@@ -1,7 +1,9 @@
 .PHONY: check lint type test fmt sync
 
+# chflags: some macOS setups mark .venv hidden, which makes Python ignore its .pth files
 sync:
 	uv sync --all-extras
+	chflags -R nohidden .venv 2>/dev/null || true
 
 check: lint type test
 

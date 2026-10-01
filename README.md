@@ -29,3 +29,5 @@ Code, tests, the Dockerfile and the report arrive in later commits.
 uv sync --all-extras   # creates .venv with all dependencies
 make check             # lint, type check, tests
 ```
+
+On macOS, if `uv run python -c 'import newline_fixer'` fails with ModuleNotFoundError, run `make sync`: some setups mark `.venv` hidden and Python 3.12+ then ignores its `.pth` files.
