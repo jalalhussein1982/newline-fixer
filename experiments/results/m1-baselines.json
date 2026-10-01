@@ -1,6 +1,24 @@
 {
-  "run_at": "2026-10-01T23:12:48+00:00",
-  "git_commit": "a3e5a6b6e62642ce59b8a382a586cf19ab2f2ae3",
+  "run_at": "2026-10-01T23:35:39+00:00",
+  "git_commit": "d56ed3fdaaf46c93ec0cf5aabad0c0e3146b730f",
+  "dirty": false,
+  "sets_sha256": {
+    "V1": "b95dfa0951eefd4700c0b4089d2cd46f1a2e3b493780ea7613da026811de3a32",
+    "V3": "770d2ba7f9a4bd5a486f1581187652288ef5deee7eed0dd123c6d81f5e7a44d3"
+  },
+  "sets_meta": {
+    "seed": 1,
+    "corruptor": {
+      "clean_fraction": 0.1,
+      "remove_base": 0.6,
+      "remove_scale": 0.4,
+      "insert_min_chars": 40,
+      "insert_max_chars": 200,
+      "word_split_prob": 0.4,
+      "double_prob": 0.1
+    },
+    "git_commit": "a8ca0777ad72511242c82cadd17d3af0ee506f69"
+  },
   "sets": [
     "V1",
     "V3"

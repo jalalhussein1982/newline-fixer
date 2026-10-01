@@ -5,7 +5,8 @@ Rendered by `scripts/results_table.py`; do not edit by hand.
 
 ## m1-baselines
 
-Results at commit `a3e5a6b6e626`, 2026-10-01T23:12:48+00:00.
+Results at commit `d56ed3fdaaf4`, 2026-10-01T23:35:39+00:00.
+Sets: V1=b95dfa0951ee, V3=770d2ba7f9a4 (built from seed 1 at commit a8ca0777ad72)
 
 | set | system | gaps | macro-F1 | classes | break-F1 | JOIN F1 | PARA F1 | wrong-join /1k | damage | str≠raw | str≠norm | para match |
 |---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
