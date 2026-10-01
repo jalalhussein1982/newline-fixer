@@ -24,8 +24,9 @@ def test_classify_ws_windows_line_endings() -> None:
 
 def test_classify_ws_tabs_and_nbsp_are_space() -> None:
     assert classify_ws("\t") is Gap.SPACE
-    assert classify_ws(" ") is Gap.SPACE
-    assert classify_ws(" \t ") is Gap.SPACE
+    assert classify_ws("\u00a0") is Gap.SPACE
+    assert classify_ws("\u00a0\t\u00a0") is Gap.SPACE
+    assert split("a\u00a0b") == (["a", "b"], [Gap.SPACE])
 
 
 def test_split_example() -> None:
