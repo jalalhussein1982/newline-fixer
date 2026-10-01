@@ -15,6 +15,17 @@ were committed before any code, and every later change to them is a commit.
 | `docs/02-design.md` | How it is built: data, model, baselines, evaluation, service (written after the requirements are agreed) |
 | `docs/03-implementation-plan.md` | Ordered, testable tasks derived from the design |
 | `docs/decisions/` | Architecture decision records, one file per decision, never rewritten |
+| `src/newline_fixer/` | library |
+| `scripts/` | data building and evaluation entry points |
+| `tests/` | pytest suite |
+| `data/` | see `data/README.md` |
 | `report.md` | Final report: how to run, approach, decisions, results (written last) |
 
 Code, tests, the Dockerfile and the report arrive in later commits.
+
+## Development
+
+```bash
+uv sync --all-extras   # creates .venv with all dependencies
+make check             # lint, type check, tests
+```

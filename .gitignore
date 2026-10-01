@@ -10,5 +10,8 @@ __pycache__/
 dist/
 data/*
 !data/README.md
+!data/split.json
+!data/sets/
+!data/realistic/
 experiments/runs/
 *.bundle
