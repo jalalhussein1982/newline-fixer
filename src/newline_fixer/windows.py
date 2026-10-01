@@ -18,8 +18,10 @@ def make_windows(
 ) -> list[tuple[int, int]]:
     """Greedy windows [start, end) over n tokens, each within budget, overlapping by half.
 
-    Raises ValueError if a single token costs more than half the budget after overhead,
-    because such a token could leave a gap uncovered.
+    Raises ValueError if a token costs more than half the budget after overhead, or if
+    any two adjacent tokens plus the gap between them exceed the budget after overhead,
+    because such a gap could be left uncovered. With zero gap costs the half-budget
+    per-token cap alone is sufficient.
     """
     if n == 0:
         return []
@@ -30,6 +32,12 @@ def make_windows(
     for i, c in enumerate(token_costs):
         if c > limit:
             raise ValueError(f"token {i} costs {c}, above half the budget {limit}")
+    for i in range(n - 1):
+        pair = token_costs[i] + gap_costs[i] + token_costs[i + 1]
+        if pair > room:
+            raise ValueError(
+                f"tokens {i} and {i + 1} with their gap cost {pair}, above room {room}"
+            )
     windows: list[tuple[int, int]] = []
     start = 0
     while True:

@@ -116,3 +116,43 @@ def test_fix_preserves_content_with_flip(text: str) -> None:
     assert content(out) == content(text)
     tokens, _ = split(text)
     assert len(tokens) < 2 or "\n" in out or " " not in out
+
+
+class Capped:
+    """Test fixer: token cost is the token length capped at half the budget."""
+
+    name = "capped"
+    budget = 64
+
+    def token_cost(self, token: str) -> int:
+        return min(len(token), self.budget // 2)
+
+    def gap_cost(self, gap: Gap) -> int:
+        return 0
+
+    def overhead(self) -> int:
+        return 0
+
+    def predict(self, tokens: Sequence[str], current: Sequence[Gap]) -> list[Gap]:
+        return list(current)
+
+
+def test_fix_long_token_with_capped_cost_is_covered() -> None:
+    url = "https://example.com/" + "x" * 2000
+    text = " ".join(["a"] * 300 + [url] + ["b"] * 300)
+    res = fix(text, Capped())
+    assert content(res.text) == content(text)
+    assert res.gaps == 600
+    assert res.windows > 1
+
+
+def test_make_windows_rejects_pair_exceeding_room_with_gap_costs() -> None:
+    with pytest.raises(ValueError):
+        make_windows(3, [2, 2, 2], [1, 1], 0, 4)
+
+
+def test_make_windows_with_gap_costs_covers_every_gap() -> None:
+    windows = make_windows(6, [1] * 6, [1] * 5, 0, 5)
+    owner = assign_gaps(windows, 5)
+    assert len(owner) == 5 and -1 not in owner
+    assert all(e - s >= 2 for s, e in windows)
