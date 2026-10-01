@@ -1,9 +1,19 @@
-Using validation data. Next we use the 80k+40k trainval set
-for training and the 20k test-dev set for evaluation. The testdev set has no publicly available ground truth and the result
-is reported by the evaluation server. Under this setting, the
-results are an mAP@.5 of 55.7% and an mAP@[.5, .95] of
-34.9% (Table 9). This is our single-model result.
+Residual Network. Based on the above plain network, we
+insert shortcut connections (Fig. 3, right) which turn the
+network into its counterpart residual version. The identity
+shortcuts (Eqn.(1)) can be directly used when the input and
+output are of the same dimensions (solid line shortcuts in
+Fig. 3). When the dimensions increase (dotted line shortcuts
+in Fig. 3), we consider two options: (A) The shortcut still
+performs identity mapping, with extra zero entries padded
+for increasing dimensions. This option introduces no extra
+parameter; (B) The projection shortcut in Eqn.(2) is used to
+match dimensions (done by 1×1 convolutions). For both
+options, when the shortcuts go across feature maps of two
+sizes, they are performed with a stride of 2.
 
-we achieve 85.6% mAP on PASCAL VOC 2007 (Table 10)
-and 83.8% on PASCAL VOC 2012 (Table 11)6 . The result
-on PASCAL VOC 2012 is 10 points higher than the previous state-of-the-art result [6].
+3x3 conv, 64
+3x3 conv, 64
+
+output
+size: 112

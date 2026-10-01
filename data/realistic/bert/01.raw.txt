@@ -1,10 +1,13 @@
-Figure 1: Overall pre-training and fine-tuning procedures for BERT. Apart from output layers, the same architectures are used in both pre-training and fine-tuning. The same pre-trained model parameters are used to initialize
-models for different down-stream tasks. During fine-tuning, all parameters are fine-tuned. [CLS] is a special
-symbol added in front of every input example, and [SEP] is a special separator token (e.g. separating questions/answers).
+We provide examples of the pre-training tasks in
+the following.
+Masked LM and the Masking Procedure Assuming the unlabeled sentence is my dog is
+hairy, and during the random masking procedure
+we chose the 4-th token (which corresponding to
+hairy), our masking procedure can be further illustrated by
+• 80% of the time: Replace the word with the
+[MASK] token, e.g., my dog is hairy →
+my dog is [MASK]
 
-ing and auto-encoder objectives have been used
-for pre-training such models (Howard and Ruder,
-2018; Radford et al., 2018; Dai and Le, 2015).
-2.3
-
-Transfer Learning from Supervised Data
+• 10% of the time: Replace the word with a
+random word, e.g., my dog is hairy → my
+dog is apple

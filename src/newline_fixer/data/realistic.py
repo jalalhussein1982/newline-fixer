@@ -21,9 +21,17 @@ def join_hyphenation(raw: str) -> tuple[str, int]:
 
 
 def cut_raw_passages(
-    raw: str, rng: random.Random, per_doc: int = 8, min_chars: int = 300, max_chars: int = 800
+    raw: str,
+    rng: random.Random,
+    per_doc: int = 8,
+    min_chars: int = 300,
+    max_chars: int = 800,
+    min_letter_ratio: float = 0.6,
 ) -> list[str]:
-    """Cut on page breaks and blank lines, then take passages within bounds at random."""
+    """Cut on page breaks and blank lines, then take passages within bounds at random.
+
+    Passages that are mostly non-letters (indexes, tables, formulas) are dropped before sampling.
+    """
     chunks: list[str] = []
     for page in raw.split("\f"):
         buf: list[str] = []
@@ -41,6 +49,7 @@ def cut_raw_passages(
         if len("\n\n".join(buf)) >= min_chars:
             chunks.append("\n\n".join(buf))
     chunks = [c.strip("\n") for c in chunks if min_chars <= len(c.strip("\n")) <= max_chars]
+    chunks = [c for c in chunks if sum(ch.isalpha() for ch in c) / len(c) >= min_letter_ratio]
     return rng.sample(chunks, min(per_doc, len(chunks)))
 
 
@@ -107,7 +116,7 @@ def load_reviewed(root: Path, role: str) -> list[EvalItem]:
                     input_text,
                     target,
                     1.0,
-                    {"doc": src["doc"], "adjustments": adjustments, **stats, **review[key]},
+                    {**review[key], "doc": src["doc"], "adjustments": adjustments, **stats},
                 )
             )
     return items

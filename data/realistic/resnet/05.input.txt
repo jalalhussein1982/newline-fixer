@@ -1,8 +1,11 @@
-PASCAL VOC
-Following [7, 32], for the PASCAL VOC 2007 test set,
-we use the 5k trainval images in VOC 2007 and 16k trainval images in VOC 2012 for training (“07+12”). For the
-PASCAL VOC 2012 test set, we use the 10k trainval+test
-images in VOC 2007 and 16k trainval images in VOC 2012
-for training (“07++12”). The hyper-parameters for training Faster R-CNN are the same as in [32]. Table 7 shows
-the results. ResNet-101 improves the mAP by >3% over
-VGG-16. This gain is solely because of the improved features learned by ResNet.
+Exploring Over 1000 layers. We explore an aggressively
+deep model of over 1000 layers. We set n = 200 that
+leads to a 1202-layer network, which is trained as described
+above. Our method shows no optimization difficulty, and
+this 103 -layer network is able to achieve training error
+<0.1% (Fig. 6, right). Its test error is still fairly good
+(7.93%, Table 6).
+But there are still open problems on such aggressively
+deep models. The testing result of this 1202-layer network
+is worse than that of our 110-layer network, although both
+8

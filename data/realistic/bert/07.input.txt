@@ -1,19 +1,14 @@
-The illustration of fine-tuning BERT on different
-tasks can be seen in Figure 4. Our task-specific
-models are formed by incorporating BERT with
-one additional output layer, so a minimal number of parameters need to be learned from scratch.
-Among the tasks, (a) and (b) are sequence-level
-tasks while (c) and (d) are token-level tasks. In
-the figure, E represents the input embedding, Ti
-represents the contextual representation of token i,
-[CLS] is the special symbol for classification output, and [SEP] is the special symbol to separate
-non-consecutive token sequences.
+results are still far worse than those of the pretrained bidirectional models. The BiLSTM hurts
+performance on the GLUE tasks.
+We recognize that it would also be possible to
+train separate LTR and RTL models and represent
+each token as the concatenation of the two models, as ELMo does. However: (a) this is twice as
+expensive as a single bidirectional model; (b) this
+is non-intuitive for tasks like QA, since the RTL
+model would not be able to condition the answer
+on the question; (c) this it is strictly less powerful
+than a deep bidirectional model, since it can use
+both left and right context at every layer.
+5.2
 
-B
-
-Detailed Experimental Setup
-
-B.1
-
-Detailed Descriptions for the GLUE
-Benchmark Experiments.
+Effect of Model Size

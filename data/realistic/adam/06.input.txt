@@ -1,22 +1,32 @@
-Published as a conference paper at ICLR 2015
+7
 
-4
+E XTENSIONS
 
-C ONVERGENCE ANALYSIS
+7.1
 
-We analyze the convergence of Adam using the online learning framework proposed in (Zinkevich,
-2003). Given an arbitrary, unknown sequence of convex cost functions f1 (θ), f2 (θ),..., fT (θ). At
-each time t, our goal is to predict the parameter θt and evaluate it on a previously unknown cost
-function ft . Since the nature of the sequence is unknown in advance, we evaluate our algorithm
-using the regret, that is the sum of all the previous difference between the online prediction ft (θt )
-and the best fixed point parameter ft (θ∗ ) from a feasible set X for all the previous steps. Concretely,
-the regret is defined as:
-R(T ) =
+A DA M AX
 
-T
+In Adam, the update rule for individual weights is to scale their gradients inversely proportional to a
+(scaled) L2 norm of their individual current and past gradients. We can generalize the L2 norm based
+update rule to a Lp norm based update rule. Such variants become numerically unstable for large
+p. However, in the special case where we let p → ∞, a surprisingly simple and stable algorithm
+emerges; see algorithm 2. We’ll now derive the algorithm. Let, in case of the Lp norm, the stepsize
+1/p
+at time t be inversely proportional to vt , where:
+vt = β2p vt−1 + (1 − β2p )|gt |p
+= (1 − β2p )
+
+t
 X
-[ft (θt ) − ft (θ∗ )]
+i=1
 
-(5)
+8
 
-t=1
+p(t−i)
+
+β2
+
+· |gi |p
+
+(6)
+(7)

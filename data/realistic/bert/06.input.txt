@@ -1,16 +1,11 @@
-The SQuAD 2.0 task extends the SQuAD 1.1
-problem definition by allowing for the possibility
-that no short answer exists in the provided paragraph, making the problem more realistic.
-We use a simple approach to extend the SQuAD
-v1.1 BERT model for this task. We treat questions that do not have an answer as having an answer span with start and end at the [CLS] token. The probability space for the start and end
-answer span positions is extended to include the
-position of the [CLS] token. For prediction, we
-compare the score of the no-answer span: snull =
-S·C + E·C to the score of the best non-null span
-12
+mixed results on the downstream task impact of
+increasing the pre-trained bi-LM size from two
+to four layers and Melamud et al. (2016) mentioned in passing that increasing hidden dimension size from 200 to 600 helped, but increasing
+further to 1,000 did not bring further improvements. Both of these prior works used a featurebased approach — we hypothesize that when the
+model is fine-tuned directly on the downstream
+tasks and uses only a very small number of randomly initialized additional parameters, the taskspecific models can benefit from the larger, more
+expressive pre-trained representations even when
+downstream task data is very small.
+5.3
 
-The TriviaQA data we used consists of paragraphs from
-TriviaQA-Wiki formed of the first 400 tokens in documents,
-that contain at least one of the provided possible answers.
-
-System
+Feature-based Approach with BERT

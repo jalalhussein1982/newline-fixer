@@ -8,48 +8,28 @@ Term
 
 This publication is available free of charge from: https://doi.org/10.6028/NIST.SP.800-63-3
 
-PSTN
+TEE
 
-Public Switched Telephone Network
+Trusted Execution Environment
 
-RA
+TGS
 
-Registration Authority
+Ticket Granting Server
 
-RMF
+TGT
 
-Risk Management Framework
+Ticket Granting Ticket
 
-RP
+TLS
 
-Relying Party
+Transport Layer Security
 
-SA&A
+TPM
 
-Security Authorization & Accreditation
+Trusted Platform Module
 
-SAML
+VOIP
 
-Security Assertion Markup Language
+Voice-Over-IP
 
-SAOP
-
-Senior Agency Official for Privacy
-
-SSL
-
-Secure Sockets Layer
-
-SMS
-
-Short Message Service
-
-SP
-
-Special Publication
-
-SORN
-
-System of Records Notice
-
-62
+63

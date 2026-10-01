@@ -1,54 +1,9 @@
-Table 2: Accuracy on subset of the Semantic-Syntactic Word Relationship test set, using word
-vectors from the CBOW architecture with limited vocabulary. Only questions containing words from
-the most frequent 30k words are used.
-Dimensionality / Training words
-50
-100
-300
-600
+7
 
-24M
-13.4
-19.4
-23.2
-24.0
+Follow-Up Work
 
-49M
-15.7
-23.1
-29.2
-30.1
-
-98M
-18.6
-27.8
-35.3
-36.5
-
-196M
-19.1
-28.7
-38.6
-40.8
-
-391M
-22.5
-33.4
-43.7
-46.6
-
-783M
-23.2
-32.2
-45.9
-50.4
-
-Table 3: Comparison of architectures using models trained on the same data, with 640-dimensional
-word vectors. The accuracies are reported on our Semantic-Syntactic Word Relationship test set,
-and on the syntactic relationship test set of [20]
-Model
-Architecture
-RNNLM
-NNLM
-CBOW
-Skip-gram
+After the initial version of this paper was written, we published single-machine multi-threaded C++
+code for computing the word vectors, using both the continuous bag-of-words and skip-gram architectures4 . The training speed is significantly higher than reported earlier in this paper, i.e. it is in the
+order of billions of words per hour for typical hyperparameter choices. We also published more than
+1.4 million vectors that represent named entities, trained on more than 100 billion words. Some of
+our follow-up work will be published in an upcoming NIPS 2013 paper [21].

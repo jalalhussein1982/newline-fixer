@@ -1,44 +1,13 @@
-Input
+Datasets and baselines. We employ the
+same 8 datasets and evaluation protocol
+of Zhang et al. (2015). We report the n-grams
+and TFIDF baselines from Zhang et al. (2015),
+as well as the character level convolutional
+model (char-CNN) of Zhang and LeCun (2015),
+the character based convolution recurrent network (char-CRNN) of (Xiao and Cho, 2016) and
+the very deep convolutional network (VDCNN)
+of Conneau et al. (2016).
+We also compare
+2
 
-Prediction
-
-Tags
-
-taiyoucon 2011 digitals: individuals digital photos from the anime convention taiyoucon 2011 in
-mesa, arizona. if you know the model and/or the
-character, please comment.
-
-#cosplay
-
-#24mm #anime #animeconvention
-#arizona #canon #con #convention
-#cos #cosplay #costume #mesa #play
-#taiyou #taiyoucon
-
-2012 twin cities pride 2012 twin cities pride parade
-
-#minneapolis
-
-#2012twincitiesprideparade
-neapolis #mn #usa
-
-beagle enjoys the snowfall
-
-#snow
-
-#2007 #beagle #hillsboro #january
-#maddison #maddy #oregon #snow
-
-christmas
-
-#christmas
-
-#cameraphone #mobile
-
-euclid avenue
-
-#newyorkcity
-
-#cleveland #euclidavenue
-
-#min-
+Using the options --nn, --ngrams and --log multi

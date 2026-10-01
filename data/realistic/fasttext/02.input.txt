@@ -1,10 +1,10 @@
-Acknowledgement. We thank Gabriel Synnaeve,
-and trends in information retrieval.
-Hervé Gégou, Jason Weston and Léon Bottou for [Schutze1992] Hinrich Schutze. 1992. Dimensions of
-meaning. In Supercomputing.
-their help and comments. We also thank Alexis Con[Tang
-et al.2015] Duyu Tang, Bing Qin, and Ting Liu.
-neau, Duyu Tang and Zichao Zhang for providing us
-2015.
-Document modeling with gated recurrent neural
-with information about their methods.
+In this work, we explore ways to scale these
+baselines to very large corpus with a large output
+space, in the context of text classification. Inspired
+by the recent work in efficient word representation
+learning (Mikolov et al., 2013; Levy et al., 2015),
+we show that linear models with a rank constraint
+and a fast loss approximation can train on a billion
+words within ten minutes, while achieving performance on par with the state-of-the-art. We evaluate the quality of our approach fastText1 on two
+different tasks, namely tag prediction and sentiment
+analysis.

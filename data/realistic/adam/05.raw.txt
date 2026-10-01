@@ -1,55 +1,13 @@
-Published as a conference paper at ICLR 2015
+Since the last iterate is noisy due to stochastic approximation, better generalization performance is
+often achieved by averaging. Previously in Moulines & Bach (2011), Polyak-Ruppert averaging
+(Polyak & Juditsky, P
+1992; Ruppert, 1988) has been shown to improve the convergence of standard
+n
+SGD, where θ̄t = 1t k=1 θk . Alternatively, an exponential moving average over the parameters can
+be used, giving higher weight to more recent parameter values. This can be trivially implemented
+by adding one line to the inner loop of algorithms 1 and 2: θ̄t ← β2 · θ̄t−1 + (1 − β2 )θt , with θ̄0 = 0.
+Initalization bias can again be corrected by the estimator θbt = θ̄t /(1 − β2t ).
 
-MNIST Logistic Regression
-AdaGrad
-SGDNesterov
-Adam
+8
 
-0.7
-
-0.6
-
-0.50
-0.45
-
-IMDB BoW feature Logistic Regression
-Adagrad+dropout
-RMSProp+dropout
-SGDNesterov+dropout
-Adam+dropout
-
-training cost
-
-training cost
-
-0.40
-0.5
-
-0.4
-
-0.30
-
-0.3
-
-0.20
-
-0.35
-
-0.25
-5
-
-10
-
-15 20 25 30 35
-iterations over entire dataset
-
-40
-
-0.200
-
-45
-
-20
-
-40 60 80 100 120 140 160
-iterations over entire dataset
+C ONCLUSION

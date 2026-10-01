@@ -1,8 +1,28 @@
-4 Deeper non-bottleneck ResNets (e.g., Fig. 5 left) also gain accuracy
-from increased depth (as shown on CIFAR-10), but are not as economical
-as the bottleneck ResNets. So the usage of bottleneck designs is mainly due
-to practical considerations. We further note that the degradation problem
-of plain nets is also witnessed for the bottleneck designs.
+We select two adjacent scales from the pyramid following
+[33]. RoI pooling and subsequent layers are performed on
+the feature maps of these two scales [33], which are merged
+by maxout as in [33]. Multi-scale testing improves the mAP
+by over 2 points (Table 9).
 
-Identity vs. Projection Shortcuts. We have shown that
-6
+val2
+
+test
+
+GoogLeNet [44] (ILSVRC’14)
+
+-
+
+43.9
+
+our single model (ILSVRC’15)
+our ensemble (ILSVRC’15)
+
+60.5
+63.6
+
+58.8
+62.1
+
+Table 12. Our results (mAP, %) on the ImageNet detection dataset.
+Our detection system is Faster R-CNN [32] with the improvements
+in Table 9, using ResNet-101.

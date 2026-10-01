@@ -1,13 +1,10 @@
-Table 5. Error rates (%) of ensembles. The top-5 error is on the
-test set of ImageNet and reported by the test server.
+Table 8. Object detection mAP (%) on the COCO validation set
+using baseline Faster R-CNN. See also Table 9 for better results.
 
-ResNet reduces the top-1 error by 3.5% (Table 2), resulting
-from the successfully reduced training error (Fig. 4 right vs.
-left). This comparison verifies the effectiveness of residual
-learning on extremely deep systems.
-Last, we also note that the 18-layer plain/residual nets
-are comparably accurate (Table 2), but the 18-layer ResNet
-converges faster (Fig. 4 right vs. left). When the net is “not
-overly deep” (18 layers here), the current SGD solver is still
-able to find good solutions to the plain net. In this case, the
-ResNet eases the optimization by providing faster convergence at the early stage.
+have similar training error. We argue that this is because of
+overfitting. The 1202-layer network may be unnecessarily
+large (19.4M) for this small dataset. Strong regularization
+such as maxout [10] or dropout [14] is applied to obtain the
+best results ([10, 25, 24, 35]) on this dataset. In this paper,
+we use no maxout/dropout and just simply impose regularization via deep and thin architectures by design, without
+distracting from the focus on the difficulties of optimization. But combining with stronger regularization may improve results, which we will study in the future.

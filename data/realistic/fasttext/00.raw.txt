@@ -1,20 +1,29 @@
-When the number of classes is large, computing the
-linear classifier is computationally expensive. More
-precisely, the computational complexity is O(kh)
-where k is the number of classes and h the dimension of the text representation. In order to improve our running time, we use a hierarchical softmax (Goodman, 2001) based on the Huffman coding tree (Mikolov et al., 2013). During training, the
-computational complexity drops to O(h log2 (k)).
-The hierarchical softmax is also advantageous at
-test time when searching for the most likely class.
-Each node is associated with a probability that is the
-probability of the path from the root to that node. If
-the node is at depth l + 1 with parents n1 , . . . , nl , its
-probability is
-P (nl+1 ) =
+output
 
-l
-Y
-i=1
+Figure 1: Model architecture of fastText for a sentence with
 
-P (ni ).
+This means that the probability of a node is always
+lower than the one of its parent. Exploring the tree
+with a depth first search and tracking the maximum
+probability among the leaves allows us to discard
+any branch associated with a small probability. In
+practice, we observe a reduction of the complexity
+to O(h log2 (k)) at test time. This approach is further extended to compute the T -top targets at the
+cost of O(log(T )), using a binary heap.
 
-N-gram features
+N ngram features x1 , . . . , xN . The features are embedded and
+averaged to form the hidden variable.
+
+2.2
+
+hidden
+
+x1
+
+x2
+
+...
+
+xN −1
+
+xN

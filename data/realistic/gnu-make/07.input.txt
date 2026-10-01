@@ -1,4 +1,10 @@
-Note that there is a difference between gmk_eval and calling gmk_expand with a string
-using the eval function: in the latter case the string will be expanded twice; once by gmk_
-expand and then again by the eval function. Using gmk_eval the buffer is only expanded
-once, at most (as it’s read by the make parser).
+The directory for installing executable programs that users can run. This should
+normally be /usr/local/bin, but write it as $(exec_prefix)/bin. (If you are
+using Autoconf, write it as ‘@bindir@’.)
+
+sbindir
+
+The directory for installing executable programs that can be run from the shell,
+but are only generally useful to system administrators. This should normally
+be /usr/local/sbin, but write it as $(exec_prefix)/sbin. (If you are using
+Autoconf, write it as ‘@sbindir@’.)

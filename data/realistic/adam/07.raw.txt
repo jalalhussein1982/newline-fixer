@@ -1,51 +1,9 @@
-p→∞
+Figure 1: Logistic regression training negative log likelihood on MNIST images and IMDB movie
+reviews with 10,000 bag-of-words (BoW) feature vectors.
+training to prevent over-fitting. In figure 1, Adagrad outperforms SGD with Nesterov momentum
+by a large margin both with and without dropout noise. Adam converges as fast as Adagrad. The
+empirical performance of Adam is consistent with our theoretical findings in sections 2 and 4. Similar to Adagrad, Adam can take advantage of sparse features and obtain faster convergence rate than
+normal SGD with momentum.
+6.2
 
-i=1
-
-= lim (1 − β2p )1/p
-p→∞
-= lim
-
-p→∞
-
-= max
-
-t
-X
-i=1
-
-p(t−i)
-β2
-· |gi |p
-
-t 
-p
-X
-(t−i)
-β2
-· |gi |
-
-!1/p
-
-!1/p
-
-i=1
-
-β2t−1 |g1 |, β2t−2 |g2 |, . . . , β2 |gt−1 |, |gt |
-
-(9)
-
-(10)
-(11)
-
-Which corresponds to the remarkably simple recursive formula:
-ut = max(β2 · ut−1 , |gt |)
-
-(12)
-
-with initial value u0 = 0. Note that, conveniently enough, we don’t need to correct for initialization
-bias in this case. Also note that the magnitude of parameter updates has a simpler bound with
-AdaMax than Adam, namely: |∆t | ≤ α.
-7.2
-
-T EMPORAL AVERAGING
+E XPERIMENT: M ULTI - LAYER N EURAL N ETWORKS

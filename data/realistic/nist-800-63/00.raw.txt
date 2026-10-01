@@ -1,15 +1,8 @@
-NIST SP 800-63-3
+NIST SP 800-63-1 updated NIST SP 800-63 to reflect current authenticator (then referred to as
+“token”) technologies and restructured it to provide a better understanding of the digital identity
+architectural model used here. Additional (minimum) technical requirements were specified for
+the CSP, protocols used to transport authentication information, and assertions if implemented
+within the digital identity model.
+2.5.2
 
-1
-
-DIGITAL IDENTITY GUIDELINES
-
-Purpose
-
-This section is informative.
-This recommendation and its companion volumes, Special Publication (SP) 800-63A, SP 80063B, and SP 800-63C, provide technical guidelines to agencies for the implementation of digital
-authentication.
-
-This publication is available free of charge from: https://doi.org/10.6028/NIST.SP.800-63-3
-
-1
+SP 800-63-2

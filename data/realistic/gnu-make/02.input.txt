@@ -1,13 +1,16 @@
-2.5 Letting make Deduce the Recipes
-It is not necessary to spell out the recipes for compiling the individual C source files,
-because make can figure them out: it has an implicit rule for updating a ‘.o’ file from
-a correspondingly named ‘.c’ file using a ‘cc -c’ command. For example, it will use the
-recipe ‘cc -c main.c -o main.o’ to compile main.c into main.o. We can therefore omit the
-recipes from the rules for the object files. See Chapter 10 [Using Implicit Rules], page 121.
+26
 
-When a ‘.c’ file is used automatically in this way, it is also automatically added to the
-list of prerequisites. We can therefore omit the ‘.c’ files from the prerequisites, provided
-we omit the recipe.
+GNU make
 
-Here is the entire example, with both of these changes, and a variable objects as
-suggested above:
+touch print
+This rule uses print as an empty target file; see Section 4.7 [Empty Target Files to Record
+Events], page 34. (The automatic variable ‘$?’ is used to print only those files that have
+changed; see Section 10.5.3 [Automatic Variables], page 130.)
+Wildcard expansion does not happen when you define a variable. Thus, if you write this:
+objects = *.o
+then the value of the variable objects is the actual string ‘*.o’. However, if you use the
+value of objects in a target or prerequisite, wildcard expansion will take place there. If
+you use the value of objects in a recipe, the shell may perform wildcard expansion when
+the recipe runs. To set objects to the expansion, instead use:
+objects := $(wildcard *.o)
+See Section 4.3.3 [Wildcard Function], page 26.

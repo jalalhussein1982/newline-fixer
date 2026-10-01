@@ -1,11 +1,10 @@
-3.1.2.1 Escape Character
-A non-quoted backslash ‘\’ is the Bash escape character. It preserves the literal value of
-the next character that follows, removing any special meaning it has, with the exception of
-newline. If a \newline pair appears, and the backslash itself is not quoted, the \newline
-is treated as a line continuation (that is, it is removed from the input stream and effectively
-ignored).
+Chapter 6: Bash Features
 
-3.1.2.2 Single Quotes
-Enclosing characters in single quotes (‘’’) preserves the literal value of each character within
-the quotes. A single quote may not occur between single quotes, even when preceded by a
-backslash.
+103
+
+expanded value as the name of a file to read and execute. Bash behaves as if the following
+command were executed:
+if [ -n "$BASH_ENV" ]; then . "$BASH_ENV"; fi
+but does not the value of the PATH variable to search for the filename.
+As noted above, if a non-interactive shell is invoked with the --login option, Bash
+attempts to read and execute commands from the login shell startup files.

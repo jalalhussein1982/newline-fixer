@@ -1,16 +1,10 @@
-(4) a degenerate text-∅ pair in text classification
-or sequence tagging. At the output, the token representations are fed into an output layer for tokenlevel tasks, such as sequence tagging or question
-answering, and the [CLS] representation is fed
-into an output layer for classification, such as entailment or sentiment analysis.
-Compared to pre-training, fine-tuning is relatively inexpensive. All of the results in the paper can be replicated in at most 1 hour on a single Cloud TPU, or a few hours on a GPU, starting
-from the exact same pre-trained model.7 We describe the task-specific details in the corresponding subsections of Section 4. More details can be
-found in Appendix A.5.
+There has also been work showing effective transfer from supervised tasks with large datasets, such
+as natural language inference (Conneau et al.,
+2017) and machine translation (McCann et al.,
+2017). Computer vision research has also demonstrated the importance of transfer learning from
+large pre-trained models, where an effective recipe
+is to fine-tune models pre-trained with ImageNet (Deng et al., 2009; Yosinski et al., 2014).
 
-4
+3
 
-Experiments
-
-In this section, we present BERT fine-tuning results on 11 NLP tasks.
-4.1
-
-GLUE
+BERT

@@ -1,17 +1,46 @@
-106
+Archive-maintaining program; default ‘ar’.
 
-GNU make
+AS
 
-The syntax of the flavor function is:
-$(flavor variable)
-Note that variable is the name of a variable to inquire about, not a reference to that
-variable. Therefore you would not normally use a ‘$’ or parentheses when writing it. (You
-can, however, use a variable reference in the name if you want the name not to be a
-constant.)
-The result of this function is a string that identifies the flavor of the variable variable:
-‘undefined’
-if variable was never defined.
-‘recursive’
-if variable is a recursively expanded variable.
-‘simple’
-if variable is a simply expanded variable.
+Program for compiling assembly files; default ‘as’.
+
+CC
+
+Program for compiling C programs; default ‘cc’.
+
+CXX
+
+Program for compiling C++ programs; default ‘g++’.
+
+CPP
+
+Program for running the C preprocessor, with results to standard output; default ‘$(CC) -E’.
+
+FC
+
+Program for compiling or preprocessing Fortran and Ratfor programs; default
+‘f77’.
+
+M2C
+
+Program to use to compile Modula-2 source code; default ‘m2c’.
+
+PC
+
+Program for compiling Pascal programs; default ‘pc’.
+
+CO
+
+Program for extracting a file from RCS; default ‘co’.
+
+GET
+
+Program for extracting a file from SCCS; default ‘get’.
+
+LEX
+
+Program to use to turn Lex grammars into source code; default ‘lex’.
+
+YACC
+
+Program to use to turn Yacc grammars into source code; default ‘yacc’.

@@ -1,128 +1,14 @@
-NSP
+Unsupervised Fine-tuning Approaches
 
-C
-
-Mask LM
-
-T1
-
-...
-
-MNLI NER
-
-Mask LM
-
-TN
-
-T1’
-
-T[SEP]
-
-...
-
-SQuAD
-
-C
-
-TM’
-
-BERT
-
-Start/End Span
-T1
-
-TN
-
-...
-
-T[SEP]
-
-BERT
-
-BERT
-
-T1’
-
-...
-
-TM’
-
-E[CLS]
-
-E1
-
-...
-
-EN
-
-E[SEP]
-
-E1’
-
-...
-
-EM’
-
-E[CLS]
-
-E1
-
-...
-
-EN
-
-E[SEP]
-
-E1’
-
-...
-
-EM’
-
-[CLS]
-
-Tok 1
-
-...
-
-Tok N
-
-[SEP]
-
-Tok 1
-
-...
-
-TokM
-
-[CLS]
-
-Tok 1
-
-...
-
-Tok N
-
-[SEP]
-
-Tok 1
-
-...
-
-TokM
-
-Masked Sentence A
-
-Question
-
-Masked Sentence B
-
-Paragraph
-
-Question Answer Pair
-
-Unlabeled Sentence A and B Pair
-
-Pre-training
-
-Fine-Tuning
+As with the feature-based approaches, the first
+works in this direction only pre-trained word embedding parameters from unlabeled text (Collobert and Weston, 2008).
+More recently, sentence or document encoders
+which produce contextual token representations
+have been pre-trained from unlabeled text and
+fine-tuned for a supervised downstream task (Dai
+and Le, 2015; Howard and Ruder, 2018; Radford
+et al., 2018). The advantage of these approaches
+is that few parameters need to be learned from
+scratch. At least partly due to this advantage,
+OpenAI GPT (Radford et al., 2018) achieved previously state-of-the-art results on many sentencelevel tasks from the GLUE benchmark (Wang
+et al., 2018a). Left-to-right language model-

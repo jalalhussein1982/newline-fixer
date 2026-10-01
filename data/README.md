@@ -28,7 +28,7 @@ Raw passages were extracted with `pdftotext` and cut (seed 1), but no targets ex
 
 Source change: `python-tutorial` (a zip of many PDFs) was replaced in the dev list by `bash-manual` (GNU Bash Reference Manual). All ten downloads and extractions succeeded.
 
-Cut passages per document (8 each, 80 total):
+Cut passages per document (8 each, 80 total; none lost to the filter because every document had enough prose chunks, but the sampled passages changed). Passages that are mostly non-letters (letter ratio below 0.6: indexes, tables, formulas) are filtered out at cut time. The reviewer should still skip any passage without a sensible newline target, so V2 may end below 25 passages and more documents may be needed.
 
 | Role | Document | Passages |
 |------|----------|----------|

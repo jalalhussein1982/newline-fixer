@@ -77,3 +77,30 @@ def test_load_reviewed_only_returns_reviewed(tmp_path: Path) -> None:
     assert [i.id for i in items] == ["doc1/00"]
     assert items[0].meta["unreachable"] == 0
     assert load_reviewed(tmp_path, "test") == []
+
+
+def test_cut_raw_passages_drops_non_prose() -> None:
+    prose = "Word " + "word " * 78 + "end."
+    dots = "Section 1.1 . . . . . . . . 12\n" * 13
+    raw = prose + "\n\n" + dots
+    out = cut_raw_passages(raw, random.Random(0), per_doc=8)
+    assert out == [prose]
+
+
+def test_load_reviewed_computed_meta_wins(tmp_path: Path) -> None:
+    import json
+
+    d = tmp_path / "doc1"
+    d.mkdir()
+    (d / "00.raw.txt").write_text("a b")
+    (d / "00.input.txt").write_text("a b")
+    (d / "00.target.txt").write_text("a\nb")
+    (tmp_path / "sources.json").write_text(
+        json.dumps({"dev": [{"doc": "doc1", "title": "t", "url": "u"}], "test": []})
+    )
+    (tmp_path / "review.json").write_text(
+        json.dumps({"doc1/00": {"reviewer": "JH", "unreachable": 99}})
+    )
+    items = load_reviewed(tmp_path, "dev")
+    assert items[0].meta["unreachable"] == 0
+    assert items[0].meta["reviewer"] == "JH"

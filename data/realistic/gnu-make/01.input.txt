@@ -1,9 +1,26 @@
-But if the package installs scripts as well as real executables, the install-strip
-target can’t just refer to the install target; it has to strip the executables but
-not the scripts.
-install-strip should not strip the executables in the build directory which are
-being copied for installation. It should only strip the copies that are installed.
-Normally we do not recommend stripping an executable unless you are sure the
-program has no bugs. However, it can be reasonable to install a stripped executable for actual execution while saving the unstripped executable elsewhere
-in case there is a bug.
-‘clean’
+194
+
+GNU make
+
+AUX =
+
+README COPYING ChangeLog Makefile.in \
+makefile.pc configure configure.in \
+tar.texinfo tar.info* texinfo.tex \
+tar.h port.h open3.h getopt.h regex.h \
+rmt.h rmt.c rtapelib.c alloca.c \
+msd_dir.h msd_dir.c tcexparg.c \
+level-0 level-1 backup-specs testpad.c
+
+.PHONY: all
+all:
+tar rmt tar.info
+tar:
+
+$(OBJS)
+$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+
+rmt:
+
+rmt.c
+$(CC) $(CFLAGS) $(LDFLAGS) -o $@ rmt.c

@@ -1,11 +1,18 @@
-($0) Expands to the name of the shell or shell script. This is set at shell
-initialization. If Bash is invoked with a file of commands (see Section 3.8 [Shell
-Scripts], page 50), $0 is set to the name of that file. If Bash is started with the
--c option (see Section 6.1 [Invoking Bash], page 100), then $0 is set to the first
-argument after the string to be executed, if one is present. Otherwise, it is set
-to the filename used to invoke Bash, as given by argument zero.
+Force the shell to run interactively. Interactive shells are described in Section 6.3
+[Interactive Shells], page 104.
 
-3.5 Shell Expansions
-Expansion is performed on the command line after it has been split into tokens. Bash
-performs these expansions:
-• brace expansion
+-l
+
+Make this shell act as if it had been directly invoked by login. When the
+shell is interactive, this is equivalent to starting a login shell with ‘exec -l
+bash’. When the shell is not interactive, it will read and execute the login shell
+startup files. ‘exec bash -l’ or ‘exec bash --login’ will replace the current
+shell with a Bash login shell. See Section 6.2 [Bash Startup Files], page 102,
+for a description of the special behavior of a login shell.
+
+-r
+
+Make the shell a restricted shell (see Section 6.10 [The Restricted Shell],
+page 115).
+
+-s

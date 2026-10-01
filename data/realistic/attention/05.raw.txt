@@ -1,9 +1,9 @@
-Model Variations
+increased the maximum output length to input length + 300. We used a beam size of 21 and α = 0.3
+for both WSJ only and the semi-supervised setting.
+Our results in Table 4 show that despite the lack of task-specific tuning our model performs surprisingly well, yielding better results than all previously reported models with the exception of the
+Recurrent Neural Network Grammar [8].
+In contrast to RNN sequence-to-sequence models [37], the Transformer outperforms the BerkeleyParser [29] even when training only on the WSJ training set of 40K sentences.
 
-To evaluate the importance of different components of the Transformer, we varied our base model
-in different ways, measuring the change in performance on English-to-German translation on the
-5
+7
 
-We used values of 2.8, 3.7, 6.0 and 9.5 TFLOPS for K80, K40, M40 and P100, respectively.
-
-8
+Conclusion

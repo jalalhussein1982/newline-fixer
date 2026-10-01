@@ -1,18 +1,12 @@
-148
+will fail when the build directory is not the source directory, because foo.man and sedscript
+are in the source directory.
+When using GNU make, relying on ‘VPATH’ to find the source file will work in the case
+where there is a single dependency file, since the make automatic variable ‘$<’ will represent
+the source file wherever it is. (Many versions of make set ‘$<’ only in implicit rules.) A
+Makefile target like
+foo.o : bar.c
+$(CC) -I. -I$(srcdir) $(CFLAGS) -c bar.c -o foo.o
 
-GNU make
-
-Data Structures
-gmk_floc
-
-This structure represents a filename/location pair. It is provided when defining
-items, so GNU make can inform the user later where the definition occurred if
-necessary.
-
-Registering Functions
-There is currently one way for makefiles to invoke operations provided by the loaded object:
-through the make function call interface. A loaded object can register one or more new
-functions which may then be invoked from within the makefile in the same way as any
-other function.
-Use gmk_add_function to create a new make function. Its arguments are as follows:
-name
+should instead be written as
+foo.o : bar.c
+$(CC) -I. -I$(srcdir) $(CFLAGS) -c $< -o $@

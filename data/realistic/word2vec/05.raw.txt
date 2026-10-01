@@ -1,9 +1,58 @@
-of the Google News data in about a day, while training time for the Skip-gram model was about three
-days.
-For experiments reported further, we used just one training epoch (again, we decrease the learning
-rate linearly so that it approaches zero at the end of training). Training a model on twice as much
-data using one epoch gives comparable or better results than iterating over the same data for three
-epochs, as is shown in Table 5, and provides additional small speedup.
-4.4
+Table 6: Comparison of models trained using the DistBelief distributed framework. Note that
+training of NNLM with 1000-dimensional vectors would take too long to complete.
+Model
 
-Large Scale Parallel Training of Models
+NNLM
+CBOW
+Skip-gram
+
+Vector
+Dimensionality
+100
+1000
+1000
+
+Training
+words
+6B
+6B
+6B
+
+Accuracy [%]
+Semantic
+34.2
+57.3
+66.1
+
+Syntactic
+64.5
+68.9
+65.1
+
+Training time
+[days x CPU cores]
+Total
+50.8
+63.7
+65.6
+
+14 x 180
+2 x 140
+2.5 x 125
+
+Table 7: Comparison and combination of models on the Microsoft Sentence Completion Challenge.
+Architecture
+4-gram [32]
+Average LSA similarity [32]
+Log-bilinear model [24]
+RNNLMs [19]
+Skip-gram
+Skip-gram + RNNLMs
+
+Accuracy [%]
+39
+49
+54.8
+55.4
+48.0
+58.9
