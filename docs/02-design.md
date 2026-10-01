@@ -60,7 +60,7 @@ This is exact, needs no alignment heuristics, and fails loudly if the invariant 
 
 A break that was deleted without leaving any whitespace (`ways:•In`) is not a gap and
 cannot be repaired. The requirements put that out of scope. Hyphenated line breaks are
-also out of scope; the realistic test set joins them before labelling (section 5.2).
+also out of scope; the realistic test set joins them before labelling (section 5.1).
 
 ## 3. Data
 
