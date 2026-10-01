@@ -31,3 +31,12 @@ make check             # lint, type check, tests
 ```
 
 On macOS, if `uv run python -c 'import newline_fixer'` fails with ModuleNotFoundError, run `make sync`: some setups mark `.venv` hidden and Python 3.12+ then ignores its `.pth` files.
+
+Rebuild data: see the docstring of `scripts/build_data.py`. Evaluate:
+
+```bash
+uv run python scripts/evaluate.py --systems identity,rules --sets V1,V2,V3 --out experiments/results/dev.json
+uv run python scripts/results_table.py
+```
+
+Results tables live in `experiments/README.md`.

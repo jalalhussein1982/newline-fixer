@@ -7,6 +7,7 @@ the Hugging Face Hub with a manifest of content hashes. See `docs/02-design.md` 
 
 ## Current build
 
+- Hub dataset URL: pending (see Pending below).
 - Dataset version: 1 (partial, Wikipedia only).
 - Wikipedia: 5000 documents, pinned revision `b04c8d1ceb2f5cd4588862100d08de323dccfbaa` (seed 1; reduced from the 20000 target).
 - Generated documents: 0. `ANTHROPIC_API_KEY` was unset, so `generate` was skipped (see `raw/generated.meta.json`).
@@ -49,3 +50,5 @@ To finish, from the repository root:
    `uv run python scripts/make_realistic_set.py propose --doc <doc>`
 2. Review: edit `data/realistic/<doc>/<nn>.target.txt` next to its `.input.txt`, then add `"<doc>/<nn>"` to `data/realistic/review.json` with your initials and the date (`{"reviewer": "JH", "date": "...", "note": ""}`). Only reviewed passages enter the sets.
 3. `uv run python scripts/make_realistic_set.py build`, then record the printed unreachable counts here.
+
+Unreachable boundary counts: pending (printed by `build`).
