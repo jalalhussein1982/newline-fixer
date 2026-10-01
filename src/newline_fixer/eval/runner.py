@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import datetime as dt
+import json
 import subprocess
 from collections.abc import Sequence
 from pathlib import Path
 
+from ..data.manifest import file_sha256
 from ..data.records import EvalItem, read_jsonl
 from ..models.base import Fixer
 from ..models.registry import get_fixer
@@ -40,11 +42,11 @@ def evaluate_set(fixer: Fixer, items: Sequence[EvalItem]) -> dict[str, object]:
         tokens, current = split(it.input)
         ref = derive_labels(it.input, it.target)
         pred = predict_all(fixer, tokens, current)
-        text = join(tokens, pred)
         if len(pred) != len(ref):
             raise RuntimeError(
                 f"{fixer.name} returned {len(pred)} gaps for {len(ref)} on item {it.id}"
             )
+        text = join(tokens, pred)
         overall.update(pred, ref, current)
         by_band[_band(it.severity)].update(pred, ref, current)
         m, t = paragraph_match(text, normalize(it.target))
@@ -72,9 +74,17 @@ def run(fixers: Sequence[str], sets: Sequence[str], sets_dir: Path) -> dict[str,
     commit = subprocess.run(
         ["git", "rev-parse", "HEAD"], capture_output=True, text=True
     ).stdout.strip()
+    status = subprocess.run(
+        ["git", "status", "--porcelain"], capture_output=True, text=True
+    ).stdout.strip()
+    meta_path = sets_dir / "meta.json"
+    sets_meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else None
     return {
         "run_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
         "git_commit": commit,
+        "dirty": bool(status),
+        "sets_sha256": {s: file_sha256(sets_dir / f"{s}.jsonl") for s in sets},
+        "sets_meta": sets_meta,
         "sets": list(sets),
         "systems": systems,
     }

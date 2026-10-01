@@ -2,7 +2,7 @@ from pathlib import Path
 
 from newline_fixer.lexicon import Lexicon
 from newline_fixer.rules import RulesFixer, rules_predict
-from newline_fixer.text import Gap, normalize, split
+from newline_fixer.text import Gap, derive_labels, normalize, split
 from newline_fixer.windows import fix
 
 WORDS = ["the", "model", "queries", "attention", "come", "from", "a", "use", "usea"]
@@ -66,3 +66,19 @@ def test_rules_solve_the_example(example_input: str, example_output: str) -> Non
 
 def test_bundled_lexicon_loads() -> None:
     assert len(Lexicon.bundled()) > 50
+
+
+def test_bundled_rules_on_example_documents_lexicon_gap(
+    example_input: str, example_output: str
+) -> None:
+    # The bundled lexicon is rebuilt in a later milestone; until then it may lack
+    # "queries", so "que ries" can stay unjoined. Everything else must be right.
+    bundled = Lexicon.bundled()
+    out = fix(example_input, RulesFixer())
+    assert (out.text == normalize(example_output)) == bundled.known("queries")
+    tokens, current = split(example_input)
+    expected = derive_labels(example_input, example_output)
+    pred = rules_predict(tokens, current, bundled)
+    for i, (p, e) in enumerate(zip(pred, expected, strict=True)):
+        if p != e:
+            assert tokens[i] == "que", f"unexpected mismatch at gap {i} after {tokens[i]!r}"

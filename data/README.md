@@ -23,6 +23,8 @@ uv run python scripts/build_data.py assemble --seed 1 && uv run python scripts/b
 uv run python scripts/build_data.py publish --repo <your-hf-user>/newline-fixer-data
 ```
 
+Re-running `assemble` redraws every split, every evaluation set and the lexicon; after it, re-run `evaluate` and `results_table` and update decision 0006 before accepting it.
+
 ## Realistic sets (pending)
 
 Raw passages were extracted with `pdftotext` and cut (seed 1), but no targets exist yet: V2 and T2 are not built. Targets must be proposed by the model (needs `ANTHROPIC_API_KEY`) and then reviewed by hand by the author.

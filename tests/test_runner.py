@@ -38,6 +38,9 @@ def test_run_reads_sets_and_writes_structure(tmp_path: Path) -> None:
     assert isinstance(systems, dict)
     assert set(systems) == {"identity", "rules"}
     assert "V9" in systems["identity"]
+    sha = out["sets_sha256"]
+    assert isinstance(sha, dict) and "V9" in sha
+    assert isinstance(out["dirty"], bool)
     md = render_table(out)
     assert "| V9" in md or "V9" in md
     assert "macro_f1" in md.lower() or "macro-F1" in md
