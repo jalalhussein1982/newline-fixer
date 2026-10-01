@@ -1,0 +1,4 @@
+Note that there is a difference between gmk_eval and calling gmk_expand with a string
+using the eval function: in the latter case the string will be expanded twice; once by gmk_
+expand and then again by the eval function. Using gmk_eval the buffer is only expanded
+once, at most (as it’s read by the make parser).

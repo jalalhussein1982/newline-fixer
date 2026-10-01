@@ -1,0 +1,8 @@
+4 Deeper non-bottleneck ResNets (e.g., Fig. 5 left) also gain accuracy
+from increased depth (as shown on CIFAR-10), but are not as economical
+as the bottleneck ResNets. So the usage of bottleneck designs is mainly due
+to practical considerations. We further note that the degradation problem
+of plain nets is also witnessed for the bottleneck designs.
+
+Identity vs. Projection Shortcuts. We have shown that
+6

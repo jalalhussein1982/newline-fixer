@@ -1,0 +1,12 @@
+√
+PT
+where θ∗ = arg minθ∈X t=1 ft (θ). We show Adam has O( T ) regret bound and a proof is given
+in the appendix. Our result is comparable to the best known bound for this general convex online
+learning problem. We also use some definitions simplify our notation, where gt , ∇ft (θt ) and gt,i
+as the ith element. We define g1:t,i ∈ Rt as a vector that contains the ith dimension of the gradients
+β2
+
+over all iterations till t, g1:t,i = [g1,i , g2,i , · · · , gt,i ]. Also, we define γ , √β1 . Our following
+1
+
+2

@@ -1,0 +1,10 @@
+Acknowledgement. We thank Gabriel Synnaeve,
+and trends in information retrieval.
+Hervé Gégou, Jason Weston and Léon Bottou for [Schutze1992] Hinrich Schutze. 1992. Dimensions of
+meaning. In Supercomputing.
+their help and comments. We also thank Alexis Con[Tang
+et al.2015] Duyu Tang, Bing Qin, and Ting Liu.
+neau, Duyu Tang and Zichao Zhang for providing us
+2015.
+Document modeling with gated recurrent neural
+with information about their methods.

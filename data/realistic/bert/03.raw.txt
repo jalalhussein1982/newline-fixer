@@ -1,0 +1,128 @@
+NSP
+
+C
+
+Mask LM
+
+T1
+
+...
+
+MNLI NER
+
+Mask LM
+
+TN
+
+T1’
+
+T[SEP]
+
+...
+
+SQuAD
+
+C
+
+TM’
+
+BERT
+
+Start/End Span
+T1
+
+TN
+
+...
+
+T[SEP]
+
+BERT
+
+BERT
+
+T1’
+
+...
+
+TM’
+
+E[CLS]
+
+E1
+
+...
+
+EN
+
+E[SEP]
+
+E1’
+
+...
+
+EM’
+
+E[CLS]
+
+E1
+
+...
+
+EN
+
+E[SEP]
+
+E1’
+
+...
+
+EM’
+
+[CLS]
+
+Tok 1
+
+...
+
+Tok N
+
+[SEP]
+
+Tok 1
+
+...
+
+TokM
+
+[CLS]
+
+Tok 1
+
+...
+
+Tok N
+
+[SEP]
+
+Tok 1
+
+...
+
+TokM
+
+Masked Sentence A
+
+Question
+
+Masked Sentence B
+
+Paragraph
+
+Question Answer Pair
+
+Unlabeled Sentence A and B Pair
+
+Pre-training
+
+Fine-Tuning

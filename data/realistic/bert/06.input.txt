@@ -1,0 +1,16 @@
+The SQuAD 2.0 task extends the SQuAD 1.1
+problem definition by allowing for the possibility
+that no short answer exists in the provided paragraph, making the problem more realistic.
+We use a simple approach to extend the SQuAD
+v1.1 BERT model for this task. We treat questions that do not have an answer as having an answer span with start and end at the [CLS] token. The probability space for the start and end
+answer span positions is extended to include the
+position of the [CLS] token. For prediction, we
+compare the score of the no-answer span: snull =
+S·C + E·C to the score of the best non-null span
+12
+
+The TriviaQA data we used consists of paragraphs from
+TriviaQA-Wiki formed of the first 400 tokens in documents,
+that contain at least one of the provided possible answers.
+
+System

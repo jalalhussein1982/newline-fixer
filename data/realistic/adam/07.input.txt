@@ -1,0 +1,51 @@
+p→∞
+
+i=1
+
+= lim (1 − β2p )1/p
+p→∞
+= lim
+
+p→∞
+
+= max
+
+t
+X
+i=1
+
+p(t−i)
+β2
+· |gi |p
+
+t 
+p
+X
+(t−i)
+β2
+· |gi |
+
+!1/p
+
+!1/p
+
+i=1
+
+β2t−1 |g1 |, β2t−2 |g2 |, . . . , β2 |gt−1 |, |gt |
+
+(9)
+
+(10)
+(11)
+
+Which corresponds to the remarkably simple recursive formula:
+ut = max(β2 · ut−1 , |gt |)
+
+(12)
+
+with initial value u0 = 0. Note that, conveniently enough, we don’t need to correct for initialization
+bias in this case. Also note that the magnitude of parameter updates has a simpler bound with
+AdaMax than Adam, namely: |∆t | ≤ α.
+7.2
+
+T EMPORAL AVERAGING

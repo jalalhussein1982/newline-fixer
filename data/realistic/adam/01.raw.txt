@@ -1,0 +1,6 @@
+This paper would probably not have existed without the support of Google Deepmind. We would
+like to give special thanks to Ivo Danihelka, and Tom Schaul for coining the name Adam. Thanks to
+Kai Fan from Duke University for spotting an error in the original AdaMax derivation. Experiments
+in this work were partly carried out on the Dutch national e-infrastructure with the support of SURF
+Foundation. Diederik Kingma is supported by the Google European Doctorate Fellowship in Deep
+Learning.

@@ -1,0 +1,55 @@
+Published as a conference paper at ICLR 2015
+
+β2
+
+kθm − θn k∞ ≤ D∞ for any m, n ∈ {1, ..., T }, and β1 , β2 ∈ [0, 1) satisfy √β1 < 1. Let αt = √αt
+2
+and β1,t = β1 λt−1 , λ ∈ (0, 1). Adam achieves the following guarantee, for all T ≥ 1.
+√
+d
+d
+d
+2
+X
+X
+X
+p
+α(β1 + 1)G∞
+D2
+D∞
+G ∞ 1 − β2
+√
+T vbT,i +
+R(T ) ≤
+kg1:T,i k2 +
+2α(1 − β1 ) i=1
+2α(1 − β1 )(1 − λ)2
+(1 − β1 ) 1 − β2 (1 − γ)2 i=1
+i=1
+Proof. Using Lemma 10.2, we have,
+ft (θt ) − ft (θ∗ ) ≤ gtT (θt − θ∗ ) =
+
+d
+X
+i=1
+
+gt,i (θt,i − θ,i∗ )
+
+From the update rules presented in algorithm 1,
+p
+vbt
+
+
+β1,t
+(1 − β1,t )
+αt
+√ mt−1 +
+√
+gt
+= θt −
+1 − β1t
+vbt
+vbt
+
+θt+1 = θt − αt m
+b t/

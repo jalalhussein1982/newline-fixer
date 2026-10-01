@@ -1,0 +1,47 @@
+3x3 conv, 256
+
+3x3 conv, 256
+
+3x3 conv, 256
+
+3x3 conv, 256
+
+3x3 conv, 256
+
+3x3 conv, 512, /2
+
+3x3 conv, 512, /2
+
+3x3 conv, 512
+
+3x3 conv, 512
+
+3x3 conv, 512
+
+3x3 conv, 512
+
+3x3 conv, 512
+
+3x3 conv, 512
+
+3x3 conv, 512
+
+3x3 conv, 512
+
+3x3 conv, 512
+
+3x3 conv, 512
+
+fc 4096
+
+avg pool
+
+avg pool
+
+fc 4096
+
+fc 1000
+
+fc 1000
+
+pool, /2

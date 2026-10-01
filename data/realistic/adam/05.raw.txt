@@ -1,0 +1,55 @@
+Published as a conference paper at ICLR 2015
+
+MNIST Logistic Regression
+AdaGrad
+SGDNesterov
+Adam
+
+0.7
+
+0.6
+
+0.50
+0.45
+
+IMDB BoW feature Logistic Regression
+Adagrad+dropout
+RMSProp+dropout
+SGDNesterov+dropout
+Adam+dropout
+
+training cost
+
+training cost
+
+0.40
+0.5
+
+0.4
+
+0.30
+
+0.3
+
+0.20
+
+0.35
+
+0.25
+5
+
+10
+
+15 20 25 30 35
+iterations over entire dataset
+
+40
+
+0.200
+
+45
+
+20
+
+40 60 80 100 120 140 160
+iterations over entire dataset

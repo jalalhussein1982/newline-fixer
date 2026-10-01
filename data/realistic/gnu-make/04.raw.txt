@@ -1,0 +1,16 @@
+26
+
+GNU make
+
+touch print
+This rule uses print as an empty target file; see Section 4.7 [Empty Target Files to Record
+Events], page 34. (The automatic variable ‘$?’ is used to print only those files that have
+changed; see Section 10.5.3 [Automatic Variables], page 130.)
+Wildcard expansion does not happen when you define a variable. Thus, if you write this:
+objects = *.o
+then the value of the variable objects is the actual string ‘*.o’. However, if you use the
+value of objects in a target or prerequisite, wildcard expansion will take place there. If
+you use the value of objects in a recipe, the shell may perform wildcard expansion when
+the recipe runs. To set objects to the expansion, instead use:
+objects := $(wildcard *.o)
+See Section 4.3.3 [Wildcard Function], page 26.

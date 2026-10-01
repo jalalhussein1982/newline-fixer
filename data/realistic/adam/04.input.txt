@@ -1,0 +1,9 @@
+where ζ = 0 if the true second moment E[gi2 ] is stationary; otherwise ζ can be kept small since
+the exponential decay rate β1 can (and should) be chosen such that the exponential moving average
+assigns small weights to gradients too far in the past. What is left is the term (1 − β2t ) which is
+caused by initializing the running average with zeros. In algorithm 1 we therefore divide by this
+term to correct the initialization bias.
+In case of sparse gradients, for a reliable estimate of the second moment one needs to average over
+many gradients by chosing a small value of β2 ; however it is exactly this case of small β2 where a
+lack of initialisation bias correction would lead to initial steps that are much larger.
+3

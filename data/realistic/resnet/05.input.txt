@@ -1,0 +1,8 @@
+PASCAL VOC
+Following [7, 32], for the PASCAL VOC 2007 test set,
+we use the 5k trainval images in VOC 2007 and 16k trainval images in VOC 2012 for training (“07+12”). For the
+PASCAL VOC 2012 test set, we use the 10k trainval+test
+images in VOC 2007 and 16k trainval images in VOC 2012
+for training (“07++12”). The hyper-parameters for training Faster R-CNN are the same as in [32]. Table 7 shows
+the results. ResNet-101 improves the mAP by >3% over
+VGG-16. This gain is solely because of the improved features learned by ResNet.

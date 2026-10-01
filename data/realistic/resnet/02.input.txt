@@ -1,0 +1,12 @@
+34-layer net with this 3-layer bottleneck block, resulting in
+a 50-layer ResNet (Table 1). We use option B for increasing
+dimensions. This model has 3.8 billion FLOPs.
+101-layer and 152-layer ResNets: We construct 101layer and 152-layer ResNets by using more 3-layer blocks
+(Table 1). Remarkably, although the depth is significantly
+increased, the 152-layer ResNet (11.3 billion FLOPs) still
+has lower complexity than VGG-16/19 nets (15.3/19.6 billion FLOPs).
+The 50/101/152-layer ResNets are more accurate than
+the 34-layer ones by considerable margins (Table 3 and 4).
+We do not observe the degradation problem and thus enjoy significant accuracy gains from considerably increased
+depth. The benefits of depth are witnessed for all evaluation
+metrics (Table 3 and 4).

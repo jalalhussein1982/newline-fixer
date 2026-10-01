@@ -1,0 +1,9 @@
+Using validation data. Next we use the 80k+40k trainval set
+for training and the 20k test-dev set for evaluation. The testdev set has no publicly available ground truth and the result
+is reported by the evaluation server. Under this setting, the
+results are an mAP@.5 of 55.7% and an mAP@[.5, .95] of
+34.9% (Table 9). This is our single-model result.
+
+we achieve 85.6% mAP on PASCAL VOC 2007 (Table 10)
+and 83.8% on PASCAL VOC 2012 (Table 11)6 . The result
+on PASCAL VOC 2012 is 10 points higher than the previous state-of-the-art result [6].

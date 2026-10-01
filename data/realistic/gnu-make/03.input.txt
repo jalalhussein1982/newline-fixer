@@ -1,0 +1,17 @@
+106
+
+GNU make
+
+The syntax of the flavor function is:
+$(flavor variable)
+Note that variable is the name of a variable to inquire about, not a reference to that
+variable. Therefore you would not normally use a ‘$’ or parentheses when writing it. (You
+can, however, use a variable reference in the name if you want the name not to be a
+constant.)
+The result of this function is a string that identifies the flavor of the variable variable:
+‘undefined’
+if variable was never defined.
+‘recursive’
+if variable is a recursively expanded variable.
+‘simple’
+if variable is a simply expanded variable.

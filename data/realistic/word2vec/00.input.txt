@@ -1,0 +1,11 @@
+For all the following models, the training complexity is proportional to
+O = E × T × Q,
+
+(1)
+
+where E is number of the training epochs, T is the number of the words in the training set and Q is
+defined further for each model architecture. Common choice is E = 3 − 50 and T up to one billion.
+All models are trained using stochastic gradient descent and backpropagation [26].
+2.1
+
+Feedforward Neural Net Language Model (NNLM)

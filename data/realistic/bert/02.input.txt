@@ -1,0 +1,47 @@
+Dev Set
+MNLI-m QNLI MRPC SST-2 SQuAD
+(Acc) (Acc) (Acc) (Acc)
+(F1)
+
+Tasks
+BERTBASE
+No NSP
+LTR & No NSP
++ BiLSTM
+
+84.4
+83.9
+82.1
+82.1
+
+88.4
+84.9
+84.3
+84.1
+
+86.7
+86.5
+77.5
+75.7
+
+92.7
+92.6
+92.1
+91.6
+
+88.5
+87.9
+77.8
+84.9
+
+Table 5: Ablation over the pre-training tasks using the
+BERTBASE architecture. “No NSP” is trained without
+the next sentence prediction task. “LTR & No NSP” is
+trained as a left-to-right LM without the next sentence
+prediction, like OpenAI GPT. “+ BiLSTM” adds a randomly initialized BiLSTM on top of the “LTR + No
+NSP” model during fine-tuning.
+
+ablation studies can be found in Appendix C.
+5.1
+
+Effect of Pre-training Tasks

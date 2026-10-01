@@ -1,0 +1,11 @@
+Each variable or function that is created or modified is given the
+export attribute and marked for export to the environment of subsequent commands.
+
+-b
+
+Cause the status of terminated background jobs to be reported
+immediately, rather than before printing the next primary prompt
+or, under some circumstances, when a foreground command exits.
+This is effective only when job control is enabled.
+
+-e

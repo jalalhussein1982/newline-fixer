@@ -1,0 +1,9 @@
+But if the package installs scripts as well as real executables, the install-strip
+target can’t just refer to the install target; it has to strip the executables but
+not the scripts.
+install-strip should not strip the executables in the build directory which are
+being copied for installation. It should only strip the copies that are installed.
+Normally we do not recommend stripping an executable unless you are sure the
+program has no bugs. However, it can be reasonable to install a stripped executable for actual execution while saving the unstripped executable elsewhere
+in case there is a bug.
+‘clean’

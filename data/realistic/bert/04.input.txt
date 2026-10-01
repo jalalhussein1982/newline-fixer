@@ -1,0 +1,11 @@
+sˆi,j = maxj≥i S·Ti + E·Tj . We predict a non-null
+answer when sˆi,j > snull + τ , where the threshold τ is selected on the dev set to maximize F1.
+We did not use TriviaQA data for this model. We
+fine-tuned for 2 epochs with a learning rate of 5e-5
+and a batch size of 48.
+The results compared to prior leaderboard entries and top published work (Sun et al., 2018;
+Wang et al., 2018b) are shown in Table 3, excluding systems that use BERT as one of their components. We observe a +5.1 F1 improvement over
+the previous best system.
+4.4
+
+SWAG

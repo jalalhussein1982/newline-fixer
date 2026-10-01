@@ -1,0 +1,9 @@
+NIST AI 100-1
+
+AI RMF 1.0
+
+Fig. 2. Lifecycle and Key Dimensions of an AI System. Modified from OECD (2022) OECD
+Framework for the Classification of AI systems — OECD Digital Economy Papers. The two inner
+circles show AI systems’ key dimensions and the outer circle shows AI lifecycle stages. Ideally,
+risk management efforts start with the Plan and Design function in the application context and are
+performed throughout the AI system lifecycle. See Figure 3 for representative AI actors.

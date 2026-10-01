@@ -1,0 +1,9 @@
+of the Google News data in about a day, while training time for the Skip-gram model was about three
+days.
+For experiments reported further, we used just one training epoch (again, we decrease the learning
+rate linearly so that it approaches zero at the end of training). Training a model on twice as much
+data using one epoch gives comparable or better results than iterating over the same data for three
+epochs, as is shown in Table 5, and provides additional small speedup.
+4.4
+
+Large Scale Parallel Training of Models

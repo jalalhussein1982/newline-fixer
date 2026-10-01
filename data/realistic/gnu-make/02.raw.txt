@@ -1,0 +1,13 @@
+2.5 Letting make Deduce the Recipes
+It is not necessary to spell out the recipes for compiling the individual C source files,
+because make can figure them out: it has an implicit rule for updating a ‘.o’ file from
+a correspondingly named ‘.c’ file using a ‘cc -c’ command. For example, it will use the
+recipe ‘cc -c main.c -o main.o’ to compile main.c into main.o. We can therefore omit the
+recipes from the rules for the object files. See Chapter 10 [Using Implicit Rules], page 121.
+
+When a ‘.c’ file is used automatically in this way, it is also automatically added to the
+list of prerequisites. We can therefore omit the ‘.c’ files from the prerequisites, provided
+we omit the recipe.
+
+Here is the entire example, with both of these changes, and a variable objects as
+suggested above:

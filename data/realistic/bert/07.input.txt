@@ -1,0 +1,19 @@
+The illustration of fine-tuning BERT on different
+tasks can be seen in Figure 4. Our task-specific
+models are formed by incorporating BERT with
+one additional output layer, so a minimal number of parameters need to be learned from scratch.
+Among the tasks, (a) and (b) are sequence-level
+tasks while (c) and (d) are token-level tasks. In
+the figure, E represents the input embedding, Ti
+represents the contextual representation of token i,
+[CLS] is the special symbol for classification output, and [SEP] is the special symbol to separate
+non-consecutive token sequences.
+
+B
+
+Detailed Experimental Setup
+
+B.1
+
+Detailed Descriptions for the GLUE
+Benchmark Experiments.

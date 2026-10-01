@@ -1,0 +1,6 @@
+If parameter is ‘@’ or ‘*’, the operation is applied to each positional parameter
+in turn, and the expansion is the resultant list. If parameter is an array variable
+subscripted with ‘@’ or ‘*’, the operation is applied to each member of the array
+in turn, and the expansion is the resultant list.
+The result of the expansion is subject to word splitting and filename expansion
+as described below.

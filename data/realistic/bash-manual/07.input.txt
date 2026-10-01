@@ -1,0 +1,11 @@
+($0) Expands to the name of the shell or shell script. This is set at shell
+initialization. If Bash is invoked with a file of commands (see Section 3.8 [Shell
+Scripts], page 50), $0 is set to the name of that file. If Bash is started with the
+-c option (see Section 6.1 [Invoking Bash], page 100), then $0 is set to the first
+argument after the string to be executed, if one is present. Otherwise, it is set
+to the filename used to invoke Bash, as given by argument zero.
+
+3.5 Shell Expansions
+Expansion is performed on the command line after it has been split into tokens. Bash
+performs these expansions:
+• brace expansion

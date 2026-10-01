@@ -1,0 +1,13 @@
+NIST SP 800-63-3
+
+DIGITAL IDENTITY GUIDELINES
+
+The secrets contained in authenticators are based on either public key pairs (asymmetric keys) or
+shared secrets (symmetric keys). A public key and a related private key comprise a public key
+pair. The private key is stored on the authenticator and is used by the claimant to prove
+possession and control of the authenticator. A verifier, knowing the claimant’s public key
+through some credential (typically a public key certificate), can use an authentication protocol to
+verify the claimant’s identity by proving that the claimant has possession and control of the
+associated private key authenticator.
+
+This publication is available free of charge from: https://doi.org/10.6028/NIST.SP.800-63-3

@@ -1,0 +1,11 @@
+3 Experiments
+We evaluate fastText on two different tasks.
+First, we compare it to existing text classifers on the
+problem of sentiment analysis. Then, we evaluate
+its capacity to scale to large output space on a tag
+prediction dataset. Note that our model could be implemented with the Vowpal Wabbit library,2 but we
+observe in practice, that our tailored implementation
+is at least 2-5× faster.
+3.1
+
+Sentiment analysis

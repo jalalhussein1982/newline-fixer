@@ -1,0 +1,7 @@
+153
+
+13 Integrating GNU make
+GNU make is often one component in a larger system of tools, including integrated development environments, compiler toolchains, and others. The role of make is to start commands
+and determine whether they succeeded or not: no special integration is needed to accomplish that. However, sometimes it is convenient to bind make more tightly with other parts
+of the system, both higher-level (tools that invoke make) and lower-level (tools that make
+invokes).
