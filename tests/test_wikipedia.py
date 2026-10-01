@@ -1,4 +1,4 @@
-from newline_fixer.data.wikipedia import clean_wikipedia_text
+from newline_fixer.data.wikipedia import clean_wikipedia_text, iter_wikipedia
 
 ARTICLE = (
     "Anarchism is a political philosophy. It questions the legitimacy of hierarchy and "
@@ -34,3 +34,8 @@ def test_clean_wikipedia_truncates_on_paragraph_boundary() -> None:
 
 def test_clean_wikipedia_rejects_short() -> None:
     assert clean_wikipedia_text("Too short.") is None
+
+
+def test_iter_wikipedia_zero_docs_yields_nothing_without_loading() -> None:
+    assert list(iter_wikipedia(0, seed=1, revision="x")) == []
+    assert list(iter_wikipedia(-3, seed=1, revision="x")) == []

@@ -52,6 +52,8 @@ def resolve_revision(repo: str = "wikimedia/wikipedia") -> str:
 def iter_wikipedia(
     n_docs: int, seed: int, revision: str, config: str = "20231101.en"
 ) -> Iterator[CleanDoc]:
+    if n_docs <= 0:
+        return
     from datasets import load_dataset
 
     ds = load_dataset(
