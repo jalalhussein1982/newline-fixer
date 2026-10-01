@@ -1,7 +1,16 @@
 # Design
 
-Status: v1, 2026-10-01. Builds on `01-requirements.md`. Says how the service is built.
+Status: v2, 2026-10-01. Builds on `01-requirements.md`. Says how the service is built.
 Decisions with real alternatives are recorded in `decisions/`.
+
+Changes from v1, after an external design review: realistic data split into development
+and test by source document; the destructive first rule of B1 replaced by a lexicon rule;
+windowing defined per model budget with a coverage check; B0 defined as normalization,
+with string-level change measured separately; T2 keeps raw and adjusted inputs and
+counts unreachable boundaries; Wikitext dropped as a source and datasets published with
+hashes; the selection rule gains a clean-text damage condition; milestones reordered so
+a submittable state exists before the second model. Details are in the sections below
+and in decision records 0004 and 0005.
 
 ## 1. Overview
 
@@ -44,6 +53,15 @@ The HTTP service can serve any of them, selected by an environment variable.
   `SPACE`, `NL`, `PARA`. The current class is an input feature for every model.
 - **Invariant.** The non-whitespace character sequence of the output equals that of the
   input. Reconstruction enforces it; a test checks it for every system.
+- **Output contract.** The output is always in canonical whitespace form: no leading or
+  trailing whitespace, and every gap is exactly one of the four strings above. Input
+  that is already canonical and needs no change comes back byte-identical. Input with
+  tabs, double spaces or spaces around newlines comes back normalized even when no gap
+  class changes. The API documents this.
+- **What the invariant does not guarantee.** `the model` and `themodel` have the same
+  non-whitespace characters. Preserving characters does not preserve words. Wrong `JOIN`
+  predictions are therefore the most damaging error class, and they are measured on
+  their own.
 
 ### 2.2 Label derivation
 
@@ -58,19 +76,29 @@ This is exact, needs no alignment heuristics, and fails loudly if the invariant 
 
 ### 2.3 Known limitation
 
-A break that was deleted without leaving any whitespace (`ways:•In`) is not a gap and
-cannot be repaired. The requirements put that out of scope. Hyphenated line breaks are
-also out of scope; the realistic test set joins them before labelling (section 5.1).
+A break that was deleted without leaving any whitespace (`ways:•In`,
+`paragraph.Second`) is not a gap and cannot be repaired. The requirements put that out
+of scope. Hyphenated line breaks are also out of scope; the realistic sets join them
+before labelling (section 5.1).
+
+Dataset validation checks reachability explicitly: for every input and target pair, every
+target break must coincide with an input gap. Unreachable boundaries are counted and
+reported per dataset. The synthetic pipeline must report zero by construction; the
+realistic sets report their count rather than silently dropping those boundaries.
 
 ## 3. Data
 
 ### 3.1 Clean sources
 
-| Source | What it contributes | Notes |
+| Source | What it contributes | Pinning |
 |---|---|---|
-| Wikitext-103 raw | paragraphs, section headings | heading markup `= Title =` converted to a plain heading line |
-| Wikipedia (Hugging Face dump, English) | paragraphs, section titles, some lists | sampled, not the whole dump |
-| LLM-generated documents | numbered headings, bullet lists with `•`, `-`, `*`, `1.`, mixed registers: papers, manuals, reports, emails, notes | written to a brief; a few thousand documents; cost in the low dollars |
+| Wikipedia, English, `wikimedia/wikipedia` on the Hugging Face Hub | paragraphs, section titles, some lists | dataset revision pinned; article ids stored with every document |
+| LLM-generated documents | numbered headings, bullet lists with `•`, `-`, `*`, `1.`, mixed registers: papers, manuals, reports, emails, notes | the generated documents themselves are kept and published; the prompt, model id and date are recorded |
+
+Wikitext-103 was considered and rejected: its "raw" variant is still tokenized, with
+spaces before punctuation and `@-@` markers, so its whitespace is not clean reference
+formatting. See decision record 0005. A Markdown documentation corpus is a possible third
+source, deferred until the first results show whether list coverage is sufficient.
 
 Hard-wrapped documents are excluded by a heuristic: if most lines end without terminal
 punctuation and the next line starts lowercase, the document is dropped. Documents shorter
@@ -79,11 +107,17 @@ than 200 characters are dropped.
 ### 3.2 Normalization, deduplication, split
 
 - Normalize whitespace to the four classes. Strip each line.
-- Deduplicate on a hash of the normalized text and on the first 200 characters.
-- Split by document, 90/5/5 into train, validation, test, with a fixed seed, before any
-  corruption. The split file is committed so it can be audited.
-- Store as JSONL: `{id, source, clean}`. Corrupted variants are produced on the fly or
+- Deduplicate on a hash of the normalized text and on the first 200 characters. Group
+  Wikipedia documents by article id so two sections or revisions of one article never
+  land on different sides of the split.
+- Split by group, 90/5/5 into train, validation, test, with a fixed seed, before any
+  corruption. The split file, listing group ids per side, is committed.
+- Store as JSONL: `{id, source, source_ref, sha256, clean}`. Corrupted variants are
   materialized once with a recorded seed: `{id, source, clean, corrupted, severity}`.
+- The built dataset is published to a Hugging Face dataset repository with a manifest of
+  content hashes and a `DATASET_VERSION`. Re-running the pipeline is documented, but the
+  published artifact is the reference; the generated documents in particular cannot be
+  regenerated identically.
 
 ### 3.3 Corruptor
 
@@ -122,20 +156,37 @@ class Fixer(Protocol):
 ```
 
 `fix(text) -> str` is one function for all systems: tokenize, window, predict, merge
-window predictions, reconstruct. Windows are 256 tokens with stride 128. A gap inside two
-windows takes the prediction from the window whose center is nearer. The first and last
-window are included unchanged, so no gap is left unpredicted.
+window predictions, reconstruct.
 
-### 4.2 B0, identity
+Windowing is defined per model. Each `Fixer` exposes `cost(tokens, current) -> int`, the
+number of model input units a span would occupy, including marker and special tokens,
+and `budget`, the maximum it accepts. For B0, B1 and M1 the cost is the token count and
+the budget is 256. For M2 the cost is the subword count after markers are inserted, and
+the budget is the encoder limit of 512. Windows are built greedily: extend from a start
+token until the next token would exceed the budget, then start the next window at the
+midpoint of the one just built, so adjacent windows overlap by about half. Every gap is
+assigned to the window whose center is nearest. A test asserts complete coverage: every
+gap receives exactly one prediction.
 
-Returns the current classes.
+A single token whose cost alone exceeds the budget is truncated for the model input
+only, keeping its first units; reconstruction always uses the original token. Tokens
+longer than 500 characters trigger this path and are counted in the request stats.
+
+### 4.2 B0, normalization only
+
+Returns the current classes. Because reconstruction emits canonical whitespace, B0 is
+not byte-identity: it collapses double spaces and tabs and strips lines. Gap-level
+metrics treat it as the do-nothing floor. String-level change on clean input is reported
+separately (section 5.2) so normalization is never mistaken for a model decision.
 
 ### 4.3 B1, rules
 
-Applied per gap, first match wins:
+Applied per gap, first match wins. `known(w)` means `w` lowercased is in a lexicon built
+from the training split, tokens with frequency at least 3.
 
-1. Current `NL` or `PARA`, previous character and next character are both lowercase
-   letters: `JOIN`.
+1. Current `NL` or `PARA`, both neighbouring tokens are alphabetic, `known(left + right)`
+   and at least one of `known(left)`, `known(right)` is false: `JOIN`. This joins
+   `que` + `ries` and leaves `the` + `model` alone.
 2. Current `NL` or `PARA`, next token starts with a lowercase letter or with closing
    punctuation: `SPACE`.
 3. Next token is a list marker (`•`, `-`, `*`, `–`, or `\d+[.)]`) and the previous token
@@ -144,7 +195,9 @@ Applied per gap, first match wins:
    as `3.2.3`, or is at most eight tokens, title-cased, with no terminal punctuation: `PARA`.
 5. Otherwise keep the current class.
 
-The rule set is frozen once written; improvements go into the models, not the baseline.
+The rules and their thresholds are checked on the validation split and the realistic
+development set, then frozen with a decision record. After that, improvements go into
+the models, not the baseline, so the comparison stays honest.
 
 ### 4.4 M1, from scratch
 
@@ -175,10 +228,17 @@ The rule set is frozen once written; improvements go into the models, not the ba
   subwords and markers get the ignore index.
 - Learning rate 3e-5 to 5e-5, batch 16, up to three epochs, mixed precision on a free
   Colab GPU, checkpoints saved to Drive. Early stopping on validation macro-F1.
-- Window size is validated against the 512 subword limit; if a 256-token window exceeds
-  it, the window is shortened for that model.
+- Windows follow the per-model budget rule in section 4.1, with cost measured in
+  subwords after marker insertion.
 
-### 4.6 Experiment tracking
+### 4.6 Ablation: pretraining in isolation
+
+M1 against M2 compares two complete approaches; architecture and capacity differ as well
+as pretraining. To isolate the value of the pretrained weights, the chosen M2 encoder is
+also trained from random initialization with the same code, data and schedule. This is
+one extra run and is part of the fine-tuned-model milestone.
+
+### 4.7 Experiment tracking
 
 Each training run writes `experiments/<run-id>.json` with git commit, dataset version,
 seed, config, training curve summary and validation metrics. A script renders
@@ -188,25 +248,48 @@ seed, config, training curve summary and validation metrics. A script renders
 
 ### 5.1 Test sets
 
-| Id | Set | Size | Built from |
-|---|---|---|---|
-| T1 | synthetic held-out | about 500 documents | the test split, corrupted at recorded severities, reported overall and by severity band |
-| T2 | realistic | 50 to 80 passages of 300 to 800 characters | `pdftotext` output of about ten real PDFs (papers, a manual, a report), including the Transformer paper; targets proposed by an LLM and reviewed by hand |
-| T3 | clean | about 200 passages | untouched clean documents from the test split and the T2 targets |
-| T0 | the challenge example | 1 | the README; a unit test |
+Development sets are used for every choice: hyperparameters, the B1 thresholds, the M2
+candidate, the clean-damage threshold, the served model. Test sets are evaluated once,
+at the end, and reported.
 
-For T2, line-end hyphenations in the raw extraction (`que-\nries`) are joined to
-`que\nries` before labelling so the content invariant holds. The report states this.
+| Id | Role | Set | Size | Built from |
+|---|---|---|---|---|
+| V1 | dev | synthetic validation | the validation split | corrupted at recorded severities |
+| V2 | dev | realistic development | about 4 source documents, 25 to 35 passages | real PDF extractions, as T2 |
+| V3 | dev | clean development | about 100 passages | untouched clean documents from the validation split |
+| T1 | test | synthetic held-out | about 500 documents | the test split, corrupted at recorded severities, reported overall and by severity band |
+| T2 | test | realistic | about 6 source documents, 35 to 50 passages | `pdftotext` output of real PDFs (papers, a manual, a report), including the Transformer paper; targets proposed by an LLM and reviewed by hand |
+| T3 | test | clean | about 200 passages | untouched clean documents from the test split and the T2 targets |
+| T0 | test | the challenge example | 1 | the README; a unit test |
+
+Realistic passages are split between V2 and T2 by source document, never by passage, so
+no document contributes to both. With about ten documents in total, the realistic
+result is evidence of limited breadth, and the report says so.
+
+For every realistic passage the repository keeps the raw extraction, the adjusted input,
+the target and a note of what was adjusted. The only adjustment is joining line-end
+hyphenations (`que-\nries` becomes `que\nries`) so the content invariant holds. The
+report gives the number of passages adjusted, the number excluded and why, and the
+number of unreachable target boundaries (section 2.3).
 
 ### 5.2 Metrics
 
-Gap level, for every system on every set:
+Gap level, for every system on every set, with the support of each class printed next
+to its scores:
 
-- precision, recall, F1 per class, and macro-F1;
+- precision, recall, F1 per class, and macro-F1 over the classes with non-zero support
+  in the reference. On clean sets `JOIN` has no support and is excluded; the table says
+  which classes entered each macro-F1.
 - headline F1 for newline-versus-none (`NL` or `PARA` against `JOIN` or `SPACE`);
-- on T3, false-edit rate: fraction of gaps changed, and fraction of passages left
-  untouched;
-- paragraph exact-match rate: fraction of reference paragraphs reproduced exactly.
+- wrong-join rate: predicted `JOIN` where the reference is not `JOIN`, per thousand
+  gaps. Reported everywhere because it is the error that changes words.
+- on clean sets, gap-level damage: fraction of gaps whose class changed, and fraction of
+  passages with no changed gap; and string-level change: fraction of passages whose
+  output differs from the raw input, and from the normalized input. The two string-level
+  numbers separate normalization from model decisions.
+- paragraph exact-match: split reference and output on `PARA`; a reference paragraph
+  matches if an identical string occurs among the output paragraphs; the rate is matched
+  reference paragraphs over all reference paragraphs.
 
 Service level, for M1 and M2 and B1:
 
@@ -219,12 +302,17 @@ All numbers land in one table in `report.md`, with the dataset version and commi
 
 ### 5.3 Decision rule
 
-M2 is the default served model if it beats B1 on T2 macro-F1 and does not exceed the
-latency target below. If it does not, the best system by that rule is served and the
-report says why.
+The served model is chosen on development data only:
 
-Latency target: p50 under 300 ms for a 2,000-character input on the M1 Mac CPU. This is a
-target to verify, not a guarantee.
+1. Candidates are the systems whose clean-damage rate on V3 is at most a threshold set
+   on V3 once B1 exists, expected to be around one changed gap per thousand, and whose
+   p50 latency for a 2,000-character input on the M1 Mac CPU is under 300 ms.
+2. Among candidates, the one with the highest macro-F1 on V2 is served, with wrong-join
+   rate as the tie-breaker.
+3. If no learned model qualifies, B1 is served and the report says why.
+
+Test sets T1, T2 and T3 are then evaluated once for all systems and reported. The
+latency figure is a target to verify, not a guarantee.
 
 ## 6. Service
 
@@ -310,25 +398,32 @@ newline-fixer/
 - Each real choice gets a decision record on the day it is made.
 - Short-lived branches per milestone, merged into `main`; the bundle carries all of them.
 
-| Milestone | Leaves the repo in this state |
-|---|---|
-| M0 | requirements, design, plan, decision records |
-| M1 | data pipeline, corruptor, T1 and T3 built, B0 and B1, evaluation harness, first results table |
-| M2 | from-scratch model trained and evaluated, T2 built and reviewed |
-| M3 | fine-tuned model selected, trained, evaluated, weights published |
-| M4 | service, Docker, tests, benchmark numbers |
-| M5 | report, Space deployed, bundle produced |
-| M6 (optional) | ONNX, more data, hyphen handling, only while a measured number improves |
+Time budget: no calendar limit was set. The core deliverable is one trained model with
+credible evaluation and a working service, reached at milestone M4. The second model and
+everything after it are extensions, pursued only while the repository stays submittable.
 
-Every milestone is submittable. The bundle is sent after M5.
+| Milestone | Leaves the repo in this state | Submittable |
+|---|---|---|
+| M0 | requirements, design, plan, decision records | no, checkpoint |
+| M1 | data pipeline, corruptor, dev and test sets built, B0 and B1 frozen, evaluation harness, first results table | no, checkpoint |
+| M2 | from-scratch model trained and evaluated, realistic sets built and reviewed | no, checkpoint |
+| M3 | service, Docker, tests, benchmark numbers, serving M1 or B1 by the decision rule | yes |
+| M4 | report, bundle produced | yes, core deliverable |
+| M5 | fine-tuned model selected, trained, evaluated, ablation run, weights published, report updated | yes |
+| M6 | Space deployed; then ONNX, more data, hyphen handling, only while a measured number improves | yes |
+
+The bundle is sent after M5 at the earliest, unless the fine-tuned model proves
+infeasible, in which case it is sent after M4 with that finding in the report.
 
 ## 10. Risks
 
 | Risk | Mitigation |
 |---|---|
-| Models learn the corruptor, not the task | T2 is real text; the decision rule uses T2 |
-| Class imbalance hides weak `JOIN` and `PARA` | per-class metrics are primary; class weights tried on validation |
-| Window seams introduce errors | merge by centrality; a test feeds a long input and checks seams |
+| Models learn the corruptor, not the task | V2 and T2 are real text; the decision rule uses V2, the report uses T2 |
+| Realistic evidence is thin | about ten source documents; the report states the limit and keeps dev and test documents disjoint |
+| Class imbalance hides weak `JOIN` and `PARA` | per-class metrics with support are primary; class weights tried on V1 |
+| Wrong joins change words | wrong-join rate reported everywhere; clean-damage threshold gates serving |
+| Window seams introduce errors | merge by centrality; a coverage test and a long-input seam test |
 | Colab session limits | checkpoints to Drive; the notebook resumes |
 | 8 GB memory during data building | streaming readers; no full corpus in memory |
 | Hub unavailable at build | pinned revision; a documented local-weights path for the build |

@@ -1,6 +1,6 @@
 # 0002. Serve self-hosted small models, compare a from-scratch model with a fine-tuned one
 
-Date: 2026-10-01. Status: accepted.
+Date: 2026-10-01. Status: superseded by 0004.
 
 ## Context
 
