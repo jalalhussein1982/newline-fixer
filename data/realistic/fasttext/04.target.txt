@@ -1,0 +1,5 @@
+Table 4: Examples from the validation set of YFCC100M dataset obtained with fastText with 200 hidden units and bigrams. We show a few correct and incorrect tag predictions.
+
+up compared to neural network based methods increases with the size of the dataset, going up to at least a 15,000× speed-up.
+
+3.2 Tag prediction

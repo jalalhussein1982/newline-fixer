@@ -1,0 +1,21 @@
+output
+
+Figure 1: Model architecture of fastText for a sentence with
+
+This means that the probability of a node is always lower than the one of its parent. Exploring the tree with a depth first search and tracking the maximum probability among the leaves allows us to discard any branch associated with a small probability. In practice, we observe a reduction of the complexity to O(h log2 (k)) at test time. This approach is further extended to compute the T -top targets at the cost of O(log(T )), using a binary heap.
+
+N ngram features x1 , . . . , xN . The features are embedded and averaged to form the hidden variable.
+
+2.2
+
+hidden
+
+x1
+
+x2
+
+...
+
+xN −1
+
+xN

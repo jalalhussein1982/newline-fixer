@@ -1,0 +1,17 @@
+Chapter 3: Basic Shell Features
+
+12
+
+3.2.5.1 Looping Constructs
+
+Bash supports the following looping constructs.
+
+Note that wherever a ‘;’ appears in the description of a command’s syntax, it may be replaced with one or more newlines.
+
+until
+
+The syntax of the until command is:
+until test-commands; do consequent-commands; done
+Execute consequent-commands as long as test-commands has an exit status which is not zero. The return status is the exit status of the last command executed in consequent-commands, or zero if none was executed.
+
+while

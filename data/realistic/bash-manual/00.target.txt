@@ -1,0 +1,5 @@
+3.6.7 Here Strings
+
+A variant of here documents, the format is:
+[n]<<< word
+The word undergoes tilde expansion, parameter and variable expansion, command substitution, arithmetic expansion, and quote removal. Filename expansion and word splitting are not performed. The result is supplied as a single string, with a newline appended, to the command on its standard input (or file descriptor n if n is specified).

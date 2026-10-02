@@ -1,0 +1,10 @@
+When the number of classes is large, computing the linear classifier is computationally expensive. More precisely, the computational complexity is O(kh) where k is the number of classes and h the dimension of the text representation. In order to improve our running time, we use a hierarchical softmax (Goodman, 2001) based on the Huffman coding tree (Mikolov et al., 2013). During training, the computational complexity drops to O(h log2 (k)). The hierarchical softmax is also advantageous at test time when searching for the most likely class. Each node is associated with a probability that is the probability of the path from the root to that node. If the node is at depth l + 1 with parents n1 , . . . , nl , its probability is
+P (nl+1 ) =
+
+l
+Y
+i=1
+
+P (ni ).
+
+N-gram features

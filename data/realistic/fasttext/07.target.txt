@@ -1,0 +1,11 @@
+tion is an hidden variable which can be potentially be reused. This architecture is similar to the cbow model of Mikolov et al. (2013), where the middle word is replaced by a label. We use the softmax function f to compute the probability distribution over the predefined classes. For a set of N documents, this leads to minimizing the negative loglikelihood over the classes:
+−
+
+N
+1 X
+yn log(f (BAxn )),
+N n=1
+
+where xn is the normalized bag of features of the nth document, yn the label, A and B the weight matrices. This model is trained asynchronously on multiple CPUs using stochastic gradient descent and a linearly decaying learning rate.
+
+2.1 Hierarchical softmax

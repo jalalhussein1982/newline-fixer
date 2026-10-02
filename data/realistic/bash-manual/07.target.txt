@@ -1,0 +1,11 @@
+Force the shell to run interactively. Interactive shells are described in Section 6.3 [Interactive Shells], page 104.
+
+-l
+
+Make this shell act as if it had been directly invoked by login. When the shell is interactive, this is equivalent to starting a login shell with ‘exec -l bash’. When the shell is not interactive, it will read and execute the login shell startup files. ‘exec bash -l’ or ‘exec bash --login’ will replace the current shell with a Bash login shell. See Section 6.2 [Bash Startup Files], page 102, for a description of the special behavior of a login shell.
+
+-r
+
+Make the shell a restricted shell (see Section 6.10 [The Restricted Shell], page 115).
+
+-s

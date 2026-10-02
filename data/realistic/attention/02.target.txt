@@ -1,0 +1,9 @@
+Scaled Dot-Product Attention
+
+Multi-Head Attention
+
+Figure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel.
+
+of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key.
+
+3.2.1 Scaled Dot-Product Attention

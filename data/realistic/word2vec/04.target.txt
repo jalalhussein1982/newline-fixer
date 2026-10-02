@@ -1,0 +1,49 @@
+Table 1: Examples of five types of semantic and nine types of syntactic questions in the SemanticSyntactic Word Relationship test set.
+
+Type of relationship
+Common capital city
+All capital cities
+Currency
+City-in-state
+Man-Woman
+Adjective to adverb
+Opposite
+Comparative
+Superlative
+Present Participle
+Nationality adjective
+Past tense
+Plural nouns
+Plural verbs
+
+4.1
+
+Word Pair 1
+Athens
+Greece
+Astana
+Kazakhstan
+Angola
+kwanza
+Chicago
+Illinois
+brother
+sister
+apparent
+apparently
+possibly
+impossibly
+great
+greater
+easy
+easiest
+think
+thinking
+Switzerland
+Swiss
+walking
+walked
+mouse
+mice
+work
+works
