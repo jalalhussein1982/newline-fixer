@@ -101,13 +101,14 @@ Realistic sets. They come from ten real PDFs: word2vec, fasttext, nist-800-63 an
 
 **Scratch, a model written from scratch.** A 30,000-word embedding, a character CNN per token (so that fragments such as `que` and capitalization are visible), an embedding of the current gap class, a two-layer BiLSTM, and a classifier over the states on both sides of the gap: 5,551,692 parameters (design 4.4). Training examples are re-corrupted every epoch. It was trained on a Colab T4 at about 52 s per epoch; the M1 Mac measured 12.1 minutes per epoch on MPS, so training moved. [Decision 0007](docs/decisions/0007-scratch-model-class-weighting.md): unweighted cross-entropy beat inverse-frequency class weights on every metric. The weights are on the Hub at the pinned revision `6c311e757d17e89c80b7b86908043637a4f56e28`, never in git ([decision 0003](docs/decisions/0003-weights-on-hub-not-in-git.md)).
 
-<!-- rendered by scripts/report_tables.py at b049f9f -->
+<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+
 | run | device | epochs | minutes | best epoch | V1 macro-F1 | V3 damage | params | commit |
 |---|---|---:|---:|---:|---:|---:|---:|---|
 | scratch-v1-inverse | cuda | 5 | 5.2 | 3 | 0.741 | 0.0447 | 5,551,692 | `dd2a39b955d0` |
 | scratch-v1 | cuda | 8 | 8.6 | 8 | 0.922 | 0.0016 | 5,551,692 | `dd2a39b955d0` |
 
-**The fine-tuned pretrained encoder (design 4.5) is planned work, not done.** The report has no result for it.
+**The fine-tuned pretrained encoder (design 4.5) is planned work, not done.** The report has no result for it. It was not started within this submission's time budget; design section 9 allows sending the bundle after M4 with that stated.
 
 ## 6. Evaluation method
 
@@ -116,11 +117,11 @@ Metrics (design 5.2), per system and set:
 - precision, recall and F1 per gap class, and macro-F1 over the classes with support in the reference (JOIN has no support on clean sets);
 - break-F1: newline (NL or PARA) against none (JOIN or SPACE);
 - wrong-join rate per thousand gaps: JOIN predicted where the reference is not JOIN. It is reported everywhere because it is the one error that changes words;
-- clean damage: the fraction of gaps whose class changed on clean text;
+- changed gaps: the fraction of gaps whose class differs from the input; on the clean sets V3 and T3 and in severity band 0 this is clean damage, elsewhere it includes correct repairs;
 - string-level change: the fraction of passages whose output differs from the raw or the normalized input;
 - paragraph match: the fraction of reference paragraphs that occur unchanged among the output paragraphs.
 
-The tables below show macro-F1, break-F1, PARA F1, wrong-join rate, clean damage and paragraph match. The per-class precision, recall and F1 for the four classes, with support, are in the per-class tables in section 7; `experiments/README.md` adds the string-level numbers.
+The tables below show macro-F1, break-F1, PARA F1, wrong-join rate, changed gaps and paragraph match. The per-class precision, recall and F1 for the four classes, with support, are in the per-class tables in section 7; `experiments/README.md` adds the string-level numbers.
 
 The decision rule (design 5.3), verbatim:
 
@@ -136,10 +137,11 @@ The discipline: every choice (B1's thresholds, the class weighting, the served m
 
 Dev sets:
 
-<!-- rendered by scripts/report_tables.py at b049f9f -->
+<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+
 Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315.
 
-| set | system | gaps | macro-F1 | break-F1 | PARA F1 | wrong-join /1k | clean damage | paragraph match |
+| set | system | gaps | macro-F1 | break-F1 | PARA F1 | wrong-join /1k | changed gaps | paragraph match |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | V1 | identity | 123610 | 0.418 | 0.346 | 0.424 | 0.00 | 0.0000 | 0.161 |
 | V1 | rules | 123610 | 0.635 | 0.513 | 0.410 | 0.00 | 0.0186 | 0.145 |
@@ -153,10 +155,11 @@ Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=0
 
 Test sets (evaluated once; the record was rendered from a dirty tree, see section 10):
 
-<!-- rendered by scripts/report_tables.py at b049f9f -->
+<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+
 Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
 
-| set | system | gaps | macro-F1 | break-F1 | PARA F1 | wrong-join /1k | clean damage | paragraph match |
+| set | system | gaps | macro-F1 | break-F1 | PARA F1 | wrong-join /1k | changed gaps | paragraph match |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | T0 | identity | 29 | 0.231 | 0.000 | 0.000 | 0.00 | 0.0000 | 0.000 |
 | T0 | rules | 29 | 1.000 | 1.000 | 1.000 | 0.00 | 0.1724 | 1.000 |
@@ -171,9 +174,12 @@ Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16
 | T3 | rules | 18392 | 0.811 | 0.978 | 0.759 | 0.00 | 0.0102 | 0.893 |
 | T3 | scratch | 18392 | 0.977 | 0.968 | 0.982 | 0.11 | 0.0023 | 0.929 |
 
+V2 macro-F1 averages three classes (JOIN has no support there) while T2 averages four (JOIN has a support of one gap, the per-class table shows it), so V2 and T2 values are not comparable; without JOIN, T2 macro-F1 is scratch 0.689, rules 0.664, identity 0.650.
+
 ### Per class, dev sets (V1, V2)
 
-<!-- rendered by scripts/report_tables.py at b049f9f -->
+<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+
 Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315.
 
 | set | system | class | support | precision | recall | F1 |
@@ -205,7 +211,8 @@ Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=0
 
 ### Per class, test sets (T1, T2)
 
-<!-- rendered by scripts/report_tables.py at b049f9f -->
+<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+
 Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
 
 | set | system | class | support | precision | recall | F1 |
@@ -237,10 +244,11 @@ Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16
 
 T1 by severity band, rules and scratch:
 
-<!-- rendered by scripts/report_tables.py at b049f9f -->
+<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+
 Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
 
-| severity band | system | items | gaps | macro-F1 | wrong-join /1k | damage |
+| severity band | system | items | gaps | macro-F1 | wrong-join /1k | changed gaps |
 |---|---|---:|---:|---:|---:|---:|
 | 0 | rules | 53 | 18575 | 0.806 | 0.00 | 0.0095 |
 | 0 | scratch | 53 | 18575 | 0.987 | 0.00 | 0.0012 |
@@ -251,7 +259,7 @@ Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16
 | (0.66,1] | rules | 101 | 32575 | 0.502 | 0.00 | 0.0320 |
 | (0.66,1] | scratch | 101 | 32575 | 0.895 | 0.31 | 0.0658 |
 
-Where the model wins. JOIN: on V1 its JOIN F1 is 0.974 against 0.682 for the rules (`experiments/README.md`); the rules join a split word only when a lexicon lookup succeeds. PARA structure on clean text: scratch has paragraph match 0.959 on V3 and 0.929 on T3 against 0.921 and 0.893 for the rules, and fewer damaged gaps. The severity table shows a gain in every band: macro-F1 0.987 against 0.806 at severity 0, and 0.895 against 0.502 at the highest band. Its own cost grows with severity: wrong joins go from 0.00 to 0.31 per thousand and damage from 0.0012 to 0.0658.
+Where the model wins. JOIN: on V1 its JOIN F1 is 0.974 against 0.682 for the rules (`experiments/README.md`); the rules join a split word only when a lexicon lookup succeeds. PARA structure on clean text: scratch has paragraph match 0.959 on V3 and 0.929 on T3 against 0.921 and 0.893 for the rules, and fewer damaged gaps. The severity table shows a gain in every band: macro-F1 0.987 against 0.806 at severity 0, and 0.895 against 0.502 at the highest band. Its own cost grows with severity: wrong joins go from 0.00 to 0.31 per thousand, and its clean damage in band 0 is 0.0012.
 
 Where it loses. On V2 and T2 the model has a lower break-F1 than the rules (0.737 against 0.869 on V2, 0.669 against 0.760 on T2), and it glues words together. Decision 0007 measured NL recall of 0.37 on V2. Paragraph match is lower than the rules' on V2 (0.453 against 0.526) and on T2 it is a near-tie (0.375 against 0.382).
 
@@ -259,7 +267,8 @@ Why. The design's risk table predicted that models learn the corruptor, not the 
 
 ## 8. Service numbers
 
-<!-- rendered by scripts/report_tables.py at b049f9f -->
+<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+
 | label | system | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | RSS MB | disk MB | commit |
 |---|---|---:|---:|---:|---:|---:|---:|---|
 | container-rules | rules | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | - | - | `3ef9677a888b` |
@@ -290,7 +299,7 @@ Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a ch
 - **The challenge example is reproduced by the rules and not by the model.** The model puts a paragraph break after `3.2.3` instead of a space, and a paragraph break before the first bullet where the expected output has a single newline (decision 0007). The rest of the example is correct. The rules reproduce it exactly (T0 macro-F1 1.000).
 - **V2 regression and T2 wrong joins.** The model is below the rules and below identity on V2, and makes 9.16 (V2) and 6.58 (T2) wrong joins per thousand gaps. A wrong join glues two words together.
 - **The V3 gate margin is thin.** The chosen epoch has V3 damage 0.0016 against the gate of 0.0026, but three of the eight epochs were above the gate (decision 0007). Selection used V1 macro-F1, so passing the gate at epoch 8 is partly luck.
-- **The rules also damage clean text.** V3 damage is 0.0026, exactly at the gate, and their PARA F1 is below identity on V1 and V2.
+- **The rules also damage clean text.** V3 damage is 0.0026, exactly at the gate, and their PARA F1 is below identity on V1 and V2. On T3, the clean test set, the rules change 0.0102 of gaps (four times the 0.0026 gate that was set on V3) with paragraph match 0.893 and macro-F1 0.811, where scratch changes 0.0023 with 0.929 and 0.977. The gate set on V3 did not generalise for the system that is served. Scratch's own T3 cost is 0.11 wrong joins per thousand gaps where the rules make none.
 - **The realistic evidence is ten documents**: four in V2, six in T2, 29 and 40 passages.
 - **The generated documents are reproducible only by download, not by script.**
 - **The container latency gap**: scratch at 304.1 ms against 40.6 ms on the host, cause not isolated.
