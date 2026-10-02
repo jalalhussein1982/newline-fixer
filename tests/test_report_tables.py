@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any
 
 from newline_fixer.eval.report import (
+    per_class_table,
     realistic_facts,
     service_table,
     severity_table,
@@ -18,7 +19,10 @@ def gap(f1: float) -> dict[str, Any]:
         "break_f1": f1,
         "wrong_join_per_1000": 0.5,
         "damage_rate": 0.01,
-        "per_class": {c: {"f1": f1} for c in ("JOIN", "SPACE", "NL", "PARA")},
+        "per_class": {
+            c: {"support": 7, "precision": 0.5, "recall": 0.25, "f1": f1}
+            for c in ("JOIN", "SPACE", "NL", "PARA")
+        },
     }
 
 
@@ -126,3 +130,12 @@ def test_realistic_facts_counts_adjusted_and_excluded(tmp_path: Path) -> None:
     facts = realistic_facts(tmp_path, review, sources)
     assert facts["V2"] == {"passages": 2, "adjusted": 1, "excluded": 1, "documents": ["adam"]}
     assert facts["T2"] == {"passages": 2, "adjusted": 0, "excluded": 0, "documents": ["bert"]}
+
+
+def test_per_class_table_has_one_row_per_class_per_system() -> None:
+    out = per_class_table(results(), ["V1"], ["rules", "scratch"])
+    assert out.startswith("Rendered from commit `abcdef012345`")
+    rows = [line for line in out.splitlines() if line.startswith("| V1 | ")]
+    assert len(rows) == 8
+    assert [r.split(" | ")[2] for r in rows[:4]] == ["JOIN", "SPACE", "NL", "PARA"]
+    assert "| V1 | rules | NL | 7 | 0.500 | 0.250 | 0.750 |" in out

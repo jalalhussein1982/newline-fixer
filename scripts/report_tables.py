@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from newline_fixer.eval.report import (
+    per_class_table,
     realistic_facts,
     service_table,
     severity_table,
@@ -30,6 +31,8 @@ def main() -> None:
     test = load("experiments/results/test-sets.json")
     print("## dev sets\n\n" + summary_table(dev, ["V1", "V2", "V3"], SYSTEMS))
     print("## test sets\n\n" + summary_table(test, ["T0", "T1", "T2", "T3"], SYSTEMS))
+    print("## per class, dev sets\n\n" + per_class_table(dev, ["V1", "V2"], SYSTEMS))
+    print("## per class, test sets\n\n" + per_class_table(test, ["T1", "T2"], SYSTEMS))
     print("## T1 by severity band\n\n" + severity_table(test, "T1", ["rules", "scratch"]))
     bench = [load(str(p)) for p in sorted(Path("experiments/bench").glob("*.json"))]
     print("## service\n\n" + service_table(bench))

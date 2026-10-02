@@ -34,6 +34,25 @@ def summary_table(results: dict[str, Any], sets: Sequence[str], systems: Sequenc
     return "\n".join(lines) + "\n"
 
 
+def per_class_table(results: dict[str, Any], sets: Sequence[str], systems: Sequence[str]) -> str:
+    lines = [
+        _provenance(results),
+        "",
+        "| set | system | class | support | precision | recall | F1 |",
+        "|---|---|---|---:|---:|---:|---:|",
+    ]
+    for s in sets:
+        for name in systems:
+            per_class = results["systems"][name][s]["gap"]["per_class"]
+            for cls in ("JOIN", "SPACE", "NL", "PARA"):
+                c = per_class[cls]
+                lines.append(
+                    f"| {s} | {name} | {cls} | {int(c['support'])} | "
+                    f"{c['precision']:.3f} | {c['recall']:.3f} | {c['f1']:.3f} |"
+                )
+    return "\n".join(lines) + "\n"
+
+
 def severity_table(results: dict[str, Any], set_name: str, systems: Sequence[str]) -> str:
     lines = [
         _provenance(results),
