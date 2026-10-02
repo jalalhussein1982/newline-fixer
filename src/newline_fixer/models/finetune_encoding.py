@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import weakref
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -35,18 +36,20 @@ def _pieces(tokenizer: Any, token: str) -> list[int]:
     return ids[:TOKEN_CAP]
 
 
-# Memo keyed on (id(tokenizer), token); a module-level dict, cleared when it grows large.
-_COST_CACHE: dict[tuple[int, str], int] = {}
+# Memo: one inner dict per tokenizer (weak-keyed, so entries die with it); an inner dict
+# is cleared when it passes 200k entries.
+_COST_CACHE: weakref.WeakKeyDictionary[Any, dict[str, int]] = weakref.WeakKeyDictionary()
+_COST_CACHE_MAX = 200_000
 
 
 def token_cost(tokenizer: Any, token: str) -> int:
     """Subwords of the token alone: at least 1, at most TOKEN_CAP."""
-    key = (id(tokenizer), token)
-    if key not in _COST_CACHE:
-        if len(_COST_CACHE) > 200_000:
-            _COST_CACHE.clear()
-        _COST_CACHE[key] = len(_pieces(tokenizer, token))
-    return _COST_CACHE[key]
+    costs = _COST_CACHE.setdefault(tokenizer, {})
+    if token not in costs:
+        if len(costs) > _COST_CACHE_MAX:
+            costs.clear()
+        costs[token] = len(_pieces(tokenizer, token))
+    return costs[token]
 
 
 def gap_cost(gap: Gap) -> int:
@@ -68,6 +71,7 @@ def encode_window(
     ids: list[int] = [tokenizer.cls_token_id]
     positions: list[int] = []
     overflowed = False
+    marker_ids = {g: tokenizer.convert_tokens_to_ids(m) for g, m in MARKERS.items()}
     for i, token in enumerate(tokens):
         pieces = _pieces(tokenizer, token)
         if len(ids) + len(pieces) > max_len - 1:
@@ -79,7 +83,7 @@ def encode_window(
             if len(ids) + 1 > max_len - 1:
                 overflowed = True
                 break
-            ids.append(tokenizer.convert_tokens_to_ids(MARKERS[current[i]]))
+            ids.append(marker_ids[current[i]])
     ids.append(tokenizer.sep_token_id)
     return Encoded(ids, [1] * len(ids), positions, len(tokens), overflowed)
 

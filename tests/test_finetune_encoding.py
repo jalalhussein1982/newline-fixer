@@ -68,7 +68,7 @@ def test_encode_window_layout_and_label_positions() -> None:
     assert e.attention_mask == [1] * len(ids)
 
 
-def test_zero_subword_token_gets_unk_and_a_position() -> None:
+def test_unknown_word_gets_unk_and_a_position() -> None:
     t = tok()
     e = encode_window(["a", "\u0001", "b"], [Gap.SPACE, Gap.SPACE], t)
     assert e.n_tokens == 3 and len(e.label_positions) == 3
@@ -120,3 +120,38 @@ def test_collate_pads_and_moves() -> None:
     )
     assert batch["label_positions"].shape[0] == 2 and batch["label_positions"][0, -1].item() == -1
     assert batch["n_tokens"].tolist() == [2, 3]
+
+
+class _StubTokenizer:
+    cls_token_id = 1
+    sep_token_id = 2
+    unk_token_id = 3
+    pad_token_id = 0
+
+    def __len__(self) -> int:
+        return 20
+
+    def encode(self, text: str, add_special_tokens: bool = False) -> list[int]:
+        if text == "\u0001":
+            return []
+        if text == "long":
+            return list(range(10, 1010))
+        return [7]
+
+    def convert_tokens_to_ids(self, token: str) -> int:
+        return {"[NL]": 4, "[PP]": 5}.get(token, self.unk_token_id)
+
+
+def test_zero_subword_token_falls_back_to_unk() -> None:
+    stub = _StubTokenizer()
+    assert token_cost(stub, "\u0001") == 1
+    e = encode_window(["a", "\u0001", "b"], [Gap.SPACE, Gap.SPACE], stub)
+    assert len(e.label_positions) == 3
+    assert e.input_ids[e.label_positions[1]] == stub.unk_token_id
+
+
+def test_long_token_is_capped_at_token_cap() -> None:
+    stub = _StubTokenizer()
+    assert token_cost(stub, "long") == TOKEN_CAP
+    e = encode_window(["long", "b"], [Gap.SPACE], stub)
+    assert e.label_positions == [1, 1 + TOKEN_CAP] and not e.overflowed
