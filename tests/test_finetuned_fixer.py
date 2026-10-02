@@ -34,6 +34,13 @@ def tiny_fixer(seed: int = 0) -> FinetunedFixer:
     )
 
 
+def test_half_precision_model_is_cast_to_fp32() -> None:
+    fx = tiny_fixer()
+    half = fx.model.half()
+    fx2 = FinetunedFixer.from_parts(fx.cfg, fx.tokenizer, half, CPU)
+    assert all(p.dtype == torch.float32 for p in fx2.model.parameters())
+
+
 def test_costs_and_budget() -> None:
     fx = tiny_fixer()
     assert fx.budget == 512 and fx.overhead() == 2

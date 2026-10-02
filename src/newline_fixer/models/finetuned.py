@@ -72,7 +72,7 @@ class FinetunedFixer:
         self.cfg = cfg
         self.tokenizer = tokenizer
         self.device = device
-        self.model = model.to(device).eval()
+        self.model = model.float().to(device).eval()
         self.budget = cfg.budget
         self.name = name
         self.weights_dir: Path | None = None
@@ -125,7 +125,7 @@ class FinetunedFixer:
             model = AutoModelForTokenClassification.from_config(config)  # type: ignore[no-untyped-call]
         else:
             model = AutoModelForTokenClassification.from_pretrained(
-                cfg.pretrained, num_labels=NUM_LABELS
+                cfg.pretrained, num_labels=NUM_LABELS, dtype=torch.float32
             )
         model.resize_token_embeddings(len(tok))
         return cls(cfg, tok, model, device)
