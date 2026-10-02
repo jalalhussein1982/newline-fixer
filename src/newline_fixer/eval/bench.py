@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-import resource
+import math
+import os
+import subprocess
 import sys
 import time
 from collections.abc import Callable, Sequence
@@ -28,8 +30,8 @@ def bench_inputs(items: Sequence[EvalItem], lengths: Sequence[int] = LENGTHS) ->
 def percentile(values: Sequence[float], p: float) -> float:
     """Nearest-rank percentile; p in [0, 100]."""
     ordered = sorted(values)
-    rank = max(1, int(round(p / 100 * len(ordered) + 0.5)))
-    return ordered[min(rank, len(ordered)) - 1]
+    rank = min(max(math.ceil(p / 100 * len(ordered)), 1), len(ordered))
+    return ordered[rank - 1]
 
 
 def time_calls(call: Callable[[], object], n: int, warmup: int) -> list[float]:
@@ -57,9 +59,15 @@ def throughput(
 
 
 def rss_mb() -> float:
-    """Peak resident set size of this process in MB (ru_maxrss is bytes on macOS, KiB on Linux)."""
-    raw = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-    return raw / 1e6 if sys.platform == "darwin" else raw / 1e3
+    """Current resident set size of this process in MB."""
+    if sys.platform.startswith("linux"):
+        with open("/proc/self/statm", encoding="ascii") as fh:
+            pages = int(fh.read().split()[1])
+        return pages * os.sysconf("SC_PAGE_SIZE") / 1e6
+    out = subprocess.run(
+        ["ps", "-o", "rss=", "-p", str(os.getpid())], capture_output=True, text=True, check=True
+    )
+    return int(out.stdout.strip()) * 1024 / 1e6
 
 
 def disk_mb(path: Path | None) -> float:
@@ -81,21 +89,25 @@ def _latency_block(
     return block
 
 
+def _disk_for(fixer: Fixer) -> float:
+    weights_dir = getattr(fixer, "weights_dir", None)
+    if weights_dir:
+        return disk_mb(Path(weights_dir))
+    if fixer.name == "rules":
+        return disk_mb(Path(__file__).resolve().parents[1] / "resources")
+    return 0.0
+
+
 def bench_fixer(
     fixer: Fixer, inputs: dict[int, str], n: int = 20, warmup: int = 3
 ) -> dict[str, object]:
-    """In-process numbers for one fixer (model size from `weights_dir` when it has one)."""
-    weights_dir = getattr(fixer, "weights_dir", None)
-    disk = (
-        disk_mb(Path(weights_dir))
-        if weights_dir
-        else disk_mb(Path(__file__).resolve().parents[1] / "resources")
-    )
+    """In-process numbers for one fixer; RSS is read after the latency warm-up and timed calls."""
     latency = _latency_block(lambda text: lambda: fix(text, fixer), inputs, n, warmup)
+    resident = rss_mb()
     tput = throughput(lambda text: fix(text, fixer), inputs[2000])
     return {
-        "disk_mb": round(disk, 2),
-        "rss_mb": round(rss_mb(), 1),
+        "disk_mb": round(_disk_for(fixer), 2),
+        "rss_mb": round(resident, 1),
         "latency_ms": latency,
         "throughput_chars_per_s": round(tput),
         "n": n,
@@ -121,8 +133,8 @@ def bench_http(
         latency = _latency_block(lambda text: lambda: post(text), inputs, n, warmup)
         tput = throughput(post, inputs[2000])
     return model, {
-        "disk_mb": 0.0,
-        "rss_mb": 0.0,
+        "disk_mb": None,  # the client cannot see the server process
+        "rss_mb": None,
         "latency_ms": latency,
         "throughput_chars_per_s": round(tput),
         "n": n,

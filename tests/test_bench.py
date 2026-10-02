@@ -40,6 +40,11 @@ def test_percentile_is_nearest_rank() -> None:
     assert percentile(xs, 50) == 3.0 and percentile(xs, 95) == 5.0 and percentile(xs, 0) == 1.0
 
 
+def test_percentile_nearest_rank_with_twenty_values() -> None:
+    xs = [float(i) for i in range(20, 0, -1)]
+    assert percentile(xs, 95) == 19.0 and percentile(xs, 50) == 10.0 and percentile(xs, 100) == 20.0
+
+
 def test_time_calls_and_throughput_are_positive() -> None:
     times = time_calls(lambda: sum(range(1000)), n=4, warmup=1)
     assert len(times) == 4 and all(t >= 0 for t in times)
@@ -48,6 +53,11 @@ def test_time_calls_and_throughput_are_positive() -> None:
 
 def test_memory_and_disk() -> None:
     assert rss_mb() > 1.0
+    before = rss_mb()
+    ballast = bytearray(200_000_000)
+    ballast[::4096] = b"x" * len(ballast[::4096])
+    assert rss_mb() > before + 100  # current, not peak: tracks allocation
+    del ballast
     assert disk_mb(None) == 0.0
     assert disk_mb(Path("src/newline_fixer/resources")) > 0.0
 
@@ -58,6 +68,26 @@ def test_bench_fixer_record_shape() -> None:
     latency = rec["latency_ms"]
     assert isinstance(latency, dict) and set(latency) == {"500", "2000", "10000"}
     assert rec["n"] == 2
+
+
+def test_render_bench_table_dashes_and_dirty_flag() -> None:
+    http = {
+        "disk_mb": None,
+        "rss_mb": None,
+        "n": 1,
+        "throughput_chars_per_s": 5,
+        "latency_ms": {k: {"p50": 1.0, "p95": 2.0} for k in ("500", "2000", "10000")},
+    }
+    record = {
+        "label": "h",
+        "git_commit": "abc",
+        "dirty": True,
+        "mode": "http",
+        "device": "cpu",
+        "systems": {"rules": http},
+    }
+    out = render_bench_table([record])
+    assert "| - | - |" in out and "`abc` (dirty)" in out
 
 
 def test_render_bench_table_has_one_row_per_system() -> None:
