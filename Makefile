@@ -1,4 +1,4 @@
-.PHONY: check lint type test fmt serve sync image container-check bundle bundle-check
+.PHONY: check lint type test fmt serve sync image container-check space-check bundle bundle-check
 
 # chflags: some macOS setups mark .venv hidden, which makes Python ignore its .pth files
 sync:
@@ -29,6 +29,10 @@ image:
 
 container-check:
 	uv run python scripts/container_check.py
+
+SPACE_URL ?= https://jalalhussein1982-newline-fixer.hf.space
+space-check:
+	uv run python scripts/container_check.py --url $(SPACE_URL) --expect-mismatch
 
 bundle:
 	for b in $$(git branch -r | grep -v -- '->' | sed 's|^ *origin/||'); do \
