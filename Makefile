@@ -1,4 +1,4 @@
-.PHONY: check lint type test fmt serve sync image container-check
+.PHONY: check lint type test fmt serve sync image container-check bundle bundle-check
 
 # chflags: some macOS setups mark .venv hidden, which makes Python ignore its .pth files
 sync:
@@ -29,3 +29,9 @@ image:
 
 container-check:
 	uv run python scripts/container_check.py
+
+bundle:
+	git bundle create jalal-hussein.bundle --all
+
+bundle-check:
+	bash scripts/bundle_check.sh
