@@ -1,0 +1,1636 @@
+{
+  "run_at": "2026-10-02T18:28:45+00:00",
+  "git_commit": "44480da7717aaaef5901b043fffee14861e3640a",
+  "dirty": false,
+  "sets_sha256": {
+    "T0": "95d8fe63481b9ebd3a6b6dda52ba9f9d5e6272658e75cda113733ebff314f7a0",
+    "T1": "a3d16ebe012c0bd8322989e0ddf26824876087c12e7f504e882b3f3520e40dec",
+    "T2": "11ba1ea6f18c006943701eff675086eb9844626159854a48abafa0dcf35c71e1",
+    "T3": "aaceae2a74c8f5438cc81ffb7b0cd7eba80b83652181754ae4c7dcc8e48254ce"
+  },
+  "sets_meta": {
+    "seed": 1,
+    "corruptor": {
+      "clean_fraction": 0.1,
+      "remove_base": 0.6,
+      "remove_scale": 0.4,
+      "insert_min_chars": 40,
+      "insert_max_chars": 200,
+      "word_split_prob": 0.4,
+      "double_prob": 0.1
+    },
+    "git_commit": "2d3885bd31a212e56bdfce1128fb04243442cefe"
+  },
+  "sets": [
+    "T0",
+    "T1",
+    "T2",
+    "T3"
+  ],
+  "systems": {
+    "finetuned": {
+      "T0": {
+        "gap": {
+          "n_items": 1,
+          "n_gaps": 29,
+          "macro_f1": 0.6666666666666666,
+          "macro_classes": [
+            "JOIN",
+            "SPACE",
+            "NL",
+            "PARA"
+          ],
+          "break_f1": 1.0,
+          "wrong_join_per_1000": 0.0,
+          "damage_rate": 0.1724137931034483,
+          "items_untouched_rate": 0.0,
+          "per_class": {
+            "JOIN": {
+              "support": 1,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "SPACE": {
+              "support": 26,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "NL": {
+              "support": 1,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "PARA": {
+              "support": 1,
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666
+            }
+          }
+        },
+        "paragraph_match_rate": 0.5,
+        "string_changed_vs_raw": 1.0,
+        "string_changed_vs_normalized": 1.0,
+        "by_severity": {
+          "0": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0,0.33]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.33,0.66]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.66,1]": {
+            "n_items": 1,
+            "n_gaps": 29,
+            "macro_f1": 0.6666666666666666,
+            "macro_classes": [
+              "JOIN",
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 1.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.1724137931034483,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 1,
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1": 1.0
+              },
+              "SPACE": {
+                "support": 26,
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1": 1.0
+              },
+              "NL": {
+                "support": 1,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 1,
+                "precision": 0.5,
+                "recall": 1.0,
+                "f1": 0.6666666666666666
+              }
+            }
+          }
+        }
+      },
+      "T1": {
+        "gap": {
+          "n_items": 350,
+          "n_gaps": 120009,
+          "macro_f1": 0.9537956623986581,
+          "macro_classes": [
+            "JOIN",
+            "SPACE",
+            "NL",
+            "PARA"
+          ],
+          "break_f1": 0.9369951534733442,
+          "wrong_join_per_1000": 0.07499437542184337,
+          "damage_rate": 0.04033030856019132,
+          "items_untouched_rate": 0.1457142857142857,
+          "per_class": {
+            "JOIN": {
+              "support": 961,
+              "precision": 0.9906054279749478,
+              "recall": 0.9875130072840791,
+              "f1": 0.9890568004168838
+            },
+            "SPACE": {
+              "support": 114599,
+              "precision": 0.9965341275232074,
+              "recall": 0.998577649019625,
+              "f1": 0.9975548417184973
+            },
+            "NL": {
+              "support": 1884,
+              "precision": 0.9314922995220393,
+              "recall": 0.9309978768577495,
+              "f1": 0.9312450225643748
+            },
+            "PARA": {
+              "support": 2565,
+              "precision": 0.9417309340188518,
+              "recall": 0.8569200779727095,
+              "f1": 0.8973259848948766
+            }
+          }
+        },
+        "paragraph_match_rate": 0.7502572898799313,
+        "string_changed_vs_raw": 0.8542857142857143,
+        "string_changed_vs_normalized": 0.8542857142857143,
+        "by_severity": {
+          "0": {
+            "n_items": 53,
+            "n_gaps": 18575,
+            "macro_f1": 0.9933158938976834,
+            "macro_classes": [
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.990023023791251,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0006998654104979811,
+            "items_untouched_rate": 0.8679245283018868,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 17929,
+                "precision": 0.9999441901997991,
+                "recall": 0.9993306932902002,
+                "f1": 0.999637347616258
+              },
+              "NL": {
+                "support": 281,
+                "precision": 0.9859154929577465,
+                "recall": 0.99644128113879,
+                "f1": 0.9911504424778762
+              },
+              "PARA": {
+                "support": 365,
+                "precision": 0.9785522788203753,
+                "recall": 1.0,
+                "f1": 0.9891598915989159
+              }
+            }
+          },
+          "(0,0.33]": {
+            "n_items": 92,
+            "n_gaps": 30364,
+            "macro_f1": 0.9575105488115344,
+            "macro_classes": [
+              "JOIN",
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.9366160293347302,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.025358977736793572,
+            "items_untouched_rate": 0.03260869565217391,
+            "per_class": {
+              "JOIN": {
+                "support": 92,
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1": 1.0
+              },
+              "SPACE": {
+                "support": 29284,
+                "precision": 0.9967973833940922,
+                "recall": 0.9990779948094523,
+                "f1": 0.9979363861175067
+              },
+              "NL": {
+                "support": 348,
+                "precision": 0.9269662921348315,
+                "recall": 0.9482758620689655,
+                "f1": 0.9375000000000001
+              },
+              "PARA": {
+                "support": 640,
+                "precision": 0.9539823008849557,
+                "recall": 0.8421875,
+                "f1": 0.8946058091286307
+              }
+            }
+          },
+          "(0.33,0.66]": {
+            "n_items": 104,
+            "n_gaps": 38495,
+            "macro_f1": 0.9439222387331918,
+            "macro_classes": [
+              "JOIN",
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.9138929088277858,
+            "wrong_join_per_1000": 0.18184179763605662,
+            "damage_rate": 0.046005974801922325,
+            "items_untouched_rate": 0.019230769230769232,
+            "per_class": {
+              "JOIN": {
+                "support": 342,
+                "precision": 0.9798270893371758,
+                "recall": 0.9941520467836257,
+                "f1": 0.9869375907111755
+              },
+              "SPACE": {
+                "support": 36717,
+                "precision": 0.9952471482889734,
+                "recall": 0.9980390554783888,
+                "f1": 0.9966411466336674
+              },
+              "NL": {
+                "support": 559,
+                "precision": 0.9166666666666666,
+                "recall": 0.8855098389982111,
+                "f1": 0.9008189262966333
+              },
+              "PARA": {
+                "support": 877,
+                "precision": 0.9416243654822335,
+                "recall": 0.8460661345496009,
+                "f1": 0.8912912912912913
+              }
+            }
+          },
+          "(0.66,1]": {
+            "n_items": 101,
+            "n_gaps": 32575,
+            "macro_f1": 0.9421383544939821,
+            "macro_classes": [
+              "JOIN",
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.9353159851301116,
+            "wrong_join_per_1000": 0.06139677666922486,
+            "damage_rate": 0.07017651573292402,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 527,
+                "precision": 0.9961464354527938,
+                "recall": 0.9810246679316889,
+                "f1": 0.9885277246653921
+              },
+              "SPACE": {
+                "support": 30669,
+                "precision": 0.9958367214181167,
+                "recall": 0.9983044768332844,
+                "f1": 0.9970690721985216
+              },
+              "NL": {
+                "support": 696,
+                "precision": 0.9231863442389758,
+                "recall": 0.9324712643678161,
+                "f1": 0.9278055754110079
+              },
+              "PARA": {
+                "support": 683,
+                "precision": 0.9078947368421053,
+                "recall": 0.808199121522694,
+                "f1": 0.855151045701007
+              }
+            }
+          }
+        }
+      },
+      "T2": {
+        "gap": {
+          "n_items": 40,
+          "n_gaps": 3645,
+          "macro_f1": 0.6367105395304534,
+          "macro_classes": [
+            "JOIN",
+            "SPACE",
+            "NL",
+            "PARA"
+          ],
+          "break_f1": 0.8011363636363636,
+          "wrong_join_per_1000": 2.1947873799725652,
+          "damage_rate": 0.07818930041152264,
+          "items_untouched_rate": 0.0,
+          "per_class": {
+            "JOIN": {
+              "support": 1,
+              "precision": 0.1111111111111111,
+              "recall": 1.0,
+              "f1": 0.19999999999999998
+            },
+            "SPACE": {
+              "support": 3486,
+              "precision": 0.9962231260894828,
+              "recall": 0.9836488812392427,
+              "f1": 0.9898960739030023
+            },
+            "NL": {
+              "support": 46,
+              "precision": 0.48,
+              "recall": 0.782608695652174,
+              "f1": 0.5950413223140497
+            },
+            "PARA": {
+              "support": 112,
+              "precision": 0.7394957983193278,
+              "recall": 0.7857142857142857,
+              "f1": 0.7619047619047619
+            }
+          }
+        },
+        "paragraph_match_rate": 0.5526315789473685,
+        "string_changed_vs_raw": 1.0,
+        "string_changed_vs_normalized": 1.0,
+        "by_severity": {
+          "0": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0,0.33]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.33,0.66]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.66,1]": {
+            "n_items": 40,
+            "n_gaps": 3645,
+            "macro_f1": 0.6367105395304534,
+            "macro_classes": [
+              "JOIN",
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.8011363636363636,
+            "wrong_join_per_1000": 2.1947873799725652,
+            "damage_rate": 0.07818930041152264,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 1,
+                "precision": 0.1111111111111111,
+                "recall": 1.0,
+                "f1": 0.19999999999999998
+              },
+              "SPACE": {
+                "support": 3486,
+                "precision": 0.9962231260894828,
+                "recall": 0.9836488812392427,
+                "f1": 0.9898960739030023
+              },
+              "NL": {
+                "support": 46,
+                "precision": 0.48,
+                "recall": 0.782608695652174,
+                "f1": 0.5950413223140497
+              },
+              "PARA": {
+                "support": 112,
+                "precision": 0.7394957983193278,
+                "recall": 0.7857142857142857,
+                "f1": 0.7619047619047619
+              }
+            }
+          }
+        }
+      },
+      "T3": {
+        "gap": {
+          "n_items": 200,
+          "n_gaps": 18392,
+          "macro_f1": 0.988859190619651,
+          "macro_classes": [
+            "SPACE",
+            "NL",
+            "PARA"
+          ],
+          "break_f1": 0.9841017488076311,
+          "wrong_join_per_1000": 0.10874293170943888,
+          "damage_rate": 0.0011418007829491082,
+          "items_untouched_rate": 0.915,
+          "per_class": {
+            "JOIN": {
+              "support": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "SPACE": {
+              "support": 17771,
+              "precision": 0.9999436714921421,
+              "recall": 0.9989308423836588,
+              "f1": 0.9994370003377998
+            },
+            "NL": {
+              "support": 327,
+              "precision": 0.9969418960244648,
+              "recall": 0.9969418960244648,
+              "f1": 0.9969418960244648
+            },
+            "PARA": {
+              "support": 294,
+              "precision": 0.9451612903225807,
+              "recall": 0.9965986394557823,
+              "f1": 0.9701986754966887
+            }
+          }
+        },
+        "paragraph_match_rate": 0.9635627530364372,
+        "string_changed_vs_raw": 0.085,
+        "string_changed_vs_normalized": 0.085,
+        "by_severity": {
+          "0": {
+            "n_items": 200,
+            "n_gaps": 18392,
+            "macro_f1": 0.988859190619651,
+            "macro_classes": [
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.9841017488076311,
+            "wrong_join_per_1000": 0.10874293170943888,
+            "damage_rate": 0.0011418007829491082,
+            "items_untouched_rate": 0.915,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 17771,
+                "precision": 0.9999436714921421,
+                "recall": 0.9989308423836588,
+                "f1": 0.9994370003377998
+              },
+              "NL": {
+                "support": 327,
+                "precision": 0.9969418960244648,
+                "recall": 0.9969418960244648,
+                "f1": 0.9969418960244648
+              },
+              "PARA": {
+                "support": 294,
+                "precision": 0.9451612903225807,
+                "recall": 0.9965986394557823,
+                "f1": 0.9701986754966887
+              }
+            }
+          },
+          "(0,0.33]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.33,0.66]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.66,1]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          }
+        }
+      }
+    },
+    "finetuned-ablation": {
+      "T0": {
+        "gap": {
+          "n_items": 1,
+          "n_gaps": 29,
+          "macro_f1": 0.6666666666666666,
+          "macro_classes": [
+            "JOIN",
+            "SPACE",
+            "NL",
+            "PARA"
+          ],
+          "break_f1": 1.0,
+          "wrong_join_per_1000": 0.0,
+          "damage_rate": 0.1724137931034483,
+          "items_untouched_rate": 0.0,
+          "per_class": {
+            "JOIN": {
+              "support": 1,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "SPACE": {
+              "support": 26,
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1": 1.0
+            },
+            "NL": {
+              "support": 1,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "PARA": {
+              "support": 1,
+              "precision": 0.5,
+              "recall": 1.0,
+              "f1": 0.6666666666666666
+            }
+          }
+        },
+        "paragraph_match_rate": 0.5,
+        "string_changed_vs_raw": 1.0,
+        "string_changed_vs_normalized": 1.0,
+        "by_severity": {
+          "0": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0,0.33]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.33,0.66]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.66,1]": {
+            "n_items": 1,
+            "n_gaps": 29,
+            "macro_f1": 0.6666666666666666,
+            "macro_classes": [
+              "JOIN",
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 1.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.1724137931034483,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 1,
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1": 1.0
+              },
+              "SPACE": {
+                "support": 26,
+                "precision": 1.0,
+                "recall": 1.0,
+                "f1": 1.0
+              },
+              "NL": {
+                "support": 1,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 1,
+                "precision": 0.5,
+                "recall": 1.0,
+                "f1": 0.6666666666666666
+              }
+            }
+          }
+        }
+      },
+      "T1": {
+        "gap": {
+          "n_items": 350,
+          "n_gaps": 120009,
+          "macro_f1": 0.8452452529669056,
+          "macro_classes": [
+            "JOIN",
+            "SPACE",
+            "NL",
+            "PARA"
+          ],
+          "break_f1": 0.7769042402371439,
+          "wrong_join_per_1000": 0.6166204201351565,
+          "damage_rate": 0.03421410060912098,
+          "items_untouched_rate": 0.10285714285714286,
+          "per_class": {
+            "JOIN": {
+              "support": 961,
+              "precision": 0.9199134199134199,
+              "recall": 0.8844953173777316,
+              "f1": 0.9018567639257294
+            },
+            "SPACE": {
+              "support": 114599,
+              "precision": 0.9868451738285468,
+              "recall": 0.9969720503669316,
+              "f1": 0.9918827645480827
+            },
+            "NL": {
+              "support": 1884,
+              "precision": 0.8409869773817683,
+              "recall": 0.6512738853503185,
+              "f1": 0.7340711935387377
+            },
+            "PARA": {
+              "support": 2565,
+              "precision": 0.8984332793084819,
+              "recall": 0.6483430799220273,
+              "f1": 0.7531702898550724
+            }
+          }
+        },
+        "paragraph_match_rate": 0.44871355060034307,
+        "string_changed_vs_raw": 0.8971428571428571,
+        "string_changed_vs_normalized": 0.8971428571428571,
+        "by_severity": {
+          "0": {
+            "n_items": 53,
+            "n_gaps": 18575,
+            "macro_f1": 0.9619110451599805,
+            "macro_classes": [
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.9482625482625483,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.003660834454912517,
+            "items_untouched_rate": 0.4716981132075472,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 17929,
+                "precision": 0.9982148834095727,
+                "recall": 0.9980478554297507,
+                "f1": 0.9981313624320179
+              },
+              "NL": {
+                "support": 281,
+                "precision": 0.9217081850533808,
+                "recall": 0.9217081850533808,
+                "f1": 0.9217081850533808
+              },
+              "PARA": {
+                "support": 365,
+                "precision": 0.9619565217391305,
+                "recall": 0.9698630136986301,
+                "f1": 0.965893587994543
+              }
+            }
+          },
+          "(0,0.33]": {
+            "n_items": 92,
+            "n_gaps": 30364,
+            "macro_f1": 0.8533985848557935,
+            "macro_classes": [
+              "JOIN",
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.7946167349327091,
+            "wrong_join_per_1000": 0.46107232248715585,
+            "damage_rate": 0.020781188249242525,
+            "items_untouched_rate": 0.07608695652173914,
+            "per_class": {
+              "JOIN": {
+                "support": 92,
+                "precision": 0.8585858585858586,
+                "recall": 0.9239130434782609,
+                "f1": 0.8900523560209425
+              },
+              "SPACE": {
+                "support": 29284,
+                "precision": 0.9895410235580828,
+                "recall": 0.9983267313208578,
+                "f1": 0.9939144625008498
+              },
+              "NL": {
+                "support": 348,
+                "precision": 0.890625,
+                "recall": 0.6551724137931034,
+                "f1": 0.7549668874172185
+              },
+              "PARA": {
+                "support": 640,
+                "precision": 0.9204301075268817,
+                "recall": 0.66875,
+                "f1": 0.7746606334841628
+              }
+            }
+          },
+          "(0.33,0.66]": {
+            "n_items": 104,
+            "n_gaps": 38495,
+            "macro_f1": 0.8200942640627985,
+            "macro_classes": [
+              "JOIN",
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.7244094488188977,
+            "wrong_join_per_1000": 0.7273671905442265,
+            "damage_rate": 0.03844655150019483,
+            "items_untouched_rate": 0.028846153846153848,
+            "per_class": {
+              "JOIN": {
+                "support": 342,
+                "precision": 0.9166666666666666,
+                "recall": 0.9005847953216374,
+                "f1": 0.9085545722713864
+              },
+              "SPACE": {
+                "support": 36717,
+                "precision": 0.9841052121994514,
+                "recall": 0.9965683470871803,
+                "f1": 0.9902975683026835
+              },
+              "NL": {
+                "support": 559,
+                "precision": 0.806282722513089,
+                "recall": 0.5509838998211091,
+                "f1": 0.6546227417640806
+              },
+              "PARA": {
+                "support": 877,
+                "precision": 0.8991596638655462,
+                "recall": 0.6100342075256556,
+                "f1": 0.7269021739130435
+              }
+            }
+          },
+          "(0.66,1]": {
+            "n_items": 101,
+            "n_gaps": 32575,
+            "macro_f1": 0.8031330210979937,
+            "macro_classes": [
+              "JOIN",
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.7233134073441502,
+            "wrong_join_per_1000": 0.9823484267075978,
+            "damage_rate": 0.059155794320798157,
+            "items_untouched_rate": 0.009900990099009901,
+            "per_class": {
+              "JOIN": {
+                "support": 527,
+                "precision": 0.934560327198364,
+                "recall": 0.8671726755218216,
+                "f1": 0.8996062992125985
+              },
+              "SPACE": {
+                "support": 30669,
+                "precision": 0.9810108280050124,
+                "recall": 0.9955329485799993,
+                "f1": 0.9882185396167787
+              },
+              "NL": {
+                "support": 696,
+                "precision": 0.8,
+                "recall": 0.6206896551724138,
+                "f1": 0.6990291262135923
+              },
+              "PARA": {
+                "support": 683,
+                "precision": 0.817966903073286,
+                "recall": 0.5065885797950219,
+                "f1": 0.6256781193490053
+              }
+            }
+          }
+        }
+      },
+      "T2": {
+        "gap": {
+          "n_items": 40,
+          "n_gaps": 3645,
+          "macro_f1": 0.441230596939794,
+          "macro_classes": [
+            "JOIN",
+            "SPACE",
+            "NL",
+            "PARA"
+          ],
+          "break_f1": 0.5369127516778524,
+          "wrong_join_per_1000": 5.486968449931413,
+          "damage_rate": 0.09410150891632373,
+          "items_untouched_rate": 0.0,
+          "per_class": {
+            "JOIN": {
+              "support": 1,
+              "precision": 0.047619047619047616,
+              "recall": 1.0,
+              "f1": 0.0909090909090909
+            },
+            "SPACE": {
+              "support": 3486,
+              "precision": 0.9793340987370838,
+              "recall": 0.97877223178428,
+              "f1": 0.9790530846484935
+            },
+            "NL": {
+              "support": 46,
+              "precision": 0.2571428571428571,
+              "recall": 0.391304347826087,
+              "f1": 0.3103448275862069
+            },
+            "PARA": {
+              "support": 112,
+              "precision": 0.5,
+              "recall": 0.3125,
+              "f1": 0.38461538461538464
+            }
+          }
+        },
+        "paragraph_match_rate": 0.14473684210526316,
+        "string_changed_vs_raw": 1.0,
+        "string_changed_vs_normalized": 1.0,
+        "by_severity": {
+          "0": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0,0.33]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.33,0.66]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.66,1]": {
+            "n_items": 40,
+            "n_gaps": 3645,
+            "macro_f1": 0.441230596939794,
+            "macro_classes": [
+              "JOIN",
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.5369127516778524,
+            "wrong_join_per_1000": 5.486968449931413,
+            "damage_rate": 0.09410150891632373,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 1,
+                "precision": 0.047619047619047616,
+                "recall": 1.0,
+                "f1": 0.0909090909090909
+              },
+              "SPACE": {
+                "support": 3486,
+                "precision": 0.9793340987370838,
+                "recall": 0.97877223178428,
+                "f1": 0.9790530846484935
+              },
+              "NL": {
+                "support": 46,
+                "precision": 0.2571428571428571,
+                "recall": 0.391304347826087,
+                "f1": 0.3103448275862069
+              },
+              "PARA": {
+                "support": 112,
+                "precision": 0.5,
+                "recall": 0.3125,
+                "f1": 0.38461538461538464
+              }
+            }
+          }
+        }
+      },
+      "T3": {
+        "gap": {
+          "n_items": 200,
+          "n_gaps": 18392,
+          "macro_f1": 0.9252649616888262,
+          "macro_classes": [
+            "SPACE",
+            "NL",
+            "PARA"
+          ],
+          "break_f1": 0.8908941755537325,
+          "wrong_join_per_1000": 0.21748586341887777,
+          "damage_rate": 0.007285776424532406,
+          "items_untouched_rate": 0.71,
+          "per_class": {
+            "JOIN": {
+              "support": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "SPACE": {
+              "support": 17771,
+              "precision": 0.99584035975267,
+              "recall": 0.9969050700579596,
+              "f1": 0.9963724304715841
+            },
+            "NL": {
+              "support": 327,
+              "precision": 0.906896551724138,
+              "recall": 0.8042813455657493,
+              "f1": 0.8525121555915721
+            },
+            "PARA": {
+              "support": 294,
+              "precision": 0.9058441558441559,
+              "recall": 0.9489795918367347,
+              "f1": 0.9269102990033223
+            }
+          }
+        },
+        "paragraph_match_rate": 0.8319838056680162,
+        "string_changed_vs_raw": 0.29,
+        "string_changed_vs_normalized": 0.29,
+        "by_severity": {
+          "0": {
+            "n_items": 200,
+            "n_gaps": 18392,
+            "macro_f1": 0.9252649616888262,
+            "macro_classes": [
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.8908941755537325,
+            "wrong_join_per_1000": 0.21748586341887777,
+            "damage_rate": 0.007285776424532406,
+            "items_untouched_rate": 0.71,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 17771,
+                "precision": 0.99584035975267,
+                "recall": 0.9969050700579596,
+                "f1": 0.9963724304715841
+              },
+              "NL": {
+                "support": 327,
+                "precision": 0.906896551724138,
+                "recall": 0.8042813455657493,
+                "f1": 0.8525121555915721
+              },
+              "PARA": {
+                "support": 294,
+                "precision": 0.9058441558441559,
+                "recall": 0.9489795918367347,
+                "f1": 0.9269102990033223
+              }
+            }
+          },
+          "(0,0.33]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.33,0.66]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.66,1]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
