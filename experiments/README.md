@@ -20,7 +20,7 @@ Sets: V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315 (built from seed 1 at co
 
 ## m2-scratch
 
-Results at commit `53ea1bae69b1` (dirty tree), 2026-10-02T12:55:10+00:00.
+Results at commit `2e48caa41060`, 2026-10-02T13:13:32+00:00.
 Sets: V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315 (built from seed 1 at commit 2d3885bd31a2)
 
 | set | system | gaps | macro-F1 | classes | break-F1 | JOIN F1 | PARA F1 | wrong-join /1k | damage | str≠raw | str≠norm | para match |
