@@ -58,6 +58,8 @@ The from-scratch model needs the `model` extra (PyTorch); `uv sync --all-extras`
 
 On macOS, if `uv run python -c 'import newline_fixer'` fails with ModuleNotFoundError, run `make sync`: some setups mark `.venv` hidden and Python 3.12+ then ignores its `.pth` files.
 
+Service benchmark (design 5.2): `uv run python scripts/bench.py --systems identity,rules,scratch --label m1-mac-cpu --out experiments/bench/m1-mac-cpu.json` measures size, memory, latency percentiles at 500, 2,000 and 10,000 characters and batch-8 throughput on CPU; `--url http://localhost:8000` measures a running server instead. `scripts/results_table.py` renders `experiments/bench/*.json`.
+
 Rebuild data: see the docstring of `scripts/build_data.py`. Evaluate:
 
 ```bash
