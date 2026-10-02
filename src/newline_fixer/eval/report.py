@@ -106,6 +106,22 @@ def training_table(records: Sequence[dict[str, Any]]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def candidates_table(record: dict[str, Any]) -> str:
+    lines = [
+        f"Scratch p50 per 256-token window: {record['scratch_p50_ms']:.1f} ms; "
+        f"limit (3x): {record['limit_ms']:.1f} ms.",
+        "",
+        "| run | pretrained | params | V1 macro-F1 | p50 ms / window | p95 ms | within limit |",
+        "|---|---|---:|---:|---:|---:|---|",
+    ]
+    for run, c in record["candidates"].items():
+        lines.append(
+            f"| {run} | {c['pretrained']} | {int(c['n_params']):,} | {c['V1_macro_f1']:.3f} | "
+            f"{c['p50_ms']:.1f} | {c['p95_ms']:.1f} | {'yes' if c['within_limit'] else 'no'} |"
+        )
+    return "\n".join(lines) + "\n"
+
+
 def realistic_facts(
     realistic_dir: Path, review: dict[str, Any], sources: dict[str, Any]
 ) -> dict[str, Any]:

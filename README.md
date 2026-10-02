@@ -93,6 +93,8 @@ make check             # lint, type check, tests
 
 The from-scratch model needs the `model` extra (PyTorch); `uv sync --all-extras` installs it. Training uses CUDA or Apple MPS when available and falls back to CPU. On the M1 a full eight-epoch run takes about 100 minutes, so the two Task 7 runs are meant for a free Colab GPU: open `notebooks/train_scratch_colab.ipynb` in Colab, which clones this repository, trains both runs and hands back `experiments/runs/` and `experiments/training/` as a zip.
 
+Train the fine-tuned encoder (design 4.5): `uv run python scripts/train_finetune.py --run-id finetuned --model microsoft/deberta-v3-xsmall --epochs 3` on a GPU; on the M1 use the Colab notebook `notebooks/train_finetune_colab.ipynb`, which runs the two candidate selections, then the chosen model and its random-initialization ablation, and hands back the run directories. `uv run python scripts/select_encoder.py --runs ft-deberta-select,ft-distilbert-select --out experiments/results/m5-candidates.json` measures CPU latency per 256-token window against the scratch model's.
+
 On macOS, if `uv run python -c 'import newline_fixer'` fails with ModuleNotFoundError, run `make sync`: some setups mark `.venv` hidden and Python 3.12+ then ignores its `.pth` files.
 
 Service benchmark (design 5.2): `uv run python scripts/bench.py --systems identity,rules,scratch --label m1-mac-cpu --out experiments/bench/m1-mac-cpu.json` measures size, memory, latency percentiles at 500, 2,000 and 10,000 characters and batch-8 throughput on CPU; `--url http://localhost:8000` measures a running server instead. `scripts/results_table.py` renders `experiments/bench/*.json`.
