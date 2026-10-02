@@ -19,7 +19,7 @@ def summary_table(results: dict[str, Any], sets: Sequence[str], systems: Sequenc
     lines = [
         _provenance(results),
         "",
-        "| set | system | gaps | macro-F1 | break-F1 | PARA F1 | wrong-join /1k | clean damage | paragraph match |",
+        "| set | system | gaps | macro-F1 | break-F1 | PARA F1 | wrong-join /1k | changed gaps | paragraph match |",
         "|---|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for s in sets:
@@ -57,7 +57,7 @@ def severity_table(results: dict[str, Any], set_name: str, systems: Sequence[str
     lines = [
         _provenance(results),
         "",
-        "| severity band | system | items | gaps | macro-F1 | wrong-join /1k | damage |",
+        "| severity band | system | items | gaps | macro-F1 | wrong-join /1k | changed gaps |",
         "|---|---|---:|---:|---:|---:|---:|",
     ]
     bands = list(results["systems"][systems[0]][set_name]["by_severity"])

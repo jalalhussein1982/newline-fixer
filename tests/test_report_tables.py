@@ -1,5 +1,8 @@
+import importlib.util
 from pathlib import Path
 from typing import Any
+
+import pytest
 
 from newline_fixer.eval.report import (
     per_class_table,
@@ -58,6 +61,7 @@ def test_summary_table_has_header_rows_and_commit() -> None:
     )
     assert out.count("\n| V1 | ") == 2 and out.count("\n| V2 | ") == 2
     assert "| 0.750 |" in out and "| 0.50 |" in out and "| 0.0100 |" in out
+    assert "| changed gaps | paragraph match |" in out and "clean damage" not in out
 
 
 def test_summary_table_marks_dirty_tree() -> None:
@@ -69,6 +73,7 @@ def test_summary_table_marks_dirty_tree() -> None:
 def test_severity_table_one_row_per_band_and_system() -> None:
     out = severity_table(results(), "V1", ["rules", "scratch"])
     assert out.count("\n| 0 | ") == 2 and out.count("\n| (0,0.33] | ") == 2
+    assert "| wrong-join /1k | changed gaps |" in out
 
 
 def test_service_table_renders_dashes_for_missing() -> None:
@@ -139,3 +144,33 @@ def test_per_class_table_has_one_row_per_class_per_system() -> None:
     assert len(rows) == 8
     assert [r.split(" | ")[2] for r in rows[:4]] == ["JOIN", "SPACE", "NL", "PARA"]
     assert "| V1 | rules | NL | 7 | 0.500 | 0.250 | 0.750 |" in out
+
+
+def test_report_tables_script_renders_every_section(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = Path(__file__).parent.parent
+    if not (root / "experiments" / "results" / "test-sets.json").exists():
+        pytest.skip("committed result records are absent")
+    spec = importlib.util.spec_from_file_location(
+        "report_tables_script", root / "scripts" / "report_tables.py"
+    )
+    assert spec is not None and spec.loader is not None
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+
+    monkeypatch.chdir(root)
+    script.main()
+    out = capsys.readouterr().out
+    for heading in (
+        "## dev sets",
+        "## test sets",
+        "## T1 by severity band",
+        "## per class, dev sets",
+        "## per class, test sets",
+        "## service",
+        "## training",
+        "## realistic sets",
+    ):
+        assert heading in out
+    assert "Rendered from commit" in out
