@@ -981,7 +981,7 @@ def test_class_weight_tensor() -> None:
     assert class_weight_tensor([10, 70, 15, 5], "none", CPU) is None
     w = class_weight_tensor([10, 70, 15, 0], "inverse", CPU)
     assert w is not None and w.shape == (4,)
-    assert w[1] < w[0] < w[2] and abs(float(w.mean()) - 1.0) < 1e-6
+    assert w[1] < w[2] < w[0] and abs(float(w.mean()) - 1.0) < 1e-6
 
 
 def test_train_tiny_end_to_end(tmp_path: Path) -> None:
