@@ -30,7 +30,7 @@ def sh(*args: str) -> str:
 
 
 def wait_healthy(base: str, cid: str | None, seconds: float) -> None:
-    """Poll /healthz; with a container id, fail fast when the container has exited."""
+    """Poll /healthz until it answers 200 with JSON `"ready": true`; with a container id, fail fast when the container has exited."""
     deadline = time.monotonic() + seconds
     last = ""
     while time.monotonic() < deadline:
@@ -41,8 +41,15 @@ def wait_healthy(base: str, cid: str | None, seconds: float) -> None:
             raise SystemExit(f"container exited: {logs.stdout}{logs.stderr}")
         try:
             with urllib.request.urlopen(f"{base}/healthz", timeout=2) as r:
+                body = r.read().decode(errors="replace")
                 if r.status == 200:
-                    return
+                    try:
+                        parsed = json.loads(body)
+                    except ValueError:
+                        parsed = None
+                    if isinstance(parsed, dict) and parsed.get("ready") is True:
+                        return
+                    last = f"200 but not ready: {body[:200]}"
         except urllib.error.HTTPError as e:
             last = f"{e.code} {e.read().decode(errors='replace')}"
         except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
