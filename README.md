@@ -1,12 +1,12 @@
 ---
 title: newline-fixer
-emoji: ↵
+emoji: 🔧
 colorFrom: gray
 colorTo: blue
 sdk: docker
 app_port: 8000
 pinned: false
-short_description: Fixes newline placement in English text (fine-tuned encoder, FastAPI)
+short_description: Fixes newline placement in English text
 ---
 # newline-fixer
 
