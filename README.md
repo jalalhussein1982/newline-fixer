@@ -17,6 +17,7 @@ were committed before any code, and every later change to them is a commit.
 | `docs/decisions/` | Architecture decision records, one file per decision, never rewritten |
 | `src/newline_fixer/` | library |
 | `src/newline_fixer/service/` | FastAPI app: `POST /v1/fix`, `/healthz`, `/metrics`, demo page at `/` |
+| `Dockerfile` | multi-stage CPU image: builder fetches weights by revision, runtime is non-root with a HEALTHCHECK |
 | `scripts/` | data building and evaluation entry points |
 | `tests/` | pytest suite |
 | `data/` | see `data/README.md` |
@@ -33,6 +34,17 @@ curl -s localhost:8000/healthz
 curl -s localhost:8000/v1/fix -H 'content-type: application/json' \
   -d '{"text": "3.2.3 Applications of Attention\n in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers,\n the que\nries come from the previous decoder layer."}'
 ```
+
+With Docker (the image fetches the scratch weights at build time by the pinned revision):
+
+```bash
+docker build -t newline-fixer:local .
+docker run --rm -p 8000:8000 newline-fixer:local                    # serves NF_MODEL=rules by default
+docker run --rm -p 8000:8000 -e NF_MODEL=scratch newline-fixer:local
+make container-check   # builds, starts, waits for health, posts the example, checks, stops
+```
+
+If the Hub is unreachable at build time, build with `--build-arg NF_MODEL_REVISION=<rev>` once it is back, or run the image with local weights mounted: `docker run --rm -p 8000:8000 -e NF_MODEL=scratch -v "$PWD/experiments/runs/current:/app/weights:ro" newline-fixer:local`.
 
 Configuration, all optional:
 

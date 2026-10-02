@@ -1,4 +1,4 @@
-.PHONY: check lint type test fmt serve sync
+.PHONY: check lint type test fmt serve sync image container-check
 
 # chflags: some macOS setups mark .venv hidden, which makes Python ignore its .pth files
 sync:
@@ -23,3 +23,9 @@ fmt:
 
 serve:
 	uv run uvicorn newline_fixer.service.app:create_app --factory --host 0.0.0.0 --port 8000
+
+image:
+	docker build -t newline-fixer:local .
+
+container-check:
+	uv run python scripts/container_check.py

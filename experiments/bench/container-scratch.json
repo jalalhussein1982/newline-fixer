@@ -1,0 +1,32 @@
+{
+  "label": "container-scratch",
+  "run_at": "2026-10-02T14:03:11+00:00",
+  "git_commit": "d012de1fc3d2f02168d806184cbcc1020d9c5e5d",
+  "dirty": true,
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "machine": "arm64",
+  "mode": "http",
+  "device": "cpu",
+  "systems": {
+    "scratch": {
+      "disk_mb": null,
+      "rss_mb": null,
+      "latency_ms": {
+        "500": {
+          "p50": 56.98,
+          "p95": 65.56
+        },
+        "2000": {
+          "p50": 318.54,
+          "p95": 344.3
+        },
+        "10000": {
+          "p50": 2086.89,
+          "p95": 2229.17
+        }
+      },
+      "throughput_chars_per_s": 18923,
+      "n": 20
+    }
+  }
+}
