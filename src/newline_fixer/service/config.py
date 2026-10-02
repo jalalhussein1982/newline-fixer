@@ -36,6 +36,7 @@ class Settings:
     log_level: str = "INFO"
     device: str = "cpu"
     weights_by_model: tuple[tuple[str, str], ...] = ()
+    torch_threads: int | None = None
 
     def __post_init__(self) -> None:
         if self.model not in FIXER_NAMES:
@@ -54,6 +55,10 @@ class Settings:
             )
         if self.max_chars <= 0:
             raise ValueError(f"NF_MAX_CHARS must be a positive integer, got {self.max_chars}")
+        if self.torch_threads is not None and self.torch_threads <= 0:
+            raise ValueError(
+                f"NF_TORCH_THREADS must be a positive integer, got {self.torch_threads}"
+            )
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> Settings:
@@ -63,6 +68,15 @@ class Settings:
             max_chars = int(raw_max)
         except ValueError as err:
             raise ValueError(f"NF_MAX_CHARS must be a positive integer, got {raw_max!r}") from err
+        raw_threads = e.get("NF_TORCH_THREADS") or None
+        torch_threads: int | None = None
+        if raw_threads is not None:
+            try:
+                torch_threads = int(raw_threads)
+            except ValueError as err:
+                raise ValueError(
+                    f"NF_TORCH_THREADS must be a positive integer, got {raw_threads!r}"
+                ) from err
         return cls(
             model=e.get("NF_MODEL", DEFAULT_MODEL),
             model_revision=e.get("NF_MODEL_REVISION", PUBLISHED_REVISION),
@@ -70,6 +84,7 @@ class Settings:
             max_chars=max_chars,
             log_level=e.get("NF_LOG_LEVEL", "INFO").upper(),
             device=e.get("NF_DEVICE", "cpu"),
+            torch_threads=torch_threads,
             weights_by_model=tuple(
                 (m, e[var])
                 for m, var in (
@@ -108,6 +123,10 @@ class Settings:
 
 def load_fixer(settings: Settings) -> Fixer:
     """Build the served fixer. Learned models load on `settings.device` (CPU in production)."""
+    if settings.torch_threads is not None:
+        import torch
+
+        torch.set_num_threads(settings.torch_threads)
     source = settings.weights_source()
     if source is None:
         return get_fixer(settings.model)

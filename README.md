@@ -1,3 +1,13 @@
+---
+title: newline-fixer
+emoji: 🔧
+colorFrom: gray
+colorTo: blue
+sdk: docker
+app_port: 8000
+pinned: false
+short_description: Fixes newline placement in English text
+---
 # newline-fixer
 
 A machine learning service that fixes newline placement in English text.
@@ -49,6 +59,21 @@ docker run --rm -p 8000:8000 -e NF_MODEL=rules newline-fixer:local
 make container-check   # builds, starts, waits for health, posts the example, checks, stops
 ```
 
+### Hugging Face Space
+
+The demo at [spaces/jalalhussein1982/newline-fixer](https://huggingface.co/spaces/jalalhussein1982/newline-fixer) (https://jalalhussein1982-newline-fixer.hf.space) runs this image on a free CPU Space (2 vCPU). It is a Docker Space: the README front matter above declares `sdk: docker` and `app_port: 8000`, and the Space builds the `Dockerfile` at the repository root, fetching both models by their pinned revisions. The image runs as uid 1000 (the user Spaces run containers as) and writes only under `/tmp` (`HF_HOME=/tmp/hf`). To deploy or update it:
+
+```bash
+uv run hf repo create newline-fixer --repo-type space --space_sdk docker   # once
+git remote add space https://huggingface.co/spaces/jalalhussein1982/newline-fixer   # once
+git push --force-with-lease space main   # the Space's `main` was pushed from the milestone branch; after a squash or rebase merge the histories differ
+make space-check SPACE_URL=https://jalalhussein1982-newline-fixer.hf.space
+```
+
+Creating a Docker Space required a Hugging Face PRO subscription at the time (the free tier allows static Spaces only); the Space itself runs on the free `cpu-basic` hardware.
+
+Space variables (Settings tab) are ordinary environment variables: `NF_MODEL=rules` serves the baseline, `NF_MAX_CHARS=20000` caps request size for the public demo. Free Spaces sleep after 48 hours idle and take about a minute to wake.
+
 Both models are baked into the image: the revisions are fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>` for scratch, default the published scratch-v1; `--build-arg NF_FINETUNED_REVISION=<rev>` for the fine-tuned encoder, default the published revision), `NF_WEIGHTS_SCRATCH=/app/weights` and `NF_WEIGHTS_FINETUNED=/app/weights-finetuned` point at them, so `NF_MODEL_REVISION` has no effect on a running container; the same default revisions are `PUBLISHED_REVISION` and `PUBLISHED_REVISION_FINETUNED` in `src/newline_fixer/service/config.py`.
 
 If the Hub is unreachable at build time, build without weights and mount a local run directory at the matching path (`/app/weights` for scratch, `/app/weights-finetuned` for finetuned) at run time:
@@ -73,6 +98,7 @@ Configuration, all optional:
 | `NF_MAX_CHARS` | `100000` | inputs longer than this get 413 |
 | `NF_LOG_LEVEL` | `INFO` | level of the JSON request log on stdout |
 | `NF_DEVICE` | `cpu` | torch device for the learned model |
+| `NF_TORCH_THREADS` | unset (torch default) | CPU threads torch uses for inference; the image leaves it unset (decision 0011: no setting beat torch's default by more than 10%) |
 
 `NF_WEIGHTS` overrides the per-model variable (`NF_WEIGHTS_SCRATCH`, `NF_WEIGHTS_FINETUNED`) for the selected model.
 

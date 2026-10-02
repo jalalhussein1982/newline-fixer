@@ -20,16 +20,16 @@ RUN if [ "$WITH_WEIGHTS" = "1" ]; then \
       && rm -rf /app/weights/.cache /app/weights-finetuned/.cache; \
     else mkdir -p /app/weights /app/weights-finetuned; fi
 
-# Runtime: the virtual environment, the sources it points at, both weights directories; non-root.
+# Runtime: the virtual environment, the sources it points at, both weights directories; non-root as uid 1000 (the user Spaces run as), HF_HOME under /tmp.
 FROM python:3.12-slim-bookworm
-ENV PATH=/app/.venv/bin:$PATH PYTHONUNBUFFERED=1 NF_MODEL=finetuned NF_WEIGHTS_SCRATCH=/app/weights NF_WEIGHTS_FINETUNED=/app/weights-finetuned
+ENV PATH=/app/.venv/bin:$PATH PYTHONUNBUFFERED=1 HF_HOME=/tmp/hf NF_MODEL=finetuned NF_WEIGHTS_SCRATCH=/app/weights NF_WEIGHTS_FINETUNED=/app/weights-finetuned
 WORKDIR /app
-RUN useradd --system --uid 10001 --no-create-home app
-COPY --from=builder --chown=app:app /app/.venv /app/.venv
-COPY --from=builder --chown=app:app /app/src /app/src
-COPY --from=builder --chown=app:app /app/weights /app/weights
-COPY --from=builder --chown=app:app /app/weights-finetuned /app/weights-finetuned
-USER app
+RUN useradd --uid 1000 --no-create-home user
+COPY --from=builder --chown=user:user /app/.venv /app/.venv
+COPY --from=builder --chown=user:user /app/src /app/src
+COPY --from=builder --chown=user:user /app/weights /app/weights
+COPY --from=builder --chown=user:user /app/weights-finetuned /app/weights-finetuned
+USER user
 EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=2)"

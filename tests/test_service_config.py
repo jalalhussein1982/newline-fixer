@@ -121,3 +121,24 @@ def test_registry_knows_both_finetuned_entries() -> None:
     from newline_fixer.models.registry import FIXER_NAMES
 
     assert {"finetuned", "finetuned-ablation"} <= set(FIXER_NAMES)
+
+
+def test_torch_threads_setting() -> None:
+    assert Settings.from_env({}).torch_threads is None
+    assert Settings.from_env({"NF_TORCH_THREADS": ""}).torch_threads is None
+    assert Settings.from_env({"NF_TORCH_THREADS": "2"}).torch_threads == 2
+    with pytest.raises(ValueError, match="NF_TORCH_THREADS"):
+        Settings.from_env({"NF_TORCH_THREADS": "0"})
+    with pytest.raises(ValueError, match="NF_TORCH_THREADS"):
+        Settings.from_env({"NF_TORCH_THREADS": "many"})
+
+
+def test_load_fixer_applies_torch_threads(monkeypatch: pytest.MonkeyPatch) -> None:
+    import torch
+
+    calls: list[int] = []
+    monkeypatch.setattr(torch, "set_num_threads", lambda n: calls.append(n))
+    load_fixer(Settings(model="rules", torch_threads=3))
+    assert calls == [3]
+    load_fixer(Settings(model="rules"))
+    assert calls == [3]  # unset: not called again

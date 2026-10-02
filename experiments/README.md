@@ -126,6 +126,9 @@ Latency is one request at a time; throughput is eight concurrent requests of 2,0
 
 | label | system | mode | device | disk MB | RSS MB | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | commit |
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| container-finetuned-threads-1 | finetuned | http | cpu | - | - | 106.7 / 125.3 | 460.6 / 493.2 | 4166.8 / 4296.7 | 11,429 | `3ea41718cacc` |
+| container-finetuned-threads-2 | finetuned | http | cpu | - | - | 179.0 / 199.2 | 388.1 / 457.4 | 3462.8 / 3714.2 | 7,983 | `3ea41718cacc` (dirty) |
+| container-finetuned-threads-4 | finetuned | http | cpu | - | - | 150.6 / 180.0 | 326.7 / 400.9 | 2897.1 / 3501.2 | 8,180 | `3ea41718cacc` (dirty) |
 | container-finetuned | finetuned | http | cpu | - | - | 121.8 / 158.9 | 342.9 / 585.1 | 2584.1 / 2954.5 | 9,458 | `3390fa73a69c` |
 | container-rules | rules | http | cpu | - | - | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | `3ef9677a888b` |
 | container-scratch | scratch | http | cpu | - | - | 54.7 / 61.8 | 304.1 / 318.5 | 1977.4 / 2056.9 | 23,563 | `3ef9677a888b` |
@@ -133,3 +136,4 @@ Latency is one request at a time; throughput is eight concurrent requests of 2,0
 | m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,354,047 | `610ca964767e` |
 | m1-mac-cpu | scratch | in-process | cpu | 22.6 | 297 | 7.3 / 7.5 | 40.2 / 42.0 | 267.8 / 283.9 | 79,701 | `610ca964767e` |
 | m1-mac-cpu | finetuned | in-process | cpu | 290.9 | 662 | 28.8 / 34.5 | 92.8 / 96.4 | 807.9 / 855.7 | 24,898 | `610ca964767e` |
+| space | finetuned | http | cpu | - | - | 168.0 / 184.2 | 342.2 / 379.0 | 2266.2 / 2576.4 | 3,224 | `4819a84bb26a` |
