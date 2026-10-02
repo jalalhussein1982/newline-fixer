@@ -46,12 +46,12 @@ Sets: V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315 (built from seed 1 at co
 
 ## Service benchmark
 
-Latency is one request at a time; throughput is eight concurrent requests of 2,000 characters. In-process rows are measured on the named machine; http rows go through a running server and carry no size or memory figures.
+Latency is one request at a time; throughput is eight concurrent requests of 2,000 characters. In-process rows are measured on the named machine; http rows go through a running server and carry no size or memory figures. Rows labelled `container-*` were measured through HTTP against the image running in Docker Desktop's Linux VM on the same M1 Mac; the design's latency rule is evaluated on the host CPU rows.
 
 | label | system | mode | device | disk MB | RSS MB | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | commit |
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---|
-| container-rules | rules | http | cpu | - | - | 1.8 / 2.8 | 2.0 / 3.5 | 4.9 / 7.5 | 1,487,243 | `d012de1fc3d2` (dirty) |
-| container-scratch | scratch | http | cpu | - | - | 57.0 / 65.6 | 318.5 / 344.3 | 2086.9 / 2229.2 | 18,923 | `d012de1fc3d2` (dirty) |
+| container-rules | rules | http | cpu | - | - | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | `3ef9677a888b` |
+| container-scratch | scratch | http | cpu | - | - | 54.7 / 61.8 | 304.1 / 318.5 | 1977.4 / 2056.9 | 23,563 | `3ef9677a888b` |
 | m1-mac-cpu | identity | in-process | cpu | 0.0 | 24 | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.5 | 7,204,882 | `c181dae5d6cb` |
 | m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,412,221 | `c181dae5d6cb` |
 | m1-mac-cpu | scratch | in-process | cpu | 22.6 | 274 | 7.5 / 7.6 | 40.6 / 41.9 | 268.1 / 274.1 | 71,266 | `c181dae5d6cb` |

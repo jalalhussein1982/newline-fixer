@@ -21,7 +21,7 @@ def main() -> None:
     bench = sorted(Path("experiments/bench").glob("*.json"))
     if bench:
         parts.append(
-            "\n## Service benchmark\n\nLatency is one request at a time; throughput is eight concurrent requests of 2,000 characters. In-process rows are measured on the named machine; http rows go through a running server and carry no size or memory figures.\n\n"
+            "\n## Service benchmark\n\nLatency is one request at a time; throughput is eight concurrent requests of 2,000 characters. In-process rows are measured on the named machine; http rows go through a running server and carry no size or memory figures. Rows labelled `container-*` were measured through HTTP against the image running in Docker Desktop's Linux VM on the same M1 Mac; the design's latency rule is evaluated on the host CPU rows.\n\n"
             + render_bench_table([json.loads(p.read_text()) for p in bench])
         )
     Path("experiments/README.md").write_text("\n".join(parts))
