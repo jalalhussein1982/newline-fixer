@@ -58,6 +58,6 @@ share the cores.
 - The thread sweep is single-run per setting; a 10% effect would need repeats to resolve,
   which is why the decision rule demanded a margin.
 
-## Postscript (Task 3)
+## Postscript (2026-10-02, M6 Task 3)
 
 On the Space (free `cpu-basic`, 2 vCPUs, same image, default threads) the measured p50 at 2,000 characters is 342.2 ms (p95 379.0 ms), over HTTP from the author's Mac (`experiments/bench/space.json`, commit 4819a84). That is far under the 1,000 ms ONNX threshold, so ONNX stays out of scope and the thread count is not revisited.
