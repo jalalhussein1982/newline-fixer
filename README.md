@@ -35,10 +35,8 @@ On macOS, if `uv run python -c 'import newline_fixer'` fails with ModuleNotFound
 Rebuild data: see the docstring of `scripts/build_data.py`. Evaluate:
 
 ```bash
-uv run python scripts/evaluate.py --systems identity,rules --sets V1,V3 --out experiments/results/dev.json
+uv run python scripts/evaluate.py --systems identity,rules --sets V1,V2,V3 --out experiments/results/dev.json
 uv run python scripts/results_table.py
 ```
-
-Add `V2` once the realistic targets are reviewed and built.
 
 Results tables live in `experiments/README.md`.

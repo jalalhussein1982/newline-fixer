@@ -1,1 +1,347 @@
-{}
+{
+  "adam/00": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "adam/03": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "adam/04": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "adam/07": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "attention/00": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "attention/01": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "attention/02": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "attention/03": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "attention/04": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "attention/05": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "attention/06": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "attention/07": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bash-manual/00": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bash-manual/01": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bash-manual/02": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bash-manual/03": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bash-manual/04": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bash-manual/05": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bash-manual/06": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bash-manual/07": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bert/00": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bert/01": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bert/02": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bert/03": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bert/04": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bert/05": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bert/06": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "bert/07": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "fasttext/00": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "fasttext/01": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "fasttext/02": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "fasttext/03": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "fasttext/04": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "fasttext/05": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "fasttext/07": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "gnu-make/00": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "gnu-make/01": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "gnu-make/02": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "gnu-make/03": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "gnu-make/04": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "gnu-make/05": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "gnu-make/06": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "gnu-make/07": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-800-63/00": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-800-63/01": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-800-63/02": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-800-63/03": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-800-63/04": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-800-63/05": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-800-63/06": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-800-63/07": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-ai-rmf/00": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-ai-rmf/01": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-ai-rmf/02": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-ai-rmf/04": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-ai-rmf/05": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-ai-rmf/06": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "nist-ai-rmf/07": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "resnet/00": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "resnet/01": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "resnet/03": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "resnet/05": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "resnet/06": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "word2vec/00": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "word2vec/01": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "word2vec/02": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "word2vec/03": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "word2vec/05": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  },
+  "word2vec/06": {
+    "reviewer": "JH",
+    "date": "2026-10-02",
+    "note": ""
+  }
+}
