@@ -38,11 +38,10 @@ setting, `scripts/bench.py --url`, records in `experiments/bench/`:
 The best p50 is 4 threads at 326.7 ms, 4.7% under the default's 342.9 ms, inside the 10%
 margin and inside the run-to-run spread seen earlier for this model (the M1 host p50 moved
 from 97.1 to 92.8 ms between two runs of the same code). The default row was measured with
-the M5 image on a different day, so even that 4.7% is not a controlled comparison. The
+the M5 image on a different day, so even that 4.7% is not a controlled comparison, and a slower same-day default run would raise the 4.7% margin; that case was not excluded. The threads-2 and threads-4 records are flagged dirty because the bench script saw the previous record unstaged; the code under test was the same commit. The
 oversubscription hypothesis did not hold as the main cause: shrinking the pool to one thread
 costs 34% at 2,000 characters, so the model really uses the cores, and the 3.7 times gap to
-the host is mostly the VM (virtualised CPU, no direct Apple-silicon performance cores), not
-wasted threads. Two weaker signals, not used for the decision: the p95 is tighter at 2 and 4
+the host is the VM (virtualised CPU, no direct Apple-silicon performance cores), which points to the VM rather than wasted threads, though this was not isolated. Two weaker signals, not used for the decision: the p95 is tighter at 2 and 4
 threads (457 and 401 ms against 585), and one thread gives the best throughput under eight
 concurrent requests (11,429 against 9,458 chars/s), as expected when requests, not threads,
 share the cores.
@@ -58,3 +57,7 @@ share the cores.
 - ONNX export stays a non-goal unless the Space p50 at 2,000 characters exceeds 1,000 ms.
 - The thread sweep is single-run per setting; a 10% effect would need repeats to resolve,
   which is why the decision rule demanded a margin.
+
+## Postscript (Task 3)
+
+On the Space (free `cpu-basic`, 2 vCPUs, same image, default threads) the measured p50 at 2,000 characters is 342.2 ms (p95 379.0 ms), over HTTP from the author's Mac (`experiments/bench/space.json`, commit 4819a84). That is far under the 1,000 ms ONNX threshold, so ONNX stays out of scope and the thread count is not revisited.

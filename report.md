@@ -2,7 +2,7 @@
 
 ## 1. Abstract
 
-This service repairs whitespace in English text. It splits the input into non-whitespace tokens, predicts for each gap between two tokens one of four classes (JOIN, SPACE, NL, PARA), and re-joins the tokens with the predicted gaps. It never changes a non-whitespace character. Five systems are built and measured on the same sets: an identity baseline (B0), a rule baseline (B1), a from-scratch BiLSTM with character features (scratch), a pretrained encoder fine-tuned for the task (finetuned, `microsoft/deberta-v3-xsmall`), and the same encoder trained from random initialization (finetuned-ablation), which isolates the value of pretraining. The service serves the fine-tuned encoder by default, because the decision rule picked it (decision 0010, which supersedes 0008): it beats the rules on the realistic dev set (V2 macro-F1 0.898 against 0.806) and on the realistic test set, but it still makes some wrong joins where the rules make none (4.58 per thousand gaps on V2, 2.19 on T2), it does not reproduce the challenge example exactly, and in the container it is slower than the 300 ms limit (342.9 ms at 2,000 characters; the limit is stated on the host, where it takes 92.8 ms). `NF_MODEL=rules` and `NF_MODEL=scratch` serve the baselines. The demo page is at `/` of the running service. A Hugging Face Space is not deployed: that is the optional deliverable D6, planned as milestone M6.
+This service repairs whitespace in English text. It splits the input into non-whitespace tokens, predicts for each gap between two tokens one of four classes (JOIN, SPACE, NL, PARA), and re-joins the tokens with the predicted gaps. It never changes a non-whitespace character. Five systems are built and measured on the same sets: an identity baseline (B0), a rule baseline (B1), a from-scratch BiLSTM with character features (scratch), a pretrained encoder fine-tuned for the task (finetuned, `microsoft/deberta-v3-xsmall`), and the same encoder trained from random initialization (finetuned-ablation), which isolates the value of pretraining. The service serves the fine-tuned encoder by default, because the decision rule picked it (decision 0010, which supersedes 0008): it beats the rules on the realistic dev set (V2 macro-F1 0.898 against 0.806) and on the realistic test set, but it still makes some wrong joins where the rules make none (4.58 per thousand gaps on V2, 2.19 on T2), it does not reproduce the challenge example exactly, and in the container it is slower than the 300 ms limit (342.9 ms at 2,000 characters; the limit is stated on the host, where it takes 92.8 ms). `NF_MODEL=rules` and `NF_MODEL=scratch` serve the baselines. The demo page is at `/` of the running service. The same image runs as a Hugging Face Space, https://huggingface.co/spaces/jalalhussein1982/newline-fixer (live service at https://jalalhussein1982-newline-fixer.hf.space, demo page at its root), on free `cpu-basic` hardware (2 vCPU); free Spaces sleep after 48 hours idle and take about a minute to wake.
 
 ## 2. How to run
 
@@ -25,6 +25,12 @@ Local:
 ```bash
 uv sync --all-extras
 make serve                       # http://localhost:8000, demo page at /
+```
+
+Space (no install; the live service of the same image on free `cpu-basic`, 2 vCPU): https://huggingface.co/spaces/jalalhussein1982/newline-fixer; the demo page is at https://jalalhussein1982-newline-fixer.hf.space/ and the example against it is
+
+```bash
+curl -s https://jalalhussein1982-newline-fixer.hf.space/v1/fix -H 'content-type: application/json' -d '{"text": "3.2.3 Applications of Attention\n in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers,\n the que\nries come from the previous decoder layer."}'
 ```
 
 The challenge example, through the API:
@@ -109,7 +115,7 @@ Realistic sets. They come from ten real PDFs: word2vec, fasttext, nist-800-63 an
 
 **Scratch, a model written from scratch.** A 30,000-word embedding, a character CNN per token (so that fragments such as `que` and capitalization are visible), an embedding of the current gap class, a two-layer BiLSTM, and a classifier over the states on both sides of the gap: 5,551,692 parameters (design 4.4). Training examples are re-corrupted every epoch. It was trained on a Colab T4 at about 52 s per epoch; the M1 Mac measured 12.1 minutes per epoch on MPS, so training moved. [Decision 0007](docs/decisions/0007-scratch-model-class-weighting.md): unweighted cross-entropy beat inverse-frequency class weights on every metric. The weights are on the Hub at the pinned revision `6c311e757d17e89c80b7b86908043637a4f56e28`, never in git ([decision 0003](docs/decisions/0003-weights-on-hub-not-in-git.md)).
 
-<!-- rendered by scripts/report_tables.py at a94a947 -->
+<!-- rendered by scripts/report_tables.py at 4819a84 -->
 
 | run | device | epochs | minutes | best epoch | V1 macro-F1 | V3 damage | params | commit |
 |---|---|---:|---:|---:|---:|---:|---:|---|
@@ -124,7 +130,7 @@ Realistic sets. They come from ten real PDFs: word2vec, fasttext, nist-800-63 an
 
 **The fine-tuned pretrained encoder (design 4.5), `finetuned`.** Two pretrained encoders were trained for one epoch on a Colab T4 and compared on V1 macro-F1 under a latency condition on the M1 Mac CPU: p50 per 256-token window within three times the scratch model's (22.5 ms, so 67.4 ms). [Decision 0009](docs/decisions/0009-encoder-candidate.md) picked `microsoft/deberta-v3-xsmall` (V1 macro-F1 0.937, 65.5 ms per window) over `distilbert-base-cased` (0.901, 51.2 ms); both were within the limit, and DeBERTa's margin on it is thin. The selection used one epoch and one seed, so the 0.035 gap is not a significance claim. The full run uses the same training data and window scheme as scratch, with the `[NL]` and `[PP]` markers added as special tokens (embeddings resized) and labels on the first subword of each token. Schedule: learning rate 5e-5, batch size 16, three epochs (best epoch 3), weight decay 0.01, warmup fraction 0.06, mixed precision (fp16) on a T4, seed 1; 70,646,404 parameters; 15.0 minutes of training. The learning rate is the top of the 3e-5 to 5e-5 range design 4.5 gives, used for both candidates; it was not tuned.
 
-<!-- rendered by scripts/report_tables.py at a94a947 -->
+<!-- rendered by scripts/report_tables.py at 4819a84 -->
 
 Scratch p50 per 256-token window: 22.5 ms; limit (3x): 67.4 ms.
 
@@ -162,7 +168,7 @@ The discipline: every choice (B1's thresholds, the class weighting, the served m
 
 Dev sets:
 
-<!-- rendered by scripts/report_tables.py at a94a947 -->
+<!-- rendered by scripts/report_tables.py at 4819a84 -->
 
 Rendered from commit `20eb57a61d0a`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315.
 
@@ -188,7 +194,7 @@ Rendered from commit `20eb57a61d0a`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=0
 
 Test sets (each system evaluated once; the provenance line lists the commits of both records and is marked dirty because the older one was, see section 10):
 
-<!-- rendered by scripts/report_tables.py at a94a947 -->
+<!-- rendered by scripts/report_tables.py at 4819a84 -->
 
 Rendered from commits `4955e06adaa2` + `44480da7717a` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
 
@@ -221,7 +227,7 @@ V2 macro-F1 averages three classes (JOIN has no support there) while T2 averages
 
 ### Per class, dev sets (V1, V2)
 
-<!-- rendered by scripts/report_tables.py at a94a947 -->
+<!-- rendered by scripts/report_tables.py at 4819a84 -->
 
 Rendered from commit `20eb57a61d0a`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315.
 
@@ -272,7 +278,7 @@ Rendered from commit `20eb57a61d0a`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=0
 
 ### Per class, test sets (T1, T2)
 
-<!-- rendered by scripts/report_tables.py at a94a947 -->
+<!-- rendered by scripts/report_tables.py at 4819a84 -->
 
 Rendered from commits `4955e06adaa2` + `44480da7717a` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
 
@@ -323,7 +329,7 @@ Rendered from commits `4955e06adaa2` + `44480da7717a` (dirty tree), sets T0=95d8
 
 T1 by severity band, rules, scratch and finetuned:
 
-<!-- rendered by scripts/report_tables.py at a94a947 -->
+<!-- rendered by scripts/report_tables.py at 4819a84 -->
 
 Rendered from commits `4955e06adaa2` + `44480da7717a` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
 
@@ -352,10 +358,13 @@ Why. The design's risk table predicted that models learn the corruptor, not the 
 
 ## 8. Service numbers
 
-<!-- rendered by scripts/report_tables.py at a94a947 -->
+<!-- rendered by scripts/report_tables.py at 4819a84 -->
 
 | label | system | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | RSS MB | disk MB | commit |
 |---|---|---:|---:|---:|---:|---:|---:|---|
+| container-finetuned-threads-1 | finetuned | 106.7 / 125.3 | 460.6 / 493.2 | 4166.8 / 4296.7 | 11,429 | - | - | `3ea41718cacc` |
+| container-finetuned-threads-2 | finetuned | 179.0 / 199.2 | 388.1 / 457.4 | 3462.8 / 3714.2 | 7,983 | - | - | `3ea41718cacc` (dirty) |
+| container-finetuned-threads-4 | finetuned | 150.6 / 180.0 | 326.7 / 400.9 | 2897.1 / 3501.2 | 8,180 | - | - | `3ea41718cacc` (dirty) |
 | container-finetuned | finetuned | 121.8 / 158.9 | 342.9 / 585.1 | 2584.1 / 2954.5 | 9,458 | - | - | `3390fa73a69c` |
 | container-rules | rules | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | - | - | `3ef9677a888b` |
 | container-scratch | scratch | 54.7 / 61.8 | 304.1 / 318.5 | 1977.4 / 2056.9 | 23,563 | - | - | `3ef9677a888b` |
@@ -363,12 +372,15 @@ Why. The design's risk table predicted that models learn the corruptor, not the 
 | m1-mac-cpu | rules | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,354,047 | 32 | 0.2 | `610ca964767e` |
 | m1-mac-cpu | scratch | 7.3 / 7.5 | 40.2 / 42.0 | 267.8 / 283.9 | 79,701 | 297 | 22.6 | `610ca964767e` |
 | m1-mac-cpu | finetuned | 28.8 / 34.5 | 92.8 / 96.4 | 807.9 / 855.7 | 24,898 | 662 | 290.9 | `610ca964767e` |
+| space | finetuned | 168.0 / 184.2 | 342.2 / 379.0 | 2266.2 / 2576.4 | 3,224 | - | - | `4819a84bb26a` |
 
 `scratch` and `finetuned` rows: weights revisions `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` and `11d6b26e80dfa2c9606702cd2755a63c9dce99ed` of `jalalhussein1982/newline-fixer-finetuned` (section 12). `finetuned-ablation` rows: the same architecture from random initialization, weights not published.
 
 Latency is one request at a time; throughput is eight concurrent requests of 2,000 characters. Rows labelled `m1-mac-cpu` are in-process measurements on an Apple M1 (8 GB) on CPU. Rows labelled `container-*` go through HTTP against the image running in Docker Desktop's Linux VM on the same Mac, so they carry no size or memory figures.
 
-The design states the latency rule on the host CPU, so the host p50 at 2,000 characters is the figure that enters the decision rule: rules 0.5 ms, scratch 40.2 ms, finetuned 92.8 ms, limit 300 ms. All three pass. The container figure for finetuned, 342.9 ms (p95 585.1 ms), is 3.7 times the host figure and would fail the limit if it were the gate. Decision 0010 extrapolated about 700 ms from scratch's ratio of 7.6 (304.1 ms in the container against 40.2 on the host); the measurement is half that, because the ratio is not constant across models. The cause of the container overhead is not isolated; thread oversubscription in the VM is the leading hypothesis and is untested. Rules in the container take 1.9 ms. Resident memory after warm-up is 32 MB for rules, 297 MB for scratch and 662 MB for finetuned; the fine-tuned weights are 290.9 MB on disk against 22.6 MB for scratch. The image holds the weights of both learned models and is 1.89 GB on disk (535 MB content size, from `docker image ls`), dominated by the CPU PyTorch wheel and the two weight sets. Container throughput for finetuned is 9,458 characters per second against 24,898 on the host.
+The design states the latency rule on the host CPU, so the host p50 at 2,000 characters is the figure that enters the decision rule: rules 0.5 ms, scratch 40.2 ms, finetuned 92.8 ms, limit 300 ms. All three pass. The container figure for finetuned, 342.9 ms (p95 585.1 ms), is 3.7 times the host figure and would fail the limit if it were the gate. Decision 0010 extrapolated about 700 ms from scratch's ratio of 7.6 (304.1 ms in the container against 40.2 on the host); the measurement is half that, because the ratio is not constant across models. The cause of the container overhead is not isolated; the thread experiment (below) ruled out oversubscription as the main cause. Rules in the container take 1.9 ms. Resident memory after warm-up is 32 MB for rules, 297 MB for scratch and 662 MB for finetuned; the fine-tuned weights are 290.9 MB on disk against 22.6 MB for scratch. The image holds the weights of both learned models and is 1.89 GB on disk (535 MB content size, from `docker image ls`), dominated by the CPU PyTorch wheel and the two weight sets. Container throughput for finetuned is 9,458 characters per second against 24,898 on the host.
+
+The thread experiment (decision 0011) kept torch's default thread count: the best setting, 4 threads, was only 4.7% better than the default at 2,000 characters (326.7 against 342.9 ms), under the 10% margin fixed beforehand. The `space` row is the same image on the Hugging Face Space (free `cpu-basic`, 2 vCPU), measured over HTTP from the author's Mac, so it includes the network round trip: p50 342.2 ms (p95 379.0 ms) at 2,000 characters, the same as the local container (342.9 ms, 8 vCPUs) and 3.7 times the host's 92.8 ms; its throughput is lower (3,224 against 9,458 characters per second) because two vCPUs serve eight concurrent requests.
 
 ## 9. Decisions
 
@@ -403,11 +415,11 @@ Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a ch
 
 In priority order, each with the number it targets:
 
-1. Isolate the container latency (thread settings in the VM, a second host). Target: finetuned p50 at 2,000 characters in the container from 342.9 ms toward the host's 92.8 ms, under 300 ms.
+1. Isolate the container latency (the thread count is ruled out by decision 0011; a second host or a native Linux CPU would test the VM explanation). Target: finetuned p50 at 2,000 characters in the container from 342.9 ms toward the host's 92.8 ms, under 300 ms.
 2. More realistic corruptions in the training data. Target: wrong joins on V2 from 4.58 per thousand toward the 0.00 of the rules, and the V1 to V2 gap of 0.056 macro-F1 (0.954 against 0.898).
-3. The Hugging Face Space (milestone M6), which runs the same image.
+3. ONNX export and thread tuning on the Space are the remaining latency levers; neither is needed now (item 5).
 4. A second seed for finetuned and its ablation, to put a spread on the 0.284 pretraining effect on V2.
-5. ONNX export only if the container latency blocks the Space after item 1; the host figure (92.8 ms against 300 ms) does not call for it.
+5. ONNX export only if the Space p50 at 2,000 characters exceeded 1,000 ms (decision 0011). It is 342.2 ms, so ONNX is not pursued; the host figure (92.8 ms against 300 ms) does not call for it either.
 
 ## 12. Process
 
@@ -415,6 +427,7 @@ The requirements, design and implementation plan were committed before any code 
 
 Locations:
 
+- Hugging Face Space (deployment target): https://huggingface.co/spaces/jalalhussein1982/newline-fixer, a Docker Space that builds the same `Dockerfile` as the local image (decision 0011 and section 8 give its latency).
 - Weights, scratch: https://huggingface.co/jalalhussein1982/newline-fixer-scratch, revision `6c311e757d17e89c80b7b86908043637a4f56e28`.
 - Weights, fine-tuned encoder: https://huggingface.co/jalalhussein1982/newline-fixer-finetuned, revision `11d6b26e80dfa2c9606702cd2755a63c9dce99ed`. The ablation weights are not published.
 - Colab notebooks: `notebooks/train_scratch_colab.ipynb` and `notebooks/train_finetune_colab.ipynb` (candidate selection and the two full runs of M5). The Colab runs used transformers 5, which writes `extra_special_tokens` as a list in the tokenizer config; the repository pins transformers below 5 (4.57.6 in the lock file), so `FinetunedFixer.load` maps the list to the mapping form before loading (decision 0009).

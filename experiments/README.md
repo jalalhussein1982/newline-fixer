@@ -136,3 +136,4 @@ Latency is one request at a time; throughput is eight concurrent requests of 2,0
 | m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,354,047 | `610ca964767e` |
 | m1-mac-cpu | scratch | in-process | cpu | 22.6 | 297 | 7.3 / 7.5 | 40.2 / 42.0 | 267.8 / 283.9 | 79,701 | `610ca964767e` |
 | m1-mac-cpu | finetuned | in-process | cpu | 290.9 | 662 | 28.8 / 34.5 | 92.8 / 96.4 | 807.9 / 855.7 | 24,898 | `610ca964767e` |
+| space | finetuned | http | cpu | - | - | 168.0 / 184.2 | 342.2 / 379.0 | 2266.2 / 2576.4 | 3,224 | `4819a84bb26a` |

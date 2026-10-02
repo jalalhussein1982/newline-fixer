@@ -61,7 +61,7 @@ make container-check   # builds, starts, waits for health, posts the example, ch
 
 ### Hugging Face Space
 
-The demo at <!-- space-url -->(link added when deployed) runs this image on a free CPU Space (2 vCPU). It is a Docker Space: the README front matter above declares `sdk: docker` and `app_port: 8000`, and the Space builds the `Dockerfile` at the repository root, fetching both models by their pinned revisions. The image runs as uid 1000 (the user Spaces run containers as) and writes only under `/tmp` (`HF_HOME=/tmp/hf`). To deploy or update it:
+The demo at [spaces/jalalhussein1982/newline-fixer](https://huggingface.co/spaces/jalalhussein1982/newline-fixer) (https://jalalhussein1982-newline-fixer.hf.space) runs this image on a free CPU Space (2 vCPU). It is a Docker Space: the README front matter above declares `sdk: docker` and `app_port: 8000`, and the Space builds the `Dockerfile` at the repository root, fetching both models by their pinned revisions. The image runs as uid 1000 (the user Spaces run containers as) and writes only under `/tmp` (`HF_HOME=/tmp/hf`). To deploy or update it:
 
 ```bash
 uv run hf repo create newline-fixer --repo-type space --space_sdk docker   # once
