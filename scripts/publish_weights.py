@@ -20,7 +20,7 @@ def model_card(record: dict[str, object], repo: str) -> str:
     best = record.get("best", {})
     assert isinstance(best, dict)
     return (
-        "---\nlibrary_name: pytorch\nlicense: mit\ntags: [text-cleaning, newline-restoration]\n---\n\n"
+        "---\nlibrary_name: pytorch\ntags: [text-cleaning, newline-restoration]\n---\n\n"
         f"# newline-fixer from-scratch model ({record['run_id']})\n\n"
         "A character-aware BiLSTM that predicts the whitespace class (join, space, newline, paragraph) "
         "between consecutive tokens of English text. Trained with https://github.com/jalalhussein1982/newline-fixer "
