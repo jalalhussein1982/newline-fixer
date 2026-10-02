@@ -12,6 +12,17 @@ hashes; the selection rule gains a clean-text damage condition; milestones reord
 a submittable state exists before the second model. Details are in the sections below
 and in decision records 0004 and 0005.
 
+Changes since v2, recorded 2026-10-02 after M4 so the document matches what was built
+(the sections below keep the v2 text; decision records and `report.md` carry the
+numbers): the from-scratch model of 4.4 trained on a Colab T4, not on the M1 Mac, after
+MPS measured 12 minutes per epoch (decision 0007); the `cost()` of 4.1 is implemented as
+`token_cost`, `gap_cost` and `overhead` on the `Fixer` protocol, additive, with the same
+budget rule; T3 of 5.1 is built from 200 untouched clean passages of the test split only,
+the T2 targets are the references of T2 and are not duplicated into T3; 6.2 gains
+`NF_WEIGHTS` (a local run directory or `hf:repo@revision`) and `NF_DEVICE` (default
+`cpu`); the M2 fine-tuned encoder of 4.5 was not started within the submission's time
+budget (section 9 allows sending after M4 with that stated).
+
 ## 1. Overview
 
 The service repairs whitespace. It splits the input into non-whitespace tokens and the gaps
