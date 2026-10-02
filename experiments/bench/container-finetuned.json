@@ -1,0 +1,32 @@
+{
+  "label": "container-finetuned",
+  "run_at": "2026-10-02T18:23:04+00:00",
+  "git_commit": "3390fa73a69c888cf9fff26583ba59f776a69d56",
+  "dirty": false,
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "machine": "arm64",
+  "mode": "http",
+  "device": "cpu",
+  "systems": {
+    "finetuned": {
+      "disk_mb": null,
+      "rss_mb": null,
+      "latency_ms": {
+        "500": {
+          "p50": 121.83,
+          "p95": 158.89
+        },
+        "2000": {
+          "p50": 342.85,
+          "p95": 585.13
+        },
+        "10000": {
+          "p50": 2584.11,
+          "p95": 2954.49
+        }
+      },
+      "throughput_chars_per_s": 9458,
+      "n": 20
+    }
+  }
+}

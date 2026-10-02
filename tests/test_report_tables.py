@@ -6,6 +6,7 @@ import pytest
 
 from newline_fixer.eval.report import (
     candidates_table,
+    merge_results,
     per_class_table,
     realistic_facts,
     service_table,
@@ -205,3 +206,29 @@ def test_candidates_table_rows_limit_line_and_yes_no() -> None:
     assert "| a | m/a | 22,000,000 | 0.912 | 250.0 | 280.0 | yes |" in out
     assert "| b | m/b | 66,000,000 | 0.900 | 400.0 | 450.0 | no |" in out
     assert out.count("\n| a |") + out.count("\n| b |") == 2
+
+
+def test_merge_results_concatenates_systems_and_joins_commits() -> None:
+    a = {
+        "git_commit": "a" * 40,
+        "dirty": False,
+        "sets_sha256": {"T0": "h0"},
+        "systems": {"rules": {"T0": 1}},
+    }
+    b = {**a, "git_commit": "b" * 40, "dirty": True, "systems": {"finetuned": {"T0": 2}}}
+    m = merge_results(a, b)
+    assert list(m["systems"]) == ["rules", "finetuned"]
+    assert m["git_commit"] == "a" * 40 + "+" + "b" * 40
+    assert m["dirty"] is True
+    out = summary_table_provenance(m)
+    assert f"commits `{'a' * 12}` + `{'b' * 12}` (dirty tree)" in out
+    with pytest.raises(ValueError, match="set hashes"):
+        merge_results(a, {**b, "sets_sha256": {"T0": "other"}})
+    with pytest.raises(ValueError, match="both records"):
+        merge_results(a, a)
+
+
+def summary_table_provenance(m: dict[str, Any]) -> str:
+    from newline_fixer.eval.report import _provenance
+
+    return _provenance(m)
