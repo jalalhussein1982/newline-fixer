@@ -1,8 +1,8 @@
 {
   "label": "m1-mac-cpu",
-  "run_at": "2026-10-02T18:02:37+00:00",
-  "git_commit": "04bcc429db6940fc5356a344f019bf1a2c42bbea",
-  "dirty": true,
+  "run_at": "2026-10-02T18:13:34+00:00",
+  "git_commit": "610ca964767e70a8bb6c70f5e8c9140c58c46eeb",
+  "dirty": false,
   "platform": "macOS-27.0.1-arm64-arm-64bit",
   "machine": "arm64",
   "mode": "in-process",
@@ -10,7 +10,7 @@
   "systems": {
     "identity": {
       "disk_mb": 0.0,
-      "rss_mb": 24.3,
+      "rss_mb": 24.0,
       "latency_ms": {
         "500": {
           "p50": 0.06,
@@ -18,74 +18,74 @@
         },
         "2000": {
           "p50": 0.27,
-          "p95": 0.27
+          "p95": 0.28
         },
         "10000": {
           "p50": 1.52,
-          "p95": 1.57
+          "p95": 1.58
         }
       },
-      "throughput_chars_per_s": 7056696,
+      "throughput_chars_per_s": 6976161,
       "n": 20
     },
     "rules": {
       "disk_mb": 0.23,
-      "rss_mb": 31.6,
+      "rss_mb": 31.9,
       "latency_ms": {
         "500": {
           "p50": 0.09,
           "p95": 0.09
         },
         "2000": {
-          "p50": 0.44,
+          "p50": 0.45,
           "p95": 0.45
         },
         "10000": {
-          "p50": 2.68,
-          "p95": 2.69
+          "p50": 2.69,
+          "p95": 2.7
         }
       },
-      "throughput_chars_per_s": 4326994,
+      "throughput_chars_per_s": 4354047,
       "n": 20
     },
     "scratch": {
       "disk_mb": 22.56,
-      "rss_mb": 281.2,
+      "rss_mb": 297.1,
       "latency_ms": {
         "500": {
-          "p50": 7.64,
-          "p95": 10.71
+          "p50": 7.32,
+          "p95": 7.45
         },
         "2000": {
-          "p50": 40.53,
-          "p95": 42.27
+          "p50": 40.17,
+          "p95": 42.03
         },
         "10000": {
-          "p50": 269.17,
-          "p95": 272.73
+          "p50": 267.76,
+          "p95": 283.85
         }
       },
-      "throughput_chars_per_s": 79756,
+      "throughput_chars_per_s": 79701,
       "n": 20
     },
     "finetuned": {
       "disk_mb": 290.95,
-      "rss_mb": 570.3,
+      "rss_mb": 662.0,
       "latency_ms": {
         "500": {
-          "p50": 29.36,
-          "p95": 31.29
+          "p50": 28.84,
+          "p95": 34.46
         },
         "2000": {
-          "p50": 97.14,
-          "p95": 102.81
+          "p50": 92.76,
+          "p95": 96.38
         },
         "10000": {
-          "p50": 840.39,
-          "p95": 861.74
+          "p50": 807.85,
+          "p95": 855.69
         }
       },
-      "throughput_chars_per_s": 24809,
+      "throughput_chars_per_s": 24898,
       "n": 20
     }
   }

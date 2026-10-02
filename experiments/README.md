@@ -111,7 +111,7 @@ Latency is one request at a time; throughput is eight concurrent requests of 2,0
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---|
 | container-rules | rules | http | cpu | - | - | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | `3ef9677a888b` |
 | container-scratch | scratch | http | cpu | - | - | 54.7 / 61.8 | 304.1 / 318.5 | 1977.4 / 2056.9 | 23,563 | `3ef9677a888b` |
-| m1-mac-cpu | identity | in-process | cpu | 0.0 | 24 | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.6 | 7,056,696 | `04bcc429db69` (dirty) |
-| m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.4 / 0.5 | 2.7 / 2.7 | 4,326,994 | `04bcc429db69` (dirty) |
-| m1-mac-cpu | scratch | in-process | cpu | 22.6 | 281 | 7.6 / 10.7 | 40.5 / 42.3 | 269.2 / 272.7 | 79,756 | `04bcc429db69` (dirty) |
-| m1-mac-cpu | finetuned | in-process | cpu | 290.9 | 570 | 29.4 / 31.3 | 97.1 / 102.8 | 840.4 / 861.7 | 24,809 | `04bcc429db69` (dirty) |
+| m1-mac-cpu | identity | in-process | cpu | 0.0 | 24 | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.6 | 6,976,161 | `610ca964767e` |
+| m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,354,047 | `610ca964767e` |
+| m1-mac-cpu | scratch | in-process | cpu | 22.6 | 297 | 7.3 / 7.5 | 40.2 / 42.0 | 267.8 / 283.9 | 79,701 | `610ca964767e` |
+| m1-mac-cpu | finetuned | in-process | cpu | 290.9 | 662 | 28.8 / 34.5 | 92.8 / 96.4 | 807.9 / 855.7 | 24,898 | `610ca964767e` |
