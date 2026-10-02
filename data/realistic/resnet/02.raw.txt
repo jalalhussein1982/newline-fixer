@@ -1,0 +1,16 @@
+3.2. Identity Mapping by Shortcuts
+We adopt residual learning to every few stacked layers.
+A building block is shown in Fig. 2. Formally, in this paper
+we consider a building block defined as:
+y = F(x, {Wi }) + x.
+
+(2)
+
+(1)
+
+Here x and y are the input and output vectors of the layers considered. The function F(x, {Wi }) represents the
+residual mapping to be learned. For the example in Fig. 2
+that has two layers, F = W2 σ(W1 x) in which σ denotes
+2 This hypothesis, however, is still an open question. See [28].
+
+3

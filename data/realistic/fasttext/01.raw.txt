@@ -1,0 +1,8 @@
+Training time. Both char-CNN and VDCNN are
+trained on a NVIDIA Tesla K40 GPU, while our
+models are trained on a CPU using 20 threads. Table 2 shows that methods using convolutions are several orders of magnitude slower than fastText.
+While it is possible to have a 10× speed up for
+char-CNN by using more recent CUDA implementations of convolutions, fastText takes less than
+a minute to train on these datasets. The GRNNs
+method of Tang et al. (2015) takes around 12 hours
+per epoch on CPU with a single thread. Our speed-

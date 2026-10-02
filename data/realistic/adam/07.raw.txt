@@ -1,0 +1,9 @@
+Figure 1: Logistic regression training negative log likelihood on MNIST images and IMDB movie
+reviews with 10,000 bag-of-words (BoW) feature vectors.
+training to prevent over-fitting. In figure 1, Adagrad outperforms SGD with Nesterov momentum
+by a large margin both with and without dropout noise. Adam converges as fast as Adagrad. The
+empirical performance of Adam is consistent with our theoretical findings in sections 2 and 4. Similar to Adagrad, Adam can take advantage of sparse features and obtain faster convergence rate than
+normal SGD with momentum.
+6.2
+
+E XPERIMENT: M ULTI - LAYER N EURAL N ETWORKS

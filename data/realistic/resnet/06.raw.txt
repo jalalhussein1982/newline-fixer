@@ -1,0 +1,10 @@
+Table 8. Object detection mAP (%) on the COCO validation set
+using baseline Faster R-CNN. See also Table 9 for better results.
+
+have similar training error. We argue that this is because of
+overfitting. The 1202-layer network may be unnecessarily
+large (19.4M) for this small dataset. Strong regularization
+such as maxout [10] or dropout [14] is applied to obtain the
+best results ([10, 25, 24, 35]) on this dataset. In this paper,
+we use no maxout/dropout and just simply impose regularization via deep and thin architectures by design, without
+distracting from the focus on the difficulties of optimization. But combining with stronger regularization may improve results, which we will study in the future.

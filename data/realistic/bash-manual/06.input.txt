@@ -1,0 +1,5 @@
+TIMEFORMAT
+The value of this parameter is used as a format string specifying how the timing information for pipelines prefixed with the time reserved word should be
+displayed. The ‘%’ character introduces an escape sequence that is expanded to
+a time value or other information. The escape sequences and their meanings
+are as follows; the brackets denote optional portions.

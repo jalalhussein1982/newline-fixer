@@ -1,0 +1,9 @@
+Fig. 3. AI actors across AI lifecycle stages. See Appendix A for detailed descriptions of AI actor tasks, including details about testing,
+evaluation, verification, and validation tasks. Note that AI actors in the AI Model dimension (Figure 2) are separated as a best practice, with
+those building and using the models separated from those verifying and validating the models.
+
+NIST AI 100-1
+
+AI RMF 1.0
+
+Page 11

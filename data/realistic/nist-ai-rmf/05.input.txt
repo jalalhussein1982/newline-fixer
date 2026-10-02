@@ -1,0 +1,17 @@
+plicable requirements (including human subject protection) and
+are representative of the relevant population.
+MEASURE 2.3: AI system performance or assurance criteria
+are measured qualitatively or quantitatively and demonstrated
+for conditions similar to deployment setting(s). Measures are
+documented.
+MEASURE 2.4:
+
+The functionality and behavior of the AI system and its components – as identified in the MAP function – are
+monitored when in production.
+MEASURE 2.5: The AI system to be deployed is demonstrated
+
+to be valid and reliable. Limitations of the generalizability beyond the conditions under which the technology was developed
+are documented.
+Continued on next page
+
+Page 29

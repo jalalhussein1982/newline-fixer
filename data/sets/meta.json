@@ -1,0 +1,13 @@
+{
+  "seed": 1,
+  "corruptor": {
+    "clean_fraction": 0.1,
+    "remove_base": 0.6,
+    "remove_scale": 0.4,
+    "insert_min_chars": 40,
+    "insert_max_chars": 200,
+    "word_split_prob": 0.4,
+    "double_prob": 0.1
+  },
+  "git_commit": "a8ca0777ad72511242c82cadd17d3af0ee506f69"
+}

@@ -1,0 +1,14 @@
+Unsupervised Fine-tuning Approaches
+
+As with the feature-based approaches, the first
+works in this direction only pre-trained word embedding parameters from unlabeled text (Collobert and Weston, 2008).
+More recently, sentence or document encoders
+which produce contextual token representations
+have been pre-trained from unlabeled text and
+fine-tuned for a supervised downstream task (Dai
+and Le, 2015; Howard and Ruder, 2018; Radford
+et al., 2018). The advantage of these approaches
+is that few parameters need to be learned from
+scratch. At least partly due to this advantage,
+OpenAI GPT (Radford et al., 2018) achieved previously state-of-the-art results on many sentencelevel tasks from the GLUE benchmark (Wang
+et al., 2018a). Left-to-right language model-

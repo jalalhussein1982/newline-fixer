@@ -1,0 +1,32 @@
+7
+
+E XTENSIONS
+
+7.1
+
+A DA M AX
+
+In Adam, the update rule for individual weights is to scale their gradients inversely proportional to a
+(scaled) L2 norm of their individual current and past gradients. We can generalize the L2 norm based
+update rule to a Lp norm based update rule. Such variants become numerically unstable for large
+p. However, in the special case where we let p → ∞, a surprisingly simple and stable algorithm
+emerges; see algorithm 2. We’ll now derive the algorithm. Let, in case of the Lp norm, the stepsize
+1/p
+at time t be inversely proportional to vt , where:
+vt = β2p vt−1 + (1 − β2p )|gt |p
+= (1 − β2p )
+
+t
+X
+i=1
+
+8
+
+p(t−i)
+
+β2
+
+· |gi |p
+
+(6)
+(7)

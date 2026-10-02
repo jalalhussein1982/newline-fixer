@@ -1,0 +1,11 @@
+worthiness in deployment context(s) and across the AI lifecycle
+are informed by input from domain experts and relevant AI actors to validate whether the system is performing consistently as
+intended. Results are documented.
+MEASURE 4.3: Measurable performance improvements or de-
+
+clines based on consultations with relevant AI actors, including affected communities, and field data about contextrelevant risks and trustworthiness characteristics are identified
+and documented.
+
+5.4
+
+Manage

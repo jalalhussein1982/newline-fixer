@@ -1,0 +1,10 @@
+The directory for installing executable programs that users can run. This should
+normally be /usr/local/bin, but write it as $(exec_prefix)/bin. (If you are
+using Autoconf, write it as ‘@bindir@’.)
+
+sbindir
+
+The directory for installing executable programs that can be run from the shell,
+but are only generally useful to system administrators. This should normally
+be /usr/local/sbin, but write it as $(exec_prefix)/sbin. (If you are using
+Autoconf, write it as ‘@sbindir@’.)

@@ -1,0 +1,13 @@
+Since the last iterate is noisy due to stochastic approximation, better generalization performance is
+often achieved by averaging. Previously in Moulines & Bach (2011), Polyak-Ruppert averaging
+(Polyak & Juditsky, P
+1992; Ruppert, 1988) has been shown to improve the convergence of standard
+n
+SGD, where θ̄t = 1t k=1 θk . Alternatively, an exponential moving average over the parameters can
+be used, giving higher weight to more recent parameter values. This can be trivially implemented
+by adding one line to the inner loop of algorithms 1 and 2: θ̄t ← β2 · θ̄t−1 + (1 − β2 )θt , with θ̄0 = 0.
+Initalization bias can again be corrected by the estimator θbt = θ̄t /(1 − β2t ).
+
+8
+
+C ONCLUSION

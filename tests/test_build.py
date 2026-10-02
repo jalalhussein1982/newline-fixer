@@ -1,0 +1,59 @@
+from pathlib import Path
+
+from newline_fixer.data.build import assemble, build_lexicon, make_clean_set, make_corrupted_set
+from newline_fixer.data.manifest import file_sha256, write_manifest
+from newline_fixer.data.records import CleanDoc
+from newline_fixer.text import content, derive_labels
+
+
+def doc(i: int, text: str, group: str | None = None) -> CleanDoc:
+    return CleanDoc.make(f"d{i}", "test", str(i), group or f"g{i}", text)
+
+
+def body(i: int) -> str:
+    return "\n\n".join(f"Heading {i}-{k}\n\nParagraph {k}. " + f"words {i} " * 30 for k in range(4))
+
+
+def test_assemble_filters_dedupes_and_splits_by_group() -> None:
+    docs = [doc(i, body(i), group=f"g{i % 50}") for i in range(200)]
+    docs.append(doc(999, "short"))
+    docs.append(doc(998, body(1)))
+    parts = assemble(docs, seed=3)
+    assert sum(len(v) for v in parts.values()) == 200
+    group_side: dict[str, str] = {}
+    for side, ds in parts.items():
+        for d in ds:
+            assert group_side.setdefault(d.group, side) == side
+
+
+def test_corrupted_set_items_are_consistent() -> None:
+    docs = [doc(i, body(i)) for i in range(20)]
+    items = make_corrupted_set(docs, seed=5, limit=10)
+    assert len(items) == 10
+    for it in items:
+        assert content(it.input) == content(it.target)
+        derive_labels(it.input, it.target)
+        assert 0.0 <= it.severity <= 1.0
+    assert items == make_corrupted_set(docs, seed=5, limit=10)
+
+
+def test_clean_set_items_are_identity_pairs() -> None:
+    docs = [doc(i, body(i)) for i in range(20)]
+    items = make_clean_set(docs, seed=5, n_passages=15)
+    assert len(items) == 15
+    for it in items:
+        assert it.input == it.target and it.severity == 0.0
+        assert 300 <= len(it.input) <= 800
+
+
+def test_build_lexicon_counts_alpha_tokens() -> None:
+    lx = build_lexicon([doc(1, "alpha alpha alpha beta beta 42 42 42")], min_count=3)
+    assert lx.known("alpha") and not lx.known("beta") and not lx.known("42")
+
+
+def test_manifest(tmp_path: Path) -> None:
+    f = tmp_path / "a.txt"
+    f.write_text("hello")
+    assert file_sha256(f) == "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+    write_manifest(tmp_path / "manifest.json", {"files": {"a.txt": file_sha256(f)}})
+    assert (tmp_path / "manifest.json").exists()

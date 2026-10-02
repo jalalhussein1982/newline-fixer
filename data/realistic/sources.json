@@ -1,0 +1,16 @@
+{
+  "dev": [
+    {"doc": "word2vec", "title": "Efficient Estimation of Word Representations in Vector Space", "url": "https://arxiv.org/pdf/1301.3781"},
+    {"doc": "fasttext", "title": "Bag of Tricks for Efficient Text Classification", "url": "https://arxiv.org/pdf/1607.01759"},
+    {"doc": "nist-800-63", "title": "NIST SP 800-63-3 Digital Identity Guidelines", "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-63-3.pdf"},
+    {"doc": "bash-manual", "title": "GNU Bash Reference Manual", "url": "https://www.gnu.org/software/bash/manual/bash.pdf"}
+  ],
+  "test": [
+    {"doc": "attention", "title": "Attention Is All You Need", "url": "https://arxiv.org/pdf/1706.03762"},
+    {"doc": "bert", "title": "BERT: Pre-training of Deep Bidirectional Transformers", "url": "https://arxiv.org/pdf/1810.04805"},
+    {"doc": "resnet", "title": "Deep Residual Learning for Image Recognition", "url": "https://arxiv.org/pdf/1512.03385"},
+    {"doc": "adam", "title": "Adam: A Method for Stochastic Optimization", "url": "https://arxiv.org/pdf/1412.6980"},
+    {"doc": "nist-ai-rmf", "title": "NIST AI Risk Management Framework 1.0", "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf"},
+    {"doc": "gnu-make", "title": "GNU Make Manual", "url": "https://www.gnu.org/software/make/manual/make.pdf"}
+  ]
+}

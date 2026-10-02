@@ -1,0 +1,10 @@
+Figure 1: Overall pre-training and fine-tuning procedures for BERT. Apart from output layers, the same architectures are used in both pre-training and fine-tuning. The same pre-trained model parameters are used to initialize
+models for different down-stream tasks. During fine-tuning, all parameters are fine-tuned. [CLS] is a special
+symbol added in front of every input example, and [SEP] is a special separator token (e.g. separating questions/answers).
+
+ing and auto-encoder objectives have been used
+for pre-training such models (Howard and Ruder,
+2018; Radford et al., 2018; Dai and Le, 2015).
+2.3
+
+Transfer Learning from Supervised Data

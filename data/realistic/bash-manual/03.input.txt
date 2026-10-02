@@ -1,0 +1,18 @@
+Print a trace of simple commands, for commands, case commands,
+select commands, and arithmetic for commands and their arguments or associated word lists to the standard error after they
+are expanded and before they are executed. The shell prints the
+expanded value of the PS4 variable before the command and its
+expanded arguments.
+
+-B
+
+The shell will perform brace expansion (see Section 3.5.1 [Brace
+Expansion], page 25). This option is on by default.
+
+-C
+
+Prevent output redirection using ‘>’, ‘>&’, and ‘<>’ from overwriting
+existing files. Using the redirection operator ‘>|’ instead of ‘>’ will
+override this and force the creation of an output file.
+
+-E

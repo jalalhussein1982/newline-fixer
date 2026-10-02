@@ -1,0 +1,14 @@
+results are still far worse than those of the pretrained bidirectional models. The BiLSTM hurts
+performance on the GLUE tasks.
+We recognize that it would also be possible to
+train separate LTR and RTL models and represent
+each token as the concatenation of the two models, as ELMo does. However: (a) this is twice as
+expensive as a single bidirectional model; (b) this
+is non-intuitive for tasks like QA, since the RTL
+model would not be able to condition the answer
+on the question; (c) this it is strictly less powerful
+than a deep bidirectional model, since it can use
+both left and right context at every layer.
+5.2
+
+Effect of Model Size

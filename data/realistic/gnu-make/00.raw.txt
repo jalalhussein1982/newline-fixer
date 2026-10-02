@@ -1,0 +1,13 @@
+5.8 Defining Canned Recipes
+When the same sequence of commands is useful in making various targets, you can define
+it as a canned sequence with the define directive, and refer to the canned sequence from
+the recipes for those targets. The canned sequence is actually a variable, so the name must
+not conflict with other variable names.
+Here is an example of defining a canned recipe:
+define run-yacc =
+yacc $(firstword $^)
+mv y.tab.c $@
+endef
+Here run-yacc is the name of the variable being defined; endef marks the end of the
+definition; the lines in between are the commands. The define directive does not expand
+variable references and function calls in the canned sequence; the ‘$’ characters, parentheses,

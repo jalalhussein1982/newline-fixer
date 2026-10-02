@@ -1,0 +1,9 @@
+The command number and the history number are usually different: the history number
+of a command is its position in the history list, which may include commands restored from
+the history file (see Section 9.1 [Bash History Facilities], page 168), while the command
+number is the position in the sequence of commands executed during the current shell
+session.
+After the string is decoded, it is expanded via parameter expansion, command substitution, arithmetic expansion, and quote removal, subject to the value of the promptvars shell
+option (see Section 4.3.2 [The Shopt Builtin], page 78). This can have unwanted side effects
+if escaped portions of the string appear within command substitution or contain characters
+special to word expansion.
