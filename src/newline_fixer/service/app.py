@@ -77,6 +77,15 @@ def create_app(
         detail = [{k: v for k, v in e.items() if k in ("type", "loc", "msg")} for e in exc.errors()]
         return JSONResponse(status_code=422, content={"detail": detail})
 
+    @app.exception_handler(Exception)
+    async def internal_error(request: Request, _exc: Exception) -> JSONResponse:
+        rid: str | None = getattr(request.state, "request_id", None)
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "internal error", "request_id": rid},
+            headers={"x-request-id": rid} if rid else {},
+        )
+
     @app.get("/healthz")
     async def healthz() -> JSONResponse:
         if state.fixer is None:
@@ -118,9 +127,22 @@ def create_app(
     async def observe(request: Request, call_next: RequestResponseEndpoint) -> Response:
         request_id = request.headers.get("x-request-id") or uuid.uuid4().hex[:16]
         t0 = time.perf_counter()
+        request.state.request_id = request_id
         status = 500
         try:
-            response = await call_next(request)
+            declared = request.headers.get("content-length", "")
+            n = int(declared) if declared.isdigit() else 0
+            if request.url.path == "/v1/fix" and n > cfg.max_chars * 4 + 1024:
+                # refuse before the body is read; chunked clients meet the check in fix_text
+                response: Response = JSONResponse(
+                    status_code=413,
+                    content={
+                        "detail": f"request body of {n} bytes exceeds the limit"
+                        f" for {cfg.max_chars} characters"
+                    },
+                )
+            else:
+                response = await call_next(request)
             status = response.status_code
             response.headers["x-request-id"] = request_id
             return response

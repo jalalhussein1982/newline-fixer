@@ -64,7 +64,7 @@ class Metrics:
     ) -> None:
         self.requests.labels(endpoint=endpoint, status=str(status)).inc()
         self.latency.labels(endpoint=endpoint).observe(seconds)
-        if status >= 500:
+        if status >= 500 and not (endpoint == "/healthz" and status == 503):
             self.errors.labels(endpoint=endpoint).inc()
         if input_chars is not None:
             self.input_chars.observe(input_chars)

@@ -11,7 +11,9 @@ from ..models.registry import FIXER_NAMES, get_fixer
 
 HUB_REPO = "jalalhussein1982/newline-fixer-scratch"
 PUBLISHED_REVISION = "6c311e757d17e89c80b7b86908043637a4f56e28"  # scratch-v1, decision 0007
-DEFAULT_MODEL = "rules"  # the decision rule of design 5.3; confirmed or changed by decision 0008
+DEFAULT_MODEL = (
+    "rules"  # decision 0008: B1 is served; NF_MODEL=scratch serves the published scratch-v1
+)
 
 
 @dataclass(frozen=True)

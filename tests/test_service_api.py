@@ -96,6 +96,22 @@ def test_size_limit_gives_413() -> None:
         assert "100" in r.json()["detail"]
 
 
+def test_oversized_content_length_gets_early_413() -> None:
+    with make_client(Settings(model="rules", max_chars=100)) as c:
+        wait_ready(c)
+        big = b'{"text": "' + b"a" * 99_980 + b'"}'
+        r = c.post(
+            "/v1/fix",
+            content=big,
+            headers={"content-type": "application/json", "content-length": str(len(big))},
+        )
+        assert r.status_code == 413
+        assert "exceeds" in r.json()["detail"]
+        assert r.headers["x-request-id"]
+        ok = c.post("/v1/fix", json={"text": "a" * 100})
+        assert ok.status_code == 200
+
+
 def test_bad_bodies_give_422(client: TestClient) -> None:
     assert client.post("/v1/fix", json={}).status_code == 422
     assert client.post("/v1/fix", json={"text": 5}).status_code == 422

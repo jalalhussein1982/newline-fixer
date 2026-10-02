@@ -46,6 +46,8 @@ docker run --rm -p 8000:8000 -e NF_MODEL=scratch newline-fixer:local
 make container-check   # builds, starts, waits for health, posts the example, checks, stops
 ```
 
+Inside the image the scratch revision is fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>`, default the published scratch-v1) and `NF_WEIGHTS=/app/weights` points at it, so `NF_MODEL_REVISION` has no effect on a running container; the same default revision is `PUBLISHED_REVISION` in `src/newline_fixer/service/config.py`.
+
 If the Hub is unreachable at build time, build without weights and mount a local run directory at run time:
 
 ```bash
