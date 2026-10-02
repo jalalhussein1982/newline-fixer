@@ -39,6 +39,7 @@ class ScratchFixer:
         self.net = net.to(device).eval()
         self.device = device
         self.budget = cfg.budget
+        self.weights_dir: Path | None = None
 
     def token_cost(self, token: str) -> int:
         return 1
@@ -92,7 +93,9 @@ class ScratchFixer:
         chars = CharVocab.load(run_dir / "chars.json")
         net = GapTagger(cfg, len(words), len(chars))
         net.load_state_dict(torch.load(run_dir / "model.pt", map_location="cpu", weights_only=True))
-        return cls(cfg, words, chars, net, device)
+        fixer = cls(cfg, words, chars, net, device)
+        fixer.weights_dir = run_dir
+        return fixer
 
 
 def parse_weights_source(source: str) -> tuple[str, str, str | None]:
