@@ -107,11 +107,13 @@ def test_weights_source_per_model() -> None:
         Settings(model="finetuned-ablation")
 
 
-def test_finetuned_without_revision_or_weights_fails_at_startup() -> None:
-    with pytest.raises(ValueError, match="NF_WEIGHTS_FINETUNED"):
-        Settings(model="finetuned")
-    with pytest.raises(ValueError, match="NF_MODEL_REVISION"):
-        Settings.from_env({"NF_MODEL": "finetuned"})
+def test_finetuned_is_the_default_at_its_published_revision() -> None:
+    from newline_fixer.service.config import HUB_REPO_FINETUNED, PUBLISHED_REVISION_FINETUNED
+
+    assert DEFAULT_MODEL == "finetuned"
+    assert len(PUBLISHED_REVISION_FINETUNED) == 40
+    s = Settings.from_env({})
+    assert s.weights_source() == f"hf:{HUB_REPO_FINETUNED}@{PUBLISHED_REVISION_FINETUNED}"
     assert Settings(model="finetuned", weights="w").weights_source() == "w"
 
 

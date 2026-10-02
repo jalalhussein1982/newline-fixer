@@ -35,24 +35,26 @@ curl -s localhost:8000/v1/fix -H 'content-type: application/json' \
   -d '{"text": "3.2.3 Applications of Attention\n in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers,\n the que\nries come from the previous decoder layer."}'
 ```
 
-The default model is `rules` (B1) for now; decision 0010 selects the fine-tuned encoder (`NF_MODEL=finetuned`) as the served model and the default flips once its weights are published. `NF_MODEL=scratch` serves the published from-scratch model.
+The default model is `finetuned`, the fine-tuned pretrained encoder, by decision 0010; `NF_MODEL=rules` and `NF_MODEL=scratch` serve the baselines.
 
-With Docker (the image fetches the scratch weights at build time by the pinned revision):
+With Docker (the image fetches both learned models' weights at build time by their pinned revisions):
 
 ```bash
 docker build -t newline-fixer:local .
-docker run --rm -p 8000:8000 newline-fixer:local                    # serves NF_MODEL=rules by default
+docker run --rm -p 8000:8000 newline-fixer:local                    # serves NF_MODEL=finetuned by default
 docker run --rm -p 8000:8000 -e NF_MODEL=scratch newline-fixer:local
+docker run --rm -p 8000:8000 -e NF_MODEL=rules newline-fixer:local
 make container-check   # builds, starts, waits for health, posts the example, checks, stops
 ```
 
-Inside the image the scratch revision is fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>`, default the published scratch-v1) and `NF_WEIGHTS=/app/weights` points at it, so `NF_MODEL_REVISION` has no effect on a running container; the same default revision is `PUBLISHED_REVISION` in `src/newline_fixer/service/config.py`.
+Both models are baked into the image: the revisions are fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>` for scratch, default the published scratch-v1; `--build-arg NF_FINETUNED_REVISION=<rev>` for the fine-tuned encoder, default the published revision), `NF_WEIGHTS_SCRATCH=/app/weights` and `NF_WEIGHTS_FINETUNED=/app/weights-finetuned` point at them, so `NF_MODEL_REVISION` has no effect on a running container; the same default revisions are `PUBLISHED_REVISION` and `PUBLISHED_REVISION_FINETUNED` in `src/newline_fixer/service/config.py`.
 
-If the Hub is unreachable at build time, build without weights and mount a local run directory at run time:
+If the Hub is unreachable at build time, build without weights and mount a local run directory at the matching path (`/app/weights` for scratch, `/app/weights-finetuned` for finetuned) at run time:
 
 ```bash
 docker build --build-arg WITH_WEIGHTS=0 -t newline-fixer:local .
 docker run --rm -p 8000:8000 -e NF_MODEL=scratch -v "$PWD/experiments/runs/current:/app/weights:ro" newline-fixer:local
+docker run --rm -p 8000:8000 -v "$PWD/experiments/runs/finetuned:/app/weights-finetuned:ro" newline-fixer:local   # the default, finetuned
 ```
 
 `experiments/runs/current` is a git-ignored run directory produced by training (see "Train the from-scratch model").
@@ -61,11 +63,11 @@ Configuration, all optional:
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `NF_MODEL` | `rules` | `identity`, `rules`, `scratch` or `finetuned` (decision 0008 sets the default) |
-| `NF_MODEL_REVISION` | the published scratch-v1 revision | Hub revision of the scratch weights |
+| `NF_MODEL` | `finetuned` | `identity`, `rules`, `scratch` or `finetuned` (decision 0010 sets the default) |
+| `NF_MODEL_REVISION` | the published scratch-v1 revision | Hub revision of the selected model's weights |
 | `NF_WEIGHTS` | unset | a local run directory or `hf:repo@revision`; overrides `NF_MODEL_REVISION` |
 | `NF_WEIGHTS_SCRATCH` | unset | weights source for `NF_MODEL=scratch` (run directory or `hf:repo@revision`) |
-| `NF_WEIGHTS_FINETUNED` | unset | weights source for `NF_MODEL=finetuned`; with neither it nor `NF_WEIGHTS` set, `NF_MODEL_REVISION` is required until a revision is published |
+| `NF_WEIGHTS_FINETUNED` | unset | weights source for `NF_MODEL=finetuned`; with neither it nor `NF_WEIGHTS` set, the published revision is downloaded from the Hub |
 | `NF_MAX_CHARS` | `100000` | inputs longer than this get 413 |
 | `NF_LOG_LEVEL` | `INFO` | level of the JSON request log on stdout |
 | `NF_DEVICE` | `cpu` | torch device for the learned model |

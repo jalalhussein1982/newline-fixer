@@ -12,11 +12,11 @@ from ..models.registry import FIXER_NAMES, get_fixer
 HUB_REPO = "jalalhussein1982/newline-fixer-scratch"
 PUBLISHED_REVISION = "6c311e757d17e89c80b7b86908043637a4f56e28"  # scratch-v1, decision 0007
 HUB_REPO_FINETUNED = "jalalhussein1982/newline-fixer-finetuned"
-PUBLISHED_REVISION_FINETUNED = ""  # Task 7 fills it; empty means the Hub repo's main
-SERVABLE = ("identity", "rules", "scratch", "finetuned")
-DEFAULT_MODEL = (
-    "rules"  # decision 0008: B1 is served; NF_MODEL=scratch serves the published scratch-v1
+PUBLISHED_REVISION_FINETUNED = (
+    "11d6b26e80dfa2c9606702cd2755a63c9dce99ed"  # finetuned, decision 0010
 )
+SERVABLE = ("identity", "rules", "scratch", "finetuned")
+DEFAULT_MODEL = "finetuned"  # decision 0010 (supersedes 0008); NF_MODEL=rules|scratch: baselines
 
 
 @dataclass(frozen=True)
