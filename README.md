@@ -41,4 +41,13 @@ uv run python scripts/evaluate.py --systems identity,rules --sets V1,V2,V3 --out
 uv run python scripts/results_table.py
 ```
 
+Train the from-scratch model:
+
+```bash
+uv run python scripts/train_scratch.py --run-id scratch-v1 --seed 1 --class-weights none
+uv run python scripts/evaluate.py --systems identity,rules,scratch --sets V1,V2,V3 --out experiments/results/m2-scratch.json
+```
+
+Weights are written to `experiments/runs/<run-id>/` (git-ignored); set `NF_WEIGHTS` to a run directory to evaluate or serve it. The two runs behind decision 0007 (`scratch-v1`, and `scratch-v1-inverse` with `--class-weights inverse`) were produced with the Colab notebook above, and `experiments/runs/current` is a copy of `scratch-v1`.
+
 Results tables live in `experiments/README.md`.

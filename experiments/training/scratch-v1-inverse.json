@@ -1,0 +1,113 @@
+{
+  "run_id": "scratch-v1-inverse",
+  "git_commit": "dd2a39b955d0fc9c0a9c89b4f2388bb7944dbd87",
+  "started": "2026-10-02T12:43:24+00:00",
+  "seed": 1,
+  "config": {
+    "vocab_size": 30000,
+    "word_dim": 128,
+    "char_dim": 32,
+    "char_filters": 64,
+    "char_width": 3,
+    "max_chars": 40,
+    "gap_dim": 8,
+    "hidden": 192,
+    "layers": 2,
+    "dropout": 0.2,
+    "classifier_hidden": 256,
+    "budget": 256
+  },
+  "train_config": {
+    "run_id": "scratch-v1-inverse",
+    "epochs": 8,
+    "batch_size": 32,
+    "lr": 0.002,
+    "weight_decay": 0.01,
+    "patience": 2,
+    "seed": 1,
+    "class_weights": "inverse",
+    "grad_clip": 1.0,
+    "max_docs": null,
+    "char_min_count": 5
+  },
+  "n_train_docs": 6299,
+  "n_examples_epoch0": 11470,
+  "class_counts_epoch0": [
+    16262,
+    2057047,
+    31125,
+    47140
+  ],
+  "n_words": 30002,
+  "n_chars": 383,
+  "n_params": 5551692,
+  "device": "cuda",
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_loss": 0.3468103514657379,
+      "seconds": 52.274534463882446,
+      "V1_macro_f1": 0.6786626876168124,
+      "V1_damage": 0.09871369630288812,
+      "V1_wrong_join_per_1000": 4.31194887145053,
+      "V3_macro_f1": 0.6576546976687145,
+      "V3_damage": 0.05801676281702406,
+      "V3_wrong_join_per_1000": 0.0
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.17343951527205684,
+      "seconds": 51.659095764160156,
+      "V1_macro_f1": 0.703715067621911,
+      "V1_damage": 0.09085834479411051,
+      "V1_wrong_join_per_1000": 3.697111884151768,
+      "V3_macro_f1": 0.6663472401418065,
+      "V3_damage": 0.05268313921846087,
+      "V3_wrong_join_per_1000": 0.0
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.14218491158113505,
+      "seconds": 51.86906862258911,
+      "V1_macro_f1": 0.7412205662297733,
+      "V1_damage": 0.0816115201035515,
+      "V1_wrong_join_per_1000": 3.1469945797265595,
+      "V3_macro_f1": 0.7094144200129405,
+      "V3_damage": 0.04473712855121367,
+      "V3_wrong_join_per_1000": 0.0
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.12276486136164506,
+      "seconds": 52.61151456832886,
+      "V1_macro_f1": 0.7089128864677943,
+      "V1_damage": 0.0888924844268263,
+      "V1_wrong_join_per_1000": 3.9964404174419546,
+      "V3_macro_f1": 0.6951185323490957,
+      "V3_damage": 0.04517252639599434,
+      "V3_wrong_join_per_1000": 0.0
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.10752190721109717,
+      "seconds": 52.26393723487854,
+      "V1_macro_f1": 0.7405832921697352,
+      "V1_damage": 0.07742092063748887,
+      "V1_wrong_join_per_1000": 3.9155408138500123,
+      "V3_macro_f1": 0.7301587193727864,
+      "V3_damage": 0.037117666267551974,
+      "V3_wrong_join_per_1000": 0.0
+    }
+  ],
+  "best": {
+    "V1_macro_f1": 0.7412205662297733,
+    "V1_damage": 0.0816115201035515,
+    "V1_wrong_join_per_1000": 3.1469945797265595,
+    "V3_macro_f1": 0.7094144200129405,
+    "V3_damage": 0.04473712855121367,
+    "V3_wrong_join_per_1000": 0.0
+  },
+  "best_epoch": 3,
+  "seconds": 314.3580901622772,
+  "weights_dir": "experiments/runs/scratch-v1-inverse"
+}
