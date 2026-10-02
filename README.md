@@ -1,7 +1,7 @@
 # newline-fixer
 
 A machine learning service that fixes newline placement in English text.
-Built for the BottleCapAI Applied ML Engineer challenge.
+Built for the BottleCapAI Applied ML Engineer challenge. The final report is [`report.md`](report.md).
 
 This repository tracks the whole project from the first written requirement to the
 final service. The history is intentional: the planning documents under `docs/`
@@ -21,9 +21,9 @@ were committed before any code, and every later change to them is a commit.
 | `scripts/` | data building and evaluation entry points |
 | `tests/` | pytest suite |
 | `data/` | see `data/README.md` |
-| `report.md` | Final report: how to run, approach, decisions, results (written last) |
+| `report.md` | Final report: how to run, approach, decisions, results |
 
-The report arrives with M4.
+The report is `report.md`.
 
 ## Run the service
 
@@ -69,6 +69,16 @@ Configuration, all optional:
 | `NF_DEVICE` | `cpu` | torch device for the scratch model |
 
 `GET /healthz` answers 503 until the model is loaded; `GET /metrics` is Prometheus text. One JSON line per request goes to stdout; request text is never logged.
+
+## Submission
+
+The challenge is submitted as a git bundle of every branch. `make bundle-check` creates `jalal-hussein.bundle` in `$TMPDIR`, verifies it, clones it into a fresh directory, runs the checks, builds the image and serves the example from it. The bundle to send is produced from `main` after the last merge:
+
+```bash
+git checkout main && git pull && make bundle   # writes jalal-hussein.bundle in the repository root (git-ignored)
+```
+
+`make bundle` first gives every remote branch a local branch, so the bundle carries all of them as branches.
 
 ## Development
 
