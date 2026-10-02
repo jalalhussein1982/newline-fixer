@@ -44,7 +44,14 @@ docker run --rm -p 8000:8000 -e NF_MODEL=scratch newline-fixer:local
 make container-check   # builds, starts, waits for health, posts the example, checks, stops
 ```
 
-If the Hub is unreachable at build time, build with `--build-arg NF_MODEL_REVISION=<rev>` once it is back, or run the image with local weights mounted: `docker run --rm -p 8000:8000 -e NF_MODEL=scratch -v "$PWD/experiments/runs/current:/app/weights:ro" newline-fixer:local`.
+If the Hub is unreachable at build time, build without weights and mount a local run directory at run time:
+
+```bash
+docker build --build-arg WITH_WEIGHTS=0 -t newline-fixer:local .
+docker run --rm -p 8000:8000 -e NF_MODEL=scratch -v "$PWD/experiments/runs/current:/app/weights:ro" newline-fixer:local
+```
+
+`experiments/runs/current` is a git-ignored run directory produced by training (see "Train the from-scratch model").
 
 Configuration, all optional:
 

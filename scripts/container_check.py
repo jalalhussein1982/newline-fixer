@@ -21,10 +21,15 @@ def sh(*args: str) -> str:
     return subprocess.run(args, check=True, capture_output=True, text=True).stdout.strip()
 
 
-def wait_healthy(base: str, seconds: float) -> None:
-    deadline = time.time() + seconds
+def wait_healthy(base: str, cid: str, seconds: float) -> None:
+    deadline = time.monotonic() + seconds
     last = ""
-    while time.time() < deadline:
+    while time.monotonic() < deadline:
+        if sh("docker", "inspect", "-f", "{{.State.Running}}", cid) != "true":
+            logs = subprocess.run(
+                ["docker", "logs", "--tail", "20", cid], capture_output=True, text=True
+            )
+            raise SystemExit(f"container exited: {logs.stdout}{logs.stderr}")
         try:
             with urllib.request.urlopen(f"{base}/healthz", timeout=2) as r:
                 if r.status == 200:
@@ -51,7 +56,7 @@ def main() -> None:
     cid = sh("docker", "run", "-d", "-p", f"{a.port}:8000", "-e", f"NF_MODEL={a.model}", a.image)
     base = f"http://127.0.0.1:{a.port}"
     try:
-        wait_healthy(base, 120)
+        wait_healthy(base, cid, 120)
         req = urllib.request.Request(
             f"{base}/v1/fix",
             data=json.dumps({"text": EXAMPLE_INPUT}).encode(),
