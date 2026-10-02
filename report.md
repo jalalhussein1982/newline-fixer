@@ -108,6 +108,8 @@ Realistic sets. They come from ten real PDFs: word2vec, fasttext, nist-800-63 an
 | scratch-v1-inverse | cuda | 5 | 5.2 | 3 | 0.741 | 0.0447 | 5,551,692 | `dd2a39b955d0` |
 | scratch-v1 | cuda | 8 | 8.6 | 8 | 0.922 | 0.0016 | 5,551,692 | `dd2a39b955d0` |
 
+`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+
 **The fine-tuned pretrained encoder (design 4.5) is planned work, not done.** The report has no result for it. It was not started within this submission's time budget; design section 9 allows sending the bundle after M4 with that stated.
 
 ## 6. Evaluation method
@@ -153,6 +155,8 @@ Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=0
 | V3 | rules | 9187 | 0.940 | 0.988 | 0.933 | 0.00 | 0.0026 | 0.921 |
 | V3 | scratch | 9187 | 0.975 | 0.971 | 0.988 | 0.00 | 0.0016 | 0.959 |
 
+`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+
 Test sets (evaluated once; the record was rendered from a dirty tree, see section 10):
 
 <!-- rendered by scripts/report_tables.py at 7ecab76 -->
@@ -173,6 +177,8 @@ Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16
 | T3 | identity | 18392 | 1.000 | 1.000 | 1.000 | 0.00 | 0.0000 | 1.000 |
 | T3 | rules | 18392 | 0.811 | 0.978 | 0.759 | 0.00 | 0.0102 | 0.893 |
 | T3 | scratch | 18392 | 0.977 | 0.968 | 0.982 | 0.11 | 0.0023 | 0.929 |
+
+`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
 
 V2 macro-F1 averages three classes (JOIN has no support there) while T2 averages four (JOIN has a support of one gap, the per-class table shows it), so V2 and T2 values are not comparable; without JOIN, T2 macro-F1 is scratch 0.689, rules 0.664, identity 0.650.
 
@@ -209,6 +215,8 @@ Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=0
 | V2 | scratch | NL | 54 | 0.500 | 0.370 | 0.426 |
 | V2 | scratch | PARA | 108 | 0.904 | 0.694 | 0.785 |
 
+`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+
 ### Per class, test sets (T1, T2)
 
 <!-- rendered by scripts/report_tables.py at 7ecab76 -->
@@ -242,6 +250,8 @@ Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16
 | T2 | scratch | NL | 46 | 0.393 | 0.478 | 0.431 |
 | T2 | scratch | PARA | 112 | 0.690 | 0.616 | 0.651 |
 
+`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+
 T1 by severity band, rules and scratch:
 
 <!-- rendered by scripts/report_tables.py at 7ecab76 -->
@@ -258,6 +268,8 @@ Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16
 | (0.33,0.66] | scratch | 104 | 38495 | 0.917 | 0.13 | 0.0439 |
 | (0.66,1] | rules | 101 | 32575 | 0.502 | 0.00 | 0.0320 |
 | (0.66,1] | scratch | 101 | 32575 | 0.895 | 0.31 | 0.0658 |
+
+`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
 
 Where the model wins. JOIN: on V1 its JOIN F1 is 0.974 against 0.682 for the rules (`experiments/README.md`); the rules join a split word only when a lexicon lookup succeeds. PARA structure on clean text: scratch has paragraph match 0.959 on V3 and 0.929 on T3 against 0.921 and 0.893 for the rules, and fewer damaged gaps. The severity table shows a gain in every band: macro-F1 0.987 against 0.806 at severity 0, and 0.895 against 0.502 at the highest band. Its own cost grows with severity: wrong joins go from 0.00 to 0.31 per thousand, and its clean damage in band 0 is 0.0012.
 
@@ -276,6 +288,8 @@ Why. The design's risk table predicted that models learn the corruptor, not the 
 | m1-mac-cpu | identity | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.5 | 7,204,882 | 24 | 0.0 | `c181dae5d6cb` |
 | m1-mac-cpu | rules | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,412,221 | 32 | 0.2 | `c181dae5d6cb` |
 | m1-mac-cpu | scratch | 7.5 / 7.6 | 40.6 / 41.9 | 268.1 / 274.1 | 71,266 | 274 | 22.6 | `c181dae5d6cb` |
+
+`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
 
 Latency is one request at a time; throughput is eight concurrent requests of 2,000 characters. Rows labelled `m1-mac-cpu` are in-process measurements on an Apple M1 (8 GB) on CPU. Rows labelled `container-*` go through HTTP against the image running in Docker Desktop's Linux VM on the same Mac, so they carry no size or memory figures.
 

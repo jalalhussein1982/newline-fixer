@@ -1,3 +1,12 @@
+---
+license: cc-by-sa-4.0
+language:
+- en
+pretty_name: newline-fixer dataset
+size_categories:
+- 1K<n<10K
+---
+
 # data
 
 Only these are committed: this file, `split.json` (group ids per split), `sets/`
