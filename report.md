@@ -77,8 +77,7 @@ Two clean sources, chosen in [decision 0005](docs/decisions/0005-clean-text-sour
 
 The training and synthetic evaluation inputs come from a seeded corruptor. It replaces true newlines by spaces with a probability that grows with severity, and inserts newlines at arbitrary character positions, including inside words. One document in ten is left uncorrupted.
 
-<!-- dataset-url -->
-The built dataset is to be published to the Hugging Face Hub with a content-hash manifest. This has not happened yet: the Hub URL is pending. Until it is published, the generated documents are not in the repository, and the training data cannot be rebuilt from it alone. The committed evaluation sets under `data/sets/` and the realistic passages under `data/realistic/` are enough to re-run the evaluation.
+The dataset (clean splits, evaluation sets, the 2,000 generated documents, the split file and a manifest of content hashes) is on the Hugging Face Hub at https://huggingface.co/datasets/jalalhussein1982/newline-fixer-data, revision `a57d9702a8f2434cf9fa0248029454dfc60255b7`. The committed evaluation sets under `data/sets/` and the realistic passages under `data/realistic/` are enough to re-run the evaluation.
 
 Evaluation sets. Development sets drive every choice; test sets were evaluated once.
 
@@ -293,7 +292,7 @@ Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a ch
 - **The V3 gate margin is thin.** The chosen epoch has V3 damage 0.0016 against the gate of 0.0026, but three of the eight epochs were above the gate (decision 0007). Selection used V1 macro-F1, so passing the gate at epoch 8 is partly luck.
 - **The rules also damage clean text.** V3 damage is 0.0026, exactly at the gate, and their PARA F1 is below identity on V1 and V2.
 - **The realistic evidence is ten documents**: four in V2, six in T2, 29 and 40 passages.
-- **The generated documents are not reproducible by script**, and the dataset is not yet on the Hub.
+- **The generated documents are reproducible only by download, not by script.**
 - **The container latency gap**: scratch at 304.1 ms against 40.6 ms on the host, cause not isolated.
 - **Out of scope by design**: hyphenated line breaks and breaks deleted without whitespace.
 - **Test-set record from a dirty tree.** `experiments/results/test-sets.json` was rendered at commit `4955e06adaa2` with uncommitted files: the decision record 0008 and the README of the next commit, `9cb6c5d`. They were not yet committed when the evaluation ran. The code was that of `4955e06`, so the numbers do not depend on the difference.
@@ -317,4 +316,4 @@ Locations:
 
 - Weights: https://huggingface.co/jalalhussein1982/newline-fixer-scratch, revision `6c311e757d17e89c80b7b86908043637a4f56e28`.
 - Wikipedia source: `wikimedia/wikipedia`, revision `b04c8d1ceb2f5cd4588862100d08de323dccfbaa`.
-- Built dataset: not yet published; Hub URL pending.
+- Built dataset: https://huggingface.co/datasets/jalalhussein1982/newline-fixer-data, revision `a57d9702a8f2434cf9fa0248029454dfc60255b7`.
