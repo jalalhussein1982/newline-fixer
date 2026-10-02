@@ -18,8 +18,8 @@ Conventions for every milestone:
 | M0 | this document | requirements, design, plan, decision records | committed |
 | M1 | `plans/2026-10-01-m1-data-baselines-eval.md` | 14 tasks, listed below | B0 and B1 evaluated on V1, V2, V3; first results table committed; B1 frozen by decision record |
 | M2 | `plans/2026-10-02-m2-scratch-model.md` | 8 tasks | M1 model trained, evaluated on dev sets, run recorded in `experiments/` |
-| M3 | `plans/<date>-m3-service.md` | written at M3 start | API, Docker, tests, benchmark; served model chosen by the decision rule |
-| M4 | `plans/<date>-m4-report.md` | written at M4 start | `report.md` complete, test sets evaluated once, bundle produced |
+| M3 | `plans/2026-10-02-m3-service.md` | see the plan | API, Docker, tests, benchmark; served model chosen by the decision rule |
+| M4 | `plans/2026-10-02-m4-report.md` | see the plan | `report.md` complete, test sets evaluated once, bundle produced |
 | M5 | `plans/<date>-m5-finetuned-model.md` | written at M5 start | M2 selected, trained, ablated, published; report updated |
 | M6 | `plans/<date>-m6-extensions.md` | written at M6 start | Space deployed; further items only while a measured number improves |
 

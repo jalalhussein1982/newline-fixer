@@ -1,7 +1,7 @@
 # newline-fixer
 
 A machine learning service that fixes newline placement in English text.
-Built for the BottleCapAI Applied ML Engineer challenge.
+Built for the BottleCapAI Applied ML Engineer challenge. The final report is [`report.md`](report.md).
 
 This repository tracks the whole project from the first written requirement to the
 final service. The history is intentional: the planning documents under `docs/`
@@ -21,9 +21,9 @@ were committed before any code, and every later change to them is a commit.
 | `scripts/` | data building and evaluation entry points |
 | `tests/` | pytest suite |
 | `data/` | see `data/README.md` |
-| `report.md` | Final report: how to run, approach, decisions, results (written last) |
+| `report.md` | Final report: how to run, approach, decisions, results |
 
-The report arrives with M4.
+The report is `report.md`.
 
 ## Run the service
 
