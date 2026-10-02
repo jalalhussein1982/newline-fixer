@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from newline_fixer.data.build import assemble, build_lexicon, make_clean_set, make_corrupted_set
-from newline_fixer.data.manifest import file_sha256, write_manifest
+from newline_fixer.data.manifest import build_manifest, file_sha256, published_files, write_manifest
 from newline_fixer.data.records import CleanDoc
 from newline_fixer.text import content, derive_labels
 
@@ -57,3 +57,45 @@ def test_manifest(tmp_path: Path) -> None:
     assert file_sha256(f) == "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
     write_manifest(tmp_path / "manifest.json", {"files": {"a.txt": file_sha256(f)}})
     assert (tmp_path / "manifest.json").exists()
+
+
+def test_published_files_matches_patterns_and_excludes_manifest(tmp_path: Path) -> None:
+    for rel in (
+        "clean/train.jsonl",
+        "sets/V1.jsonl",
+        "sets/meta.json",
+        "raw/wikipedia.meta.json",
+        "raw/generated/00000.txt",
+        "split.json",
+        "README.md",
+        "manifest.json",
+        "raw/wikipedia.jsonl",
+        "raw/pdf/x.pdf",
+    ):
+        p = tmp_path / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text("x")
+    got = [p.relative_to(tmp_path).as_posix() for p in published_files(tmp_path)]
+    assert got == sorted(
+        [
+            "README.md",
+            "clean/train.jsonl",
+            "raw/generated/00000.txt",
+            "raw/wikipedia.meta.json",
+            "sets/V1.jsonl",
+            "sets/meta.json",
+            "split.json",
+        ]
+    )
+
+
+def test_build_manifest_hashes_every_published_file(tmp_path: Path) -> None:
+    (tmp_path / "sets").mkdir()
+    (tmp_path / "sets" / "meta.json").write_text("{}")
+    (tmp_path / "split.json").write_text("{}")
+    m = build_manifest(tmp_path, "1", "abc", "2026-10-02T00:00:00+00:00")
+    assert m["dataset_version"] == "1" and m["git_commit"] == "abc"
+    files = m["files"]
+    assert isinstance(files, dict)
+    assert set(files) == {"sets/meta.json", "split.json"}
+    assert files["split.json"] == file_sha256(tmp_path / "split.json")
