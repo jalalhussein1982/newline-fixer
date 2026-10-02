@@ -107,6 +107,15 @@ def train(
     }
     epochs: list[dict[str, object]] = []
     best_f1, best_epoch, bad, start_all = -1.0, 0, 0, time.time()
+
+    def write_record() -> None:
+        record["epochs"] = epochs
+        record["best_epoch"] = best_epoch
+        record["seconds"] = time.time() - start_all
+        record["weights_dir"] = str(run_dir)
+        run_dir.mkdir(parents=True, exist_ok=True)
+        (run_dir / "run.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+
     for epoch in range(tcfg.epochs):
         examples = first_epoch if epoch == 0 else epoch_examples(docs, tcfg.seed, epoch, cfg.budget)
         net.train()
@@ -140,12 +149,8 @@ def train(
             record["best"] = dict(metrics)
         else:
             bad += 1
-            if bad >= tcfg.patience:
-                break
-    record["epochs"] = epochs
-    record["best_epoch"] = best_epoch
-    record["seconds"] = time.time() - start_all
-    record["weights_dir"] = str(run_dir)
-    run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "run.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+        write_record()
+        if bad >= tcfg.patience:
+            break
+    write_record()
     return record
