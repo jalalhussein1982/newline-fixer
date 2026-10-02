@@ -33,6 +33,8 @@ Space (no install; the live service of the same image on free `cpu-basic`, 2 vCP
 curl -s https://jalalhussein1982-newline-fixer.hf.space/v1/fix -H 'content-type: application/json' -d '{"text": "3.2.3 Applications of Attention\n in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers,\n the que\nries come from the previous decoder layer."}'
 ```
 
+The Space is public and unauthenticated. Requests above `NF_MAX_CHARS` get an early 413 (the service default is 100,000 characters unless a Space variable lowers it); there is no other limit beyond the two vCPUs, and no request text is logged (design 6.3).
+
 The challenge example, through the API:
 
 ```bash
@@ -72,6 +74,7 @@ Configuration, all optional:
 | `NF_MAX_CHARS` | `100000` | inputs longer than this get 413 |
 | `NF_LOG_LEVEL` | `INFO` | level of the JSON request log on stdout |
 | `NF_DEVICE` | `cpu` | torch device for the learned models |
+| `NF_TORCH_THREADS` | unset (torch default) | CPU threads torch uses for inference; the image leaves it unset (decision 0011: no setting beat torch's default by more than 10%) |
 
 Inside the image both revisions are fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>` for scratch, `--build-arg NF_FINETUNED_REVISION=<rev>` for the fine-tuned encoder), so `NF_MODEL_REVISION` has no effect on a running container. One JSON line per request goes to stdout; request text is never logged. The [README](README.md) has the offline build.
 
@@ -378,13 +381,13 @@ Why. The design's risk table predicted that models learn the corruptor, not the 
 
 Latency is one request at a time; throughput is eight concurrent requests of 2,000 characters. Rows labelled `m1-mac-cpu` are in-process measurements on an Apple M1 (8 GB) on CPU. Rows labelled `container-*` go through HTTP against the image running in Docker Desktop's Linux VM on the same Mac, so they carry no size or memory figures.
 
-The design states the latency rule on the host CPU, so the host p50 at 2,000 characters is the figure that enters the decision rule: rules 0.5 ms, scratch 40.2 ms, finetuned 92.8 ms, limit 300 ms. All three pass. The container figure for finetuned, 342.9 ms (p95 585.1 ms), is 3.7 times the host figure and would fail the limit if it were the gate. Decision 0010 extrapolated about 700 ms from scratch's ratio of 7.6 (304.1 ms in the container against 40.2 on the host); the measurement is half that, because the ratio is not constant across models. The cause of the container overhead is not isolated; the thread experiment (below) ruled out oversubscription as the main cause. Rules in the container take 1.9 ms. Resident memory after warm-up is 32 MB for rules, 297 MB for scratch and 662 MB for finetuned; the fine-tuned weights are 290.9 MB on disk against 22.6 MB for scratch. The image holds the weights of both learned models and is 1.89 GB on disk (535 MB content size, from `docker image ls`), dominated by the CPU PyTorch wheel and the two weight sets. Container throughput for finetuned is 9,458 characters per second against 24,898 on the host.
+The design states the latency rule on the host CPU, so the host p50 at 2,000 characters is the figure that enters the decision rule: rules 0.5 ms, scratch 40.2 ms, finetuned 92.8 ms, limit 300 ms. All three pass. The container figure for finetuned, 342.9 ms (p95 585.1 ms), is 3.7 times the host figure and would fail the limit if it were the gate. Decision 0010 extrapolated about 700 ms from scratch's ratio of 7.6 (304.1 ms in the container against 40.2 on the host); the measurement is half that, because the ratio is not constant across models. The cause of the container overhead is not isolated; the thread experiment (below) did not support oversubscription as the main cause. Rules in the container take 1.9 ms. Resident memory after warm-up is 32 MB for rules, 297 MB for scratch and 662 MB for finetuned; the fine-tuned weights are 290.9 MB on disk against 22.6 MB for scratch. The image holds the weights of both learned models and is 1.89 GB on disk (535 MB content size, from `docker image ls`), dominated by the CPU PyTorch wheel and the two weight sets. Container throughput for finetuned is 9,458 characters per second against 24,898 on the host.
 
 The thread experiment (decision 0011) kept torch's default thread count: the best setting, 4 threads, was only 4.7% better than the default at 2,000 characters (326.7 against 342.9 ms), under the 10% margin fixed beforehand. The `space` row is the same image on the Hugging Face Space (free `cpu-basic`, 2 vCPU), measured over HTTP from the author's Mac, so it includes the network round trip: p50 342.2 ms (p95 379.0 ms) at 2,000 characters, the same as the local container (342.9 ms, 8 vCPUs; a near-coincidence, since the Space figure includes the round trip from the Mac) and 3.7 times the host's 92.8 ms; its throughput is lower (3,224 against 9,458 chars/s), consistent with two vCPUs serving eight concurrent requests, though the network path differs and the cause was not isolated.
 
 ## 9. Decisions
 
-Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a change is a new record (decision 0011 carries marked clarifications and a dated postscript added before its acceptance on this branch).
+Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a change is a new record (decision 0011 was amended on this branch before merge: two clarifying sentences marked in the record and a dated postscript).
 
 - [0001](docs/decisions/0001-gap-classification-formulation.md): four-way classification of each whitespace gap, over a binary newline decision and over free-form rewriting. The four classes express every operation in the example, and only gaps change, so content is preserved by construction.
 - [0002](docs/decisions/0002-self-hosted-small-models.md): serve self-hosted small models and compare a from-scratch model with a fine-tuned one; superseded by 0004.
@@ -396,6 +399,7 @@ Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a ch
 - [0008](docs/decisions/0008-served-model.md): serve the rules baseline; superseded by 0010. Both systems pass both candidate conditions; the rules have the higher V2 macro-F1 (0.806 against 0.733) and no wrong joins.
 - [0009](docs/decisions/0009-encoder-candidate.md): fine-tune `microsoft/deberta-v3-xsmall`. After one epoch each, it led `distilbert-base-cased` on V1 macro-F1 (0.937 against 0.901) and both were within the per-window latency limit of 67.4 ms (65.5 and 51.2 ms); one epoch and one seed, so the gap is not a significance claim.
 - [0010](docs/decisions/0010-served-model-after-m5.md): serve the fine-tuned encoder, superseding 0008. Rules, scratch and finetuned pass both candidate conditions; finetuned has the highest V2 macro-F1 (0.898 against 0.806 and 0.733). The decision records the caveats that this report measures: wrong joins, the challenge example, and the cost in weight size, memory and container latency. The random-init ablation (V3 damage 0.0057, over the gate) is evidence for what pretraining is worth, not a candidate.
+- [0011](docs/decisions/0011-container-threads.md): keep torch's default thread count in the image. Four threads were 4.7% better than the default against a 10% rule fixed before measuring; the Space measured 342.2 ms p50 at 2,000 characters on 2 vCPU, so ONNX is not pursued.
 
 ## 10. Known failures and limits
 
@@ -415,7 +419,7 @@ Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a ch
 
 In priority order, each with the number it targets:
 
-1. Isolate the container latency (the thread count is not the main cause (decision 0011); a second host or a native Linux CPU would test the VM explanation). Target: finetuned p50 at 2,000 characters in the container from 342.9 ms toward the host's 92.8 ms, under 300 ms.
+1. Isolate the container latency (the thread count is not the main cause, decision 0011; a second host or a native Linux CPU would test the VM explanation). Target: finetuned p50 at 2,000 characters in the container from 342.9 ms toward the host's 92.8 ms, under 300 ms.
 2. More realistic corruptions in the training data. Target: wrong joins on V2 from 4.58 per thousand toward the 0.00 of the rules, and the V1 to V2 gap of 0.056 macro-F1 (0.954 against 0.898).
 3. ONNX export and thread tuning on the Space are the remaining latency levers; neither is needed now (item 5).
 4. A second seed for finetuned and its ablation, to put a spread on the 0.284 pretraining effect on V2.
@@ -427,7 +431,7 @@ The requirements, design and implementation plan were committed before any code 
 
 Locations:
 
-- Hugging Face Space (deployment target): https://huggingface.co/spaces/jalalhussein1982/newline-fixer, a Docker Space that builds the same `Dockerfile` as the local image (decision 0011 and section 8 give its latency).
+- Hugging Face Space (deployment target): https://huggingface.co/spaces/jalalhussein1982/newline-fixer, a Docker Space that builds the same `Dockerfile` as the local image (decision 0011 and section 8 give its latency); creating a Docker Space required a Hugging Face PRO subscription (the free tier allows static Spaces only), and the Space itself runs on the free `cpu-basic` hardware.
 - Weights, scratch: https://huggingface.co/jalalhussein1982/newline-fixer-scratch, revision `6c311e757d17e89c80b7b86908043637a4f56e28`.
 - Weights, fine-tuned encoder: https://huggingface.co/jalalhussein1982/newline-fixer-finetuned, revision `11d6b26e80dfa2c9606702cd2755a63c9dce99ed`. The ablation weights are not published.
 - Colab notebooks: `notebooks/train_scratch_colab.ipynb` and `notebooks/train_finetune_colab.ipynb` (candidate selection and the two full runs of M5). The Colab runs used transformers 5, which writes `extra_special_tokens` as a list in the tokenizer config; the repository pins transformers below 5 (4.57.6 in the lock file), so `FinetunedFixer.load` maps the list to the mapping form before loading (decision 0009).

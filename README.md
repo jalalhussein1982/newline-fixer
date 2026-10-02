@@ -66,9 +66,11 @@ The demo at [spaces/jalalhussein1982/newline-fixer](https://huggingface.co/space
 ```bash
 uv run hf repo create newline-fixer --repo-type space --space_sdk docker   # once
 git remote add space https://huggingface.co/spaces/jalalhussein1982/newline-fixer   # once
-git push space main
+git push --force-with-lease space main   # the Space's `main` was pushed from the milestone branch; after a squash or rebase merge the histories differ
 make space-check SPACE_URL=https://jalalhussein1982-newline-fixer.hf.space
 ```
+
+Creating a Docker Space required a Hugging Face PRO subscription at the time (the free tier allows static Spaces only); the Space itself runs on the free `cpu-basic` hardware.
 
 Space variables (Settings tab) are ordinary environment variables: `NF_MODEL=rules` serves the baseline, `NF_MAX_CHARS=20000` caps request size for the public demo. Free Spaces sleep after 48 hours idle and take about a minute to wake.
 

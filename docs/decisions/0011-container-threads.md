@@ -37,11 +37,11 @@ setting, `scripts/bench.py --url`, records in `experiments/bench/`:
 
 The best p50 is 4 threads at 326.7 ms, 4.7% under the default's 342.9 ms, inside the 10%
 margin and inside the run-to-run spread seen earlier for this model (the M1 host p50 moved
-from 97.1 to 92.8 ms between two runs of the same code). The default row was measured with
-the M5 image on a different day, so even that 4.7% is not a controlled comparison, and a slower same-day default run would raise the 4.7% margin; that case was not excluded. The threads-2 and threads-4 records are flagged dirty because the bench script saw the previous record unstaged; the code under test was the same commit. The
+from 97.1 to 92.8 ms between two runs of the same code). The default row was measured about an hour earlier with
+the M5 image build, so even that 4.7% is not a controlled comparison, and a slower default run now would raise the 4.7% margin; that case was not excluded. [clarified 2026-10-02, M6 Task 3] The threads-2 and threads-4 records are flagged dirty because the bench script saw the previous record unstaged; the code under test was the same commit. [clarified 2026-10-02, M6 Task 3] The
 oversubscription hypothesis did not hold as the main cause: shrinking the pool to one thread
 costs 34% at 2,000 characters, so the model really uses the cores, and the 3.7 times gap to
-the host is the VM (virtualised CPU, no direct Apple-silicon performance cores), which points to the VM rather than wasted threads, though this was not isolated. Two weaker signals, not used for the decision: the p95 is tighter at 2 and 4
+the host is consistent with the VM (virtualised CPU, no direct Apple-silicon performance cores) rather than wasted threads; it was not isolated. Two weaker signals, not used for the decision: the p95 is tighter at 2 and 4
 threads (457 and 401 ms against 585), and one thread gives the best throughput under eight
 concurrent requests (11,429 against 9,458 chars/s), as expected when requests, not threads,
 share the cores.

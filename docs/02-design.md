@@ -19,8 +19,8 @@ MPS measured 12 minutes per epoch (decision 0007); the `cost()` of 4.1 is implem
 `token_cost`, `gap_cost` and `overhead` on the `Fixer` protocol, additive, with the same
 budget rule; T3 of 5.1 is built from 200 untouched clean passages of the test split only,
 the T2 targets are the references of T2 and are not duplicated into T3; 6.2 gains
-`NF_WEIGHTS` (a local run directory or `hf:repo@revision`) and `NF_DEVICE` (default
-`cpu`); the M2 fine-tuned encoder of 4.5 was not started before M4 (section 9 allows
+`NF_WEIGHTS` (a local run directory or `hf:repo@revision`), `NF_DEVICE` (default
+`cpu`) and `NF_TORCH_THREADS` (unset by default); the M2 fine-tuned encoder of 4.5 was not started before M4 (section 9 allows
 sending after M4 with that stated) and was built in M5. Added after M5: the encoder
 of 4.5 was trained at learning rate 5e-5 (the top of the 4.5 range) for both candidates, and
 selection latency was measured on the host CPU.
