@@ -1,0 +1,90 @@
+{
+  "run_id": "finetuned",
+  "git_commit": "6093ac8f91250fe8d4a352a1e3a8f14dc452f365",
+  "started": "2026-10-02T17:14:57+00:00",
+  "seed": 1,
+  "pretrained": "microsoft/deberta-v3-xsmall",
+  "random_init": false,
+  "config": {
+    "pretrained": "microsoft/deberta-v3-xsmall",
+    "random_init": false,
+    "budget": 512,
+    "max_len": 512
+  },
+  "train_config": {
+    "run_id": "finetuned",
+    "pretrained": "microsoft/deberta-v3-xsmall",
+    "random_init": false,
+    "epochs": 3,
+    "batch_size": 16,
+    "lr": 5e-05,
+    "weight_decay": 0.01,
+    "warmup_fraction": 0.06,
+    "patience": 1,
+    "seed": 1,
+    "grad_clip": 1.0,
+    "max_docs": null,
+    "max_examples": null,
+    "token_budget": 192
+  },
+  "n_train_docs": 6299,
+  "n_examples_epoch0": 14811,
+  "class_counts_epoch0": [
+    16247,
+    2053861,
+    31068,
+    47051
+  ],
+  "n_overflow_examples": 6,
+  "n_params": 70646404,
+  "device": "cuda",
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_loss": 0.10008851744055539,
+      "overflow": 6,
+      "seconds": 229.69809246063232,
+      "V1_macro_f1": 0.9473226805507602,
+      "V1_damage": 0.03913113825742254,
+      "V1_wrong_join_per_1000": 0.024269881077582718,
+      "V3_macro_f1": 0.9767861324372212,
+      "V3_damage": 0.0018504408403178403,
+      "V3_wrong_join_per_1000": 0.0
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.018923603792945092,
+      "overflow": 6,
+      "seconds": 233.16507697105408,
+      "V1_macro_f1": 0.950581285450723,
+      "V1_damage": 0.03753741606666127,
+      "V1_wrong_join_per_1000": 0.0404498017959712,
+      "V3_macro_f1": 0.9941098173856795,
+      "V3_damage": 0.00043539784478066834,
+      "V3_wrong_join_per_1000": 0.0
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.01587815672066766,
+      "overflow": 7,
+      "seconds": 236.80190920829773,
+      "V1_macro_f1": 0.9542155941671165,
+      "V1_damage": 0.03839495186473586,
+      "V1_wrong_join_per_1000": 0.024269881077582718,
+      "V3_macro_f1": 0.9911215230810928,
+      "V3_damage": 0.0007619462283661696,
+      "V3_wrong_join_per_1000": 0.0
+    }
+  ],
+  "best": {
+    "V1_macro_f1": 0.9542155941671165,
+    "V1_damage": 0.03839495186473586,
+    "V1_wrong_join_per_1000": 0.024269881077582718,
+    "V3_macro_f1": 0.9911215230810928,
+    "V3_damage": 0.0007619462283661696,
+    "V3_wrong_join_per_1000": 0.0
+  },
+  "best_epoch": 3,
+  "seconds": 901.7359359264374,
+  "weights_dir": "experiments/runs/finetuned"
+}

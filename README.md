@@ -35,7 +35,7 @@ curl -s localhost:8000/v1/fix -H 'content-type: application/json' \
   -d '{"text": "3.2.3 Applications of Attention\n in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers,\n the que\nries come from the previous decoder layer."}'
 ```
 
-The default model is `rules` (B1) by decision 0008; `NF_MODEL=scratch` serves the published from-scratch model.
+The default model is `rules` (B1) for now; decision 0010 selects the fine-tuned encoder (`NF_MODEL=finetuned`) as the served model and the default flips once its weights are published. `NF_MODEL=scratch` serves the published from-scratch model.
 
 With Docker (the image fetches the scratch weights at build time by the pinned revision):
 

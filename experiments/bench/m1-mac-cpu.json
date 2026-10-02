@@ -1,8 +1,8 @@
 {
   "label": "m1-mac-cpu",
-  "run_at": "2026-10-02T13:56:53+00:00",
-  "git_commit": "c181dae5d6cb2d74d210dbde82aafa34d5aa3075",
-  "dirty": false,
+  "run_at": "2026-10-02T18:02:37+00:00",
+  "git_commit": "04bcc429db6940fc5356a344f019bf1a2c42bbea",
+  "dirty": true,
   "platform": "macOS-27.0.1-arm64-arm-64bit",
   "machine": "arm64",
   "mode": "in-process",
@@ -21,51 +21,71 @@
           "p95": 0.27
         },
         "10000": {
-          "p50": 1.49,
-          "p95": 1.5
+          "p50": 1.52,
+          "p95": 1.57
         }
       },
-      "throughput_chars_per_s": 7204882,
+      "throughput_chars_per_s": 7056696,
       "n": 20
     },
     "rules": {
       "disk_mb": 0.23,
-      "rss_mb": 31.8,
+      "rss_mb": 31.6,
       "latency_ms": {
         "500": {
-          "p50": 0.08,
+          "p50": 0.09,
           "p95": 0.09
         },
         "2000": {
-          "p50": 0.45,
+          "p50": 0.44,
           "p95": 0.45
         },
         "10000": {
-          "p50": 2.66,
-          "p95": 2.73
+          "p50": 2.68,
+          "p95": 2.69
         }
       },
-      "throughput_chars_per_s": 4412221,
+      "throughput_chars_per_s": 4326994,
       "n": 20
     },
     "scratch": {
       "disk_mb": 22.56,
-      "rss_mb": 273.7,
+      "rss_mb": 281.2,
       "latency_ms": {
         "500": {
-          "p50": 7.49,
-          "p95": 7.64
+          "p50": 7.64,
+          "p95": 10.71
         },
         "2000": {
-          "p50": 40.59,
-          "p95": 41.94
+          "p50": 40.53,
+          "p95": 42.27
         },
         "10000": {
-          "p50": 268.07,
-          "p95": 274.14
+          "p50": 269.17,
+          "p95": 272.73
         }
       },
-      "throughput_chars_per_s": 71266,
+      "throughput_chars_per_s": 79756,
+      "n": 20
+    },
+    "finetuned": {
+      "disk_mb": 290.95,
+      "rss_mb": 570.3,
+      "latency_ms": {
+        "500": {
+          "p50": 29.36,
+          "p95": 31.29
+        },
+        "2000": {
+          "p50": 97.14,
+          "p95": 102.81
+        },
+        "10000": {
+          "p50": 840.39,
+          "p95": 861.74
+        }
+      },
+      "throughput_chars_per_s": 24809,
       "n": 20
     }
   }

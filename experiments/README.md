@@ -46,6 +46,30 @@ Scratch p50 per 256-token window: 22.5 ms; limit (3x): 67.4 ms.
 | ft-distilbert-select | distilbert-base-cased | 65,195,524 | 0.901 | 51.2 | 53.6 | yes |
 
 
+## m5-finetuned
+
+Results at commit `04bcc429db69` (dirty tree), 2026-10-02T18:01:24+00:00.
+Sets: V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315 (built from seed 1 at commit 2d3885bd31a2)
+
+| set | system | gaps | macro-F1 | classes | break-F1 | JOIN F1 | PARA F1 | wrong-join /1k | damage | str≠raw | str≠norm | para match |
+|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| V1 | identity | 123610 | 0.418 | JOIN,SPACE,NL,PARA | 0.346 | 0.000 | 0.424 | 0.00 | 0.0000 | 0.603 | 0.000 | 0.161 |
+| V1 | rules | 123610 | 0.635 | JOIN,SPACE,NL,PARA | 0.513 | 0.682 | 0.410 | 0.00 | 0.0186 | 0.863 | 0.846 | 0.145 |
+| V1 | scratch | 123610 | 0.922 | JOIN,SPACE,NL,PARA | 0.885 | 0.974 | 0.861 | 0.11 | 0.0365 | 0.903 | 0.903 | 0.656 |
+| V1 | finetuned | 123610 | 0.954 | JOIN,SPACE,NL,PARA | 0.940 | 0.995 | 0.899 | 0.02 | 0.0384 | 0.891 | 0.891 | 0.747 |
+| V1 | finetuned-ablation | 123610 | 0.839 | JOIN,SPACE,NL,PARA | 0.763 | 0.912 | 0.749 | 0.68 | 0.0337 | 0.949 | 0.949 | 0.428 |
+| V2 | identity | 2401 | 0.753 | SPACE,NL,PARA | 0.714 | 0.000 | 0.864 | 0.00 | 0.0000 | 0.000 | 0.000 | 0.555 |
+| V2 | rules | 2401 | 0.806 | SPACE,NL,PARA | 0.869 | 0.000 | 0.776 | 0.00 | 0.0604 | 0.931 | 0.931 | 0.526 |
+| V2 | scratch | 2401 | 0.733 | SPACE,NL,PARA | 0.737 | 0.000 | 0.785 | 9.16 | 0.0804 | 1.000 | 1.000 | 0.453 |
+| V2 | finetuned | 2401 | 0.898 | SPACE,NL,PARA | 0.915 | 0.000 | 0.886 | 4.58 | 0.0641 | 0.966 | 0.966 | 0.708 |
+| V2 | finetuned-ablation | 2401 | 0.614 | SPACE,NL,PARA | 0.547 | 0.000 | 0.548 | 6.66 | 0.0979 | 1.000 | 1.000 | 0.226 |
+| V3 | identity | 9187 | 1.000 | SPACE,NL,PARA | 1.000 | 0.000 | 1.000 | 0.00 | 0.0000 | 0.000 | 0.000 | 1.000 |
+| V3 | rules | 9187 | 0.940 | SPACE,NL,PARA | 0.988 | 0.000 | 0.933 | 0.00 | 0.0026 | 0.170 | 0.170 | 0.921 |
+| V3 | scratch | 9187 | 0.975 | SPACE,NL,PARA | 0.971 | 0.000 | 0.988 | 0.00 | 0.0016 | 0.080 | 0.080 | 0.959 |
+| V3 | finetuned | 9187 | 0.991 | SPACE,NL,PARA | 0.986 | 0.000 | 0.985 | 0.00 | 0.0008 | 0.070 | 0.070 | 0.974 |
+| V3 | finetuned-ablation | 9187 | 0.926 | SPACE,NL,PARA | 0.900 | 0.000 | 0.909 | 0.44 | 0.0057 | 0.330 | 0.330 | 0.794 |
+
+
 ## test-sets
 
 Results at commit `4955e06adaa2` (dirty tree), 2026-10-02T14:16:08+00:00.
@@ -71,6 +95,8 @@ Sets: T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8 (built 
 
 | run | commit | class weights | best epoch / run | V1 macro-F1 | V2 macro-F1 | V3 damage | params | device | minutes |
 |---|---|---|---|---:|---:|---:|---:|---|---:|
+| finetuned-ablation | `6093ac8f9125` |  | 3 / 3 | 0.839 |  | 0.0057 | 70,646,404 | cuda | 15.4 |
+| finetuned | `6093ac8f9125` |  | 3 / 3 | 0.954 |  | 0.0008 | 70,646,404 | cuda | 15.0 |
 | ft-deberta-select | `6093ac8f9125` |  | 1 / 1 | 0.937 |  | 0.0023 | 70,646,404 | cuda | 3.8 |
 | ft-distilbert-select | `6093ac8f9125` |  | 1 / 1 | 0.901 |  | 0.0024 | 65,195,524 | cuda | 2.4 |
 | scratch-v1-inverse | `dd2a39b955d0` | inverse | 3 / 5 | 0.741 |  | 0.0447 | 5,551,692 | cuda | 5.2 |
@@ -85,6 +111,7 @@ Latency is one request at a time; throughput is eight concurrent requests of 2,0
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---|
 | container-rules | rules | http | cpu | - | - | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | `3ef9677a888b` |
 | container-scratch | scratch | http | cpu | - | - | 54.7 / 61.8 | 304.1 / 318.5 | 1977.4 / 2056.9 | 23,563 | `3ef9677a888b` |
-| m1-mac-cpu | identity | in-process | cpu | 0.0 | 24 | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.5 | 7,204,882 | `c181dae5d6cb` |
-| m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,412,221 | `c181dae5d6cb` |
-| m1-mac-cpu | scratch | in-process | cpu | 22.6 | 274 | 7.5 / 7.6 | 40.6 / 41.9 | 268.1 / 274.1 | 71,266 | `c181dae5d6cb` |
+| m1-mac-cpu | identity | in-process | cpu | 0.0 | 24 | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.6 | 7,056,696 | `04bcc429db69` (dirty) |
+| m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.4 / 0.5 | 2.7 / 2.7 | 4,326,994 | `04bcc429db69` (dirty) |
+| m1-mac-cpu | scratch | in-process | cpu | 22.6 | 281 | 7.6 / 10.7 | 40.5 / 42.3 | 269.2 / 272.7 | 79,756 | `04bcc429db69` (dirty) |
+| m1-mac-cpu | finetuned | in-process | cpu | 290.9 | 570 | 29.4 / 31.3 | 97.1 / 102.8 | 840.4 / 861.7 | 24,809 | `04bcc429db69` (dirty) |
