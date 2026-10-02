@@ -142,5 +142,9 @@
   },
   "best_epoch": 8,
   "seconds": 514.8005511760712,
-  "weights_dir": "experiments/runs/scratch-v1"
+  "weights_dir": "experiments/runs/scratch-v1",
+  "hub": {
+    "repo": "jalalhussein1982/newline-fixer-scratch",
+    "revision": "6c311e757d17e89c80b7b86908043637a4f56e28"
+  }
 }
