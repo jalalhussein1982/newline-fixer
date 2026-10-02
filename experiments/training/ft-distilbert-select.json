@@ -1,0 +1,66 @@
+{
+  "run_id": "ft-distilbert-select",
+  "git_commit": "6093ac8f91250fe8d4a352a1e3a8f14dc452f365",
+  "started": "2026-10-02T16:23:27+00:00",
+  "seed": 1,
+  "pretrained": "distilbert-base-cased",
+  "random_init": false,
+  "config": {
+    "pretrained": "distilbert-base-cased",
+    "random_init": false,
+    "budget": 512,
+    "max_len": 512
+  },
+  "train_config": {
+    "run_id": "ft-distilbert-select",
+    "pretrained": "distilbert-base-cased",
+    "random_init": false,
+    "epochs": 1,
+    "batch_size": 16,
+    "lr": 5e-05,
+    "weight_decay": 0.01,
+    "warmup_fraction": 0.06,
+    "patience": 1,
+    "seed": 1,
+    "grad_clip": 1.0,
+    "max_docs": null,
+    "max_examples": 20000,
+    "token_budget": 192
+  },
+  "n_train_docs": 6299,
+  "n_examples_epoch0": 14811,
+  "class_counts_epoch0": [
+    16247,
+    2053861,
+    31068,
+    47051
+  ],
+  "n_overflow_examples": 13,
+  "n_params": 65195524,
+  "device": "cuda",
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_loss": 0.07171944269737467,
+      "overflow": 13,
+      "seconds": 141.15073585510254,
+      "V1_macro_f1": 0.9011260267231262,
+      "V1_damage": 0.03562009546153224,
+      "V1_wrong_join_per_1000": 0.19415904862066174,
+      "V3_macro_f1": 0.9623996364922743,
+      "V3_damage": 0.002394688146293676,
+      "V3_wrong_join_per_1000": 0.0
+    }
+  ],
+  "best": {
+    "V1_macro_f1": 0.9011260267231262,
+    "V1_damage": 0.03562009546153224,
+    "V1_wrong_join_per_1000": 0.19415904862066174,
+    "V3_macro_f1": 0.9623996364922743,
+    "V3_damage": 0.002394688146293676,
+    "V3_wrong_join_per_1000": 0.0
+  },
+  "best_epoch": 1,
+  "seconds": 141.6502947807312,
+  "weights_dir": "experiments/runs/ft-distilbert-select"
+}

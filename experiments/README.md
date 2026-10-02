@@ -36,6 +36,16 @@ Sets: V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315 (built from seed 1 at co
 | V3 | scratch | 9187 | 0.975 | SPACE,NL,PARA | 0.971 | 0.000 | 0.988 | 0.00 | 0.0016 | 0.080 | 0.080 | 0.959 |
 
 
+## m5-candidates
+
+Scratch p50 per 256-token window: 22.5 ms; limit (3x): 67.4 ms.
+
+| run | pretrained | params | V1 macro-F1 | p50 ms / window | p95 ms | within limit |
+|---|---|---:|---:|---:|---:|---|
+| ft-deberta-select | microsoft/deberta-v3-xsmall | 70,646,404 | 0.937 | 65.5 | 76.0 | yes |
+| ft-distilbert-select | distilbert-base-cased | 65,195,524 | 0.901 | 51.2 | 53.6 | yes |
+
+
 ## test-sets
 
 Results at commit `4955e06adaa2` (dirty tree), 2026-10-02T14:16:08+00:00.
@@ -61,6 +71,8 @@ Sets: T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8 (built 
 
 | run | commit | class weights | best epoch / run | V1 macro-F1 | V2 macro-F1 | V3 damage | params | device | minutes |
 |---|---|---|---|---:|---:|---:|---:|---|---:|
+| ft-deberta-select | `6093ac8f9125` |  | 1 / 1 | 0.937 |  | 0.0023 | 70,646,404 | cuda | 3.8 |
+| ft-distilbert-select | `6093ac8f9125` |  | 1 / 1 | 0.901 |  | 0.0024 | 65,195,524 | cuda | 2.4 |
 | scratch-v1-inverse | `dd2a39b955d0` | inverse | 3 / 5 | 0.741 |  | 0.0447 | 5,551,692 | cuda | 5.2 |
 | scratch-v1 | `dd2a39b955d0` | none | 8 / 8 | 0.922 |  | 0.0016 | 5,551,692 | cuda | 8.6 |
 

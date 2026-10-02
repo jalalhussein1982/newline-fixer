@@ -110,3 +110,16 @@ def test_config_json_round_trip(tmp_path: Path) -> None:
 def test_content_preserved_for_any_text(text: str) -> None:
     fx = tiny_fixer()
     assert content(fix(text, fx).text) == content(text)
+
+
+def test_tokenizer_overrides_map_list_form_extra_special_tokens(tmp_path: Path) -> None:
+    from newline_fixer.models.finetuned import _tokenizer_overrides
+
+    assert _tokenizer_overrides(tmp_path) == {}
+    cfg = tmp_path / "tokenizer_config.json"
+    cfg.write_text('{"extra_special_tokens": ["[NL]", "[PP]"]}', encoding="utf-8")
+    assert _tokenizer_overrides(tmp_path) == {
+        "extra_special_tokens": {"extra_0": "[NL]", "extra_1": "[PP]"}
+    }
+    cfg.write_text('{"extra_special_tokens": {"a": "[NL]"}}', encoding="utf-8")
+    assert _tokenizer_overrides(tmp_path) == {}

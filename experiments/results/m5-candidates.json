@@ -1,0 +1,27 @@
+{
+  "run_at": "2026-10-02T16:30:45+00:00",
+  "git_commit": "6093ac8f91250fe8d4a352a1e3a8f14dc452f365",
+  "dirty": true,
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "window_tokens": 256,
+  "scratch_p50_ms": 22.46,
+  "limit_ms": 67.38,
+  "candidates": {
+    "ft-deberta-select": {
+      "pretrained": "microsoft/deberta-v3-xsmall",
+      "V1_macro_f1": 0.9365710587136062,
+      "p50_ms": 65.52,
+      "p95_ms": 76.04,
+      "within_limit": true,
+      "n_params": 70646404
+    },
+    "ft-distilbert-select": {
+      "pretrained": "distilbert-base-cased",
+      "V1_macro_f1": 0.9011260267231262,
+      "p50_ms": 51.24,
+      "p95_ms": 53.58,
+      "within_limit": true,
+      "n_params": 65195524
+    }
+  }
+}

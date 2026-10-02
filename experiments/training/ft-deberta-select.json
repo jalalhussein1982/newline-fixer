@@ -1,0 +1,66 @@
+{
+  "run_id": "ft-deberta-select",
+  "git_commit": "6093ac8f91250fe8d4a352a1e3a8f14dc452f365",
+  "started": "2026-10-02T16:17:08+00:00",
+  "seed": 1,
+  "pretrained": "microsoft/deberta-v3-xsmall",
+  "random_init": false,
+  "config": {
+    "pretrained": "microsoft/deberta-v3-xsmall",
+    "random_init": false,
+    "budget": 512,
+    "max_len": 512
+  },
+  "train_config": {
+    "run_id": "ft-deberta-select",
+    "pretrained": "microsoft/deberta-v3-xsmall",
+    "random_init": false,
+    "epochs": 1,
+    "batch_size": 16,
+    "lr": 5e-05,
+    "weight_decay": 0.01,
+    "warmup_fraction": 0.06,
+    "patience": 1,
+    "seed": 1,
+    "grad_clip": 1.0,
+    "max_docs": null,
+    "max_examples": 20000,
+    "token_budget": 192
+  },
+  "n_train_docs": 6299,
+  "n_examples_epoch0": 14811,
+  "class_counts_epoch0": [
+    16247,
+    2053861,
+    31068,
+    47051
+  ],
+  "n_overflow_examples": 6,
+  "n_params": 70646404,
+  "device": "cuda",
+  "epochs": [
+    {
+      "epoch": 1,
+      "train_loss": 0.07498504160742475,
+      "overflow": 6,
+      "seconds": 227.57494258880615,
+      "V1_macro_f1": 0.9365710587136062,
+      "V1_damage": 0.03855675107191975,
+      "V1_wrong_join_per_1000": 0.11325944502871936,
+      "V3_macro_f1": 0.9488486957934739,
+      "V3_damage": 0.002285838685098509,
+      "V3_wrong_join_per_1000": 0.0
+    }
+  ],
+  "best": {
+    "V1_macro_f1": 0.9365710587136062,
+    "V1_damage": 0.03855675107191975,
+    "V1_wrong_join_per_1000": 0.11325944502871936,
+    "V3_macro_f1": 0.9488486957934739,
+    "V3_damage": 0.002285838685098509,
+    "V3_wrong_join_per_1000": 0.0
+  },
+  "best_epoch": 1,
+  "seconds": 228.15523529052734,
+  "weights_dir": "experiments/runs/ft-deberta-select"
+}

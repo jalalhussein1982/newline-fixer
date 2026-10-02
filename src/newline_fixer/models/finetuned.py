@@ -58,6 +58,19 @@ class FinetunedConfig:
         return cls(**json.loads(path.read_text(encoding="utf-8")))
 
 
+def _tokenizer_overrides(run_dir: Path) -> dict[str, object]:
+    """Load kwargs for tokenizers saved by transformers 5 (Colab), which writes
+    `extra_special_tokens` as a list; transformers 4 expects a mapping. The tokens themselves
+    are in tokenizer.json, so naming them is enough."""
+    path = run_dir / "tokenizer_config.json"
+    if not path.exists():
+        return {}
+    extra = json.loads(path.read_text(encoding="utf-8")).get("extra_special_tokens")
+    if isinstance(extra, list):
+        return {"extra_special_tokens": {f"extra_{i}": t for i, t in enumerate(extra)}}
+    return {}
+
+
 class FinetunedFixer:
     name = "finetuned"
 
@@ -145,7 +158,9 @@ class FinetunedFixer:
                 f"no weights at {run_dir}; train a fine-tuned run or set {WEIGHTS_ENV_FINETUNED}"
             )
         cfg = FinetunedConfig.load(run_dir / "fixer.json")
-        tok = AutoTokenizer.from_pretrained(run_dir)  # type: ignore[no-untyped-call]
+        tok = AutoTokenizer.from_pretrained(  # type: ignore[no-untyped-call]
+            run_dir, **_tokenizer_overrides(run_dir)
+        )
         model = AutoModelForTokenClassification.from_pretrained(run_dir)
         fixer = cls(cfg, tok, model, device or select_device(), name=name)
         fixer.weights_dir = run_dir
