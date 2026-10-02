@@ -69,7 +69,7 @@ Configuration, all optional:
 
 Inside the image both revisions are fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>` for scratch, `--build-arg NF_FINETUNED_REVISION=<rev>` for the fine-tuned encoder), so `NF_MODEL_REVISION` has no effect on a running container. One JSON line per request goes to stdout; request text is never logged. The [README](README.md) has the offline build.
 
-Tests. `make check` runs lint, type check and pytest. CI ([workflow](.github/workflows/ci.yml)) has two jobs: `check` runs `make check`; `container` runs `scripts/container_check.py`, which builds the image, starts it with `NF_MODEL=rules` (its default), waits for health, posts the challenge example and fails unless the output matches; `--model finetuned` runs the same check on the default model, where health must reach 200 and the example is expected not to match. The suite covers the API contract and error codes (`tests/test_service_api.py`), content preservation for any text (Hypothesis tests in `tests/test_service_api.py`, `tests/test_scratch_fixer.py`, `tests/test_text.py`), clean input unchanged, a long input that needs windows, the size limit (413), readiness (503 before load), metrics and request logging (`tests/test_service_observability.py`), configuration, and the container check.
+Tests. `make check` runs lint, type check and pytest. CI ([workflow](.github/workflows/ci.yml)) has two jobs: `check` runs `make check`; `container` runs `scripts/container_check.py`, which builds the image, starts it with `NF_MODEL=rules` (its default), waits for health, posts the challenge example and fails unless the output matches; `uv run python scripts/container_check.py --no-build --model finetuned --expect-mismatch` starts the image's default model, requires health 200 and content preservation, and expects the known one-gap difference on the example; CI runs both checks. The suite covers the API contract and error codes (`tests/test_service_api.py`), content preservation for any text (Hypothesis tests in `tests/test_service_api.py`, `tests/test_scratch_fixer.py`, `tests/test_text.py`), clean input unchanged, a long input that needs windows, the size limit (413), readiness (503 before load), metrics and request logging (`tests/test_service_observability.py`), configuration, the fine-tuned encoder's window encoding, fixer and trainer (`tests/test_finetune_encoding.py`, `tests/test_finetuned_fixer.py`, `tests/test_finetune_trainer.py`), and the container check.
 
 ## 3. The problem as formulated
 
@@ -321,7 +321,7 @@ Rendered from commits `4955e06adaa2` + `44480da7717a` (dirty tree), sets T0=95d8
 
 `scratch` and `finetuned` rows: weights revisions `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` and `11d6b26e80dfa2c9606702cd2755a63c9dce99ed` of `jalalhussein1982/newline-fixer-finetuned` (section 12). `finetuned-ablation` rows: the same architecture from random initialization, weights not published.
 
-T1 by severity band, rules and scratch:
+T1 by severity band, rules, scratch and finetuned:
 
 <!-- rendered by scripts/report_tables.py at a94a947 -->
 
@@ -387,6 +387,7 @@ Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a ch
 
 ## 10. Known failures and limits
 
+- **Requirement A2 (the challenge example through the API) holds for `NF_MODEL=rules` and not for the default model, which differs on one gap; the default follows decision 0010's rule (Q2) over A2, deliberately.**
 - **The challenge example is reproduced by the rules and not by the served model.** The fine-tuned model gets the heading and the lead-in sentence right and puts a paragraph break (a blank line) before the first bullet where the expected output has a single newline. T0 macro-F1 is 0.667 (paragraph match 0.500) against 1.000 for the rules. Scratch failed it in two places (T0 0.620). Anyone who tries the README example against the default image will see the difference; `NF_MODEL=rules` gives the exact output.
 - **Wrong joins.** The fine-tuned model makes 4.58 (V2), 2.19 (T2) and 0.11 (T3) wrong joins per thousand gaps where the rules make none. A wrong join glues two words together. It is lower than scratch (9.16, 6.58, 0.11) and is the worst error the service can make.
 - **Container latency.** The served model takes 342.9 ms p50 at 2,000 characters in the container (p95 585.1 ms), above the 300 ms limit, which the design states on the host (92.8 ms). The cause of the container overhead is not isolated. A user running the default image on a CPU like the Docker Desktop VM's will wait about a third of a second for 2,000 characters and 2.6 seconds for 10,000.

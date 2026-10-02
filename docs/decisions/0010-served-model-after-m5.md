@@ -108,3 +108,8 @@ reverse its sign, but the size of the gap is a single measurement.
   there; it is not needed for the host rule, which passes at 92.8 ms.
 - Test sets T0 to T3 are evaluated for `finetuned` once, after Task 7, and are not used for
   any further choice.
+
+## Postscript, 2026-10-02 (Task 7)
+
+- The defaults flipped at commit 3390fa7 with `PUBLISHED_REVISION_FINETUNED = 11d6b26e80dfa2c9606702cd2755a63c9dce99ed` (the weights published by the author).
+- The container p50 at 2,000 characters measured 342.9 ms (p95 585.1), not the ~700 ms extrapolated above; see report section 8.

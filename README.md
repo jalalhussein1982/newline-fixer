@@ -35,6 +35,8 @@ curl -s localhost:8000/v1/fix -H 'content-type: application/json' \
   -d '{"text": "3.2.3 Applications of Attention\n in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers,\n the que\nries come from the previous decoder layer."}'
 ```
 
+With the default model (`finetuned`, decision 0010) this request returns the example with one gap different: a paragraph break before the first bullet instead of a single newline. `NF_MODEL=rules` reproduces the expected output exactly (requirement A2). The default serves the model the decision rule chose on the realistic dev set; that trade-off is deliberate and recorded in decision 0010 and the report.
+
 The default model is `finetuned`, the fine-tuned pretrained encoder, by decision 0010; `NF_MODEL=rules` and `NF_MODEL=scratch` serve the baselines.
 
 With Docker (the image fetches both learned models' weights at build time by their pinned revisions):
@@ -64,7 +66,7 @@ Configuration, all optional:
 | Variable | Default | Meaning |
 |---|---|---|
 | `NF_MODEL` | `finetuned` | `identity`, `rules`, `scratch` or `finetuned` (decision 0010 sets the default) |
-| `NF_MODEL_REVISION` | the published scratch-v1 revision | Hub revision of the selected model's weights |
+| `NF_MODEL_REVISION` | the published revision of the selected model | Hub revision of the selected model's weights |
 | `NF_WEIGHTS` | unset | a local run directory or `hf:repo@revision`; overrides `NF_MODEL_REVISION` |
 | `NF_WEIGHTS_SCRATCH` | unset | weights source for `NF_MODEL=scratch` (run directory or `hf:repo@revision`) |
 | `NF_WEIGHTS_FINETUNED` | unset | weights source for `NF_MODEL=finetuned`; with neither it nor `NF_WEIGHTS` set, the published revision is downloaded from the Hub |

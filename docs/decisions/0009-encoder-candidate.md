@@ -51,3 +51,5 @@ test applied to the trained model in decision 0010; passing this selection does 
   `FinetunedFixer.load` maps the list to the mapping form before loading. Token ids of
   `[NL]` and `[PP]` were checked after loading (DeBERTa 128001 and 128002, DistilBERT 28996
   and 28997).
+
+Postscript, 2026-10-02: the 20,000-window cap did not bind (an epoch is 14,811 windows), so each selection run was the full first epoch.
