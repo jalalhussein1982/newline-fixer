@@ -91,10 +91,30 @@ class ScratchFixer:
         words = WordVocab.load(run_dir / "words.json")
         chars = CharVocab.load(run_dir / "chars.json")
         net = GapTagger(cfg, len(words), len(chars))
-        net.load_state_dict(torch.load(run_dir / "model.pt", map_location="cpu"))
+        net.load_state_dict(torch.load(run_dir / "model.pt", map_location="cpu", weights_only=True))
         return cls(cfg, words, chars, net, device)
 
 
+def parse_weights_source(source: str) -> tuple[str, str, str | None]:
+    """'hf:repo[@revision]' is a Hub model repo; anything else is a local directory."""
+    if not source.startswith("hf:"):
+        return "dir", source, None
+    spec = source[3:]
+    if not spec:
+        raise ValueError(
+            "hf: source needs a repo id, for example hf:user/newline-fixer-scratch@<revision>"
+        )
+    repo, _, revision = spec.partition("@")
+    return "hf", repo, revision or None
+
+
 def resolve_weights(source: str | Path) -> Path:
-    """A local directory. Task 8 extends this to Hub sources of the form hf:repo@revision."""
-    return Path(source)
+    """A local directory, or a Hub snapshot downloaded for 'hf:repo[@revision]'."""
+    if isinstance(source, Path):
+        return source
+    kind, value, revision = parse_weights_source(source)
+    if kind == "dir":
+        return Path(value)
+    from huggingface_hub import snapshot_download
+
+    return Path(snapshot_download(repo_id=value, revision=revision))
