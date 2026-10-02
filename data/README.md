@@ -28,7 +28,7 @@ dataset.
 ## Current build
 
 - Hub dataset URL: https://huggingface.co/datasets/jalalhussein1982/newline-fixer-data
-- Dataset version: 1, published at revision `a57d9702a8f2434cf9fa0248029454dfc60255b7`.
+- Dataset version: 1, published at revision `42b4d8333b2bb89901f0be1680756be628382c88`.
 - Wikipedia: 5000 documents, pinned revision `b04c8d1ceb2f5cd4588862100d08de323dccfbaa` (seed 1; reduced from the 20000 target).
 - Generated documents: 2000 (seed 1), written in a Claude session under the pipeline's prompt rules rather than through the API, and cached as `raw/generated/00000.txt` to `01999.txt`; `generate` recorded the model id `claude-cowork` (see `raw/generated.meta.json`). All 2000 passed `validate_generated` and survived filtering and deduplication.
 - Splits after filtering and deduplication (seed 1): train 6299, val 350, test 350 documents.

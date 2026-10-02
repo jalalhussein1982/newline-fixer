@@ -77,7 +77,7 @@ Two clean sources, chosen in [decision 0005](docs/decisions/0005-clean-text-sour
 
 The training and synthetic evaluation inputs come from a seeded corruptor. It replaces true newlines by spaces with a probability that grows with severity, and inserts newlines at arbitrary character positions, including inside words. One document in ten is left uncorrupted.
 
-The dataset (clean splits, evaluation sets, the 2,000 generated documents, the split file and a manifest of content hashes) is on the Hugging Face Hub at https://huggingface.co/datasets/jalalhussein1982/newline-fixer-data, revision `a57d9702a8f2434cf9fa0248029454dfc60255b7`. The committed evaluation sets under `data/sets/` and the realistic passages under `data/realistic/` are enough to re-run the evaluation.
+The dataset (clean splits, evaluation sets, the 2,000 generated documents, the split file and a manifest of content hashes) is on the Hugging Face Hub at https://huggingface.co/datasets/jalalhussein1982/newline-fixer-data, revision `42b4d8333b2bb89901f0be1680756be628382c88`. The committed evaluation sets under `data/sets/` and the realistic passages under `data/realistic/` are enough to re-run the evaluation.
 
 Evaluation sets. Development sets drive every choice; test sets were evaluated once.
 
@@ -339,4 +339,4 @@ Locations:
 
 - Weights: https://huggingface.co/jalalhussein1982/newline-fixer-scratch, revision `6c311e757d17e89c80b7b86908043637a4f56e28`.
 - Wikipedia source: `wikimedia/wikipedia`, revision `b04c8d1ceb2f5cd4588862100d08de323dccfbaa`.
-- Built dataset: https://huggingface.co/datasets/jalalhussein1982/newline-fixer-data, revision `a57d9702a8f2434cf9fa0248029454dfc60255b7`.
+- Built dataset: https://huggingface.co/datasets/jalalhussein1982/newline-fixer-data, revision `42b4d8333b2bb89901f0be1680756be628382c88`.
