@@ -55,3 +55,25 @@ def render_training_table(records: Sequence[dict[str, Any]]) -> str:
             f"{r.get('device', '')} | {float(r.get('seconds', 0.0)) / 60:.1f} |"
         )
     return "\n".join(lines) + "\n"
+
+
+def _mb(value: float | None, digits: int) -> str:
+    return "-" if value is None else f"{value:.{digits}f}"
+
+
+def render_bench_table(records: Sequence[dict[str, Any]]) -> str:
+    lines = [
+        "| label | system | mode | device | disk MB | RSS MB | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | commit |",
+        "|---|---|---|---|---:|---:|---:|---:|---:|---:|---|",
+    ]
+    for r in records:
+        for name, s in r["systems"].items():
+            lat = s["latency_ms"]
+            cells = " | ".join(
+                f"{lat[k]['p50']:.1f} / {lat[k]['p95']:.1f}" for k in ("500", "2000", "10000")
+            )
+            lines.append(
+                f"| {r['label']} | {name} | {r['mode']} | {r['device']} | {_mb(s['disk_mb'], 1)} | {_mb(s['rss_mb'], 0)} | "
+                f"{cells} | {int(s['throughput_chars_per_s']):,} | `{str(r.get('git_commit', ''))[:12]}`{' (dirty)' if r.get('dirty') else ''} |"
+            )
+    return "\n".join(lines) + "\n"

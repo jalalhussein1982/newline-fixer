@@ -16,12 +16,59 @@ were committed before any code, and every later change to them is a commit.
 | `docs/03-implementation-plan.md` | Ordered, testable tasks derived from the design |
 | `docs/decisions/` | Architecture decision records, one file per decision, never rewritten |
 | `src/newline_fixer/` | library |
+| `src/newline_fixer/service/` | FastAPI app: `POST /v1/fix`, `/healthz`, `/metrics`, demo page at `/` |
+| `Dockerfile` | multi-stage CPU image: builder fetches weights by revision, runtime is non-root with a HEALTHCHECK |
 | `scripts/` | data building and evaluation entry points |
 | `tests/` | pytest suite |
 | `data/` | see `data/README.md` |
 | `report.md` | Final report: how to run, approach, decisions, results (written last) |
 
-Code, tests, the Dockerfile and the report arrive in later commits.
+The report arrives with M4.
+
+## Run the service
+
+```bash
+uv sync --all-extras
+make serve                       # http://localhost:8000, demo page at /
+curl -s localhost:8000/healthz
+curl -s localhost:8000/v1/fix -H 'content-type: application/json' \
+  -d '{"text": "3.2.3 Applications of Attention\n in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers,\n the que\nries come from the previous decoder layer."}'
+```
+
+The default model is `rules` (B1) by decision 0008; `NF_MODEL=scratch` serves the published from-scratch model.
+
+With Docker (the image fetches the scratch weights at build time by the pinned revision):
+
+```bash
+docker build -t newline-fixer:local .
+docker run --rm -p 8000:8000 newline-fixer:local                    # serves NF_MODEL=rules by default
+docker run --rm -p 8000:8000 -e NF_MODEL=scratch newline-fixer:local
+make container-check   # builds, starts, waits for health, posts the example, checks, stops
+```
+
+Inside the image the scratch revision is fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>`, default the published scratch-v1) and `NF_WEIGHTS=/app/weights` points at it, so `NF_MODEL_REVISION` has no effect on a running container; the same default revision is `PUBLISHED_REVISION` in `src/newline_fixer/service/config.py`.
+
+If the Hub is unreachable at build time, build without weights and mount a local run directory at run time:
+
+```bash
+docker build --build-arg WITH_WEIGHTS=0 -t newline-fixer:local .
+docker run --rm -p 8000:8000 -e NF_MODEL=scratch -v "$PWD/experiments/runs/current:/app/weights:ro" newline-fixer:local
+```
+
+`experiments/runs/current` is a git-ignored run directory produced by training (see "Train the from-scratch model").
+
+Configuration, all optional:
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `NF_MODEL` | `rules` | `identity`, `rules` or `scratch` (decision 0008 sets the default) |
+| `NF_MODEL_REVISION` | the published scratch-v1 revision | Hub revision of the scratch weights |
+| `NF_WEIGHTS` | unset | a local run directory or `hf:repo@revision`; overrides `NF_MODEL_REVISION` |
+| `NF_MAX_CHARS` | `100000` | inputs longer than this get 413 |
+| `NF_LOG_LEVEL` | `INFO` | level of the JSON request log on stdout |
+| `NF_DEVICE` | `cpu` | torch device for the scratch model |
+
+`GET /healthz` answers 503 until the model is loaded; `GET /metrics` is Prometheus text. One JSON line per request goes to stdout; request text is never logged.
 
 ## Development
 
@@ -33,6 +80,8 @@ make check             # lint, type check, tests
 The from-scratch model needs the `model` extra (PyTorch); `uv sync --all-extras` installs it. Training uses CUDA or Apple MPS when available and falls back to CPU. On the M1 a full eight-epoch run takes about 100 minutes, so the two Task 7 runs are meant for a free Colab GPU: open `notebooks/train_scratch_colab.ipynb` in Colab, which clones this repository, trains both runs and hands back `experiments/runs/` and `experiments/training/` as a zip.
 
 On macOS, if `uv run python -c 'import newline_fixer'` fails with ModuleNotFoundError, run `make sync`: some setups mark `.venv` hidden and Python 3.12+ then ignores its `.pth` files.
+
+Service benchmark (design 5.2): `uv run python scripts/bench.py --systems identity,rules,scratch --label m1-mac-cpu --out experiments/bench/m1-mac-cpu.json` measures size, memory, latency percentiles at 500, 2,000 and 10,000 characters and batch-8 throughput on CPU; `--url http://localhost:8000` measures a running server instead. `scripts/results_table.py` renders `experiments/bench/*.json`.
 
 Rebuild data: see the docstring of `scripts/build_data.py`. Evaluate:
 

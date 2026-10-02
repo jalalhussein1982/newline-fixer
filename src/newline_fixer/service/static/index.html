@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>newline-fixer</title>
+<style>
+  body { font: 16px/1.4 system-ui, sans-serif; max-width: 56rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  textarea, pre { width: 100%; box-sizing: border-box; font: 14px/1.4 ui-monospace, monospace; }
+  textarea { height: 12rem; }
+  pre { white-space: pre-wrap; background: #f6f6f6; padding: .75rem; min-height: 6rem; }
+  button { font-size: 1rem; padding: .5rem 1rem; }
+  #stats, #error { font-size: .9rem; color: #555; }
+  #error { color: #b00020; }
+</style>
+</head>
+<body>
+<h1>newline-fixer</h1>
+<p>Paste text with broken line breaks. The service re-joins the words and places newlines and paragraph breaks.</p>
+<textarea id="input" placeholder="3.2.3 Applications of Attention&#10; in our Model The Transformer uses ..."></textarea>
+<p><button id="fix">Fix newlines</button> <span id="stats"></span></p>
+<p id="error"></p>
+<pre id="output"></pre>
+<script>
+  const input = document.getElementById("input");
+  const output = document.getElementById("output");
+  const stats = document.getElementById("stats");
+  const error = document.getElementById("error");
+  document.getElementById("fix").addEventListener("click", async () => {
+    error.textContent = ""; stats.textContent = "working…";
+    try {
+      const r = await fetch("/v1/fix", {
+        method: "POST", headers: {"content-type": "application/json"},
+        body: JSON.stringify({text: input.value}),
+      });
+      const body = await r.json();
+      if (!r.ok) { stats.textContent = ""; error.textContent = `${r.status}: ${JSON.stringify(body.detail)}`; return; }
+      output.textContent = body.text;
+      const s = body.stats;
+      stats.textContent = `${s.model}: ${s.changed} of ${s.gaps} gaps changed, ${s.latency_ms} ms`;
+    } catch (e) { stats.textContent = ""; error.textContent = String(e); }
+  });
+</script>
+</body>
+</html>

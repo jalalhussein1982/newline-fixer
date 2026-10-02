@@ -36,9 +36,43 @@ Sets: V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315 (built from seed 1 at co
 | V3 | scratch | 9187 | 0.975 | SPACE,NL,PARA | 0.971 | 0.000 | 0.988 | 0.00 | 0.0016 | 0.080 | 0.080 | 0.959 |
 
 
+## test-sets
+
+Results at commit `4955e06adaa2` (dirty tree), 2026-10-02T14:16:08+00:00.
+Sets: T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8 (built from seed 1 at commit 2d3885bd31a2)
+
+| set | system | gaps | macro-F1 | classes | break-F1 | JOIN F1 | PARA F1 | wrong-join /1k | damage | str≠raw | str≠norm | para match |
+|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| T0 | identity | 29 | 0.231 | JOIN,SPACE,NL,PARA | 0.000 | 0.000 | 0.000 | 0.00 | 0.0000 | 1.000 | 0.000 | 0.000 |
+| T0 | rules | 29 | 1.000 | JOIN,SPACE,NL,PARA | 1.000 | 1.000 | 1.000 | 0.00 | 0.1724 | 1.000 | 1.000 | 1.000 |
+| T0 | scratch | 29 | 0.620 | JOIN,SPACE,NL,PARA | 0.800 | 1.000 | 0.500 | 0.00 | 0.2069 | 1.000 | 1.000 | 0.000 |
+| T1 | identity | 120009 | 0.426 | JOIN,SPACE,NL,PARA | 0.356 | 0.000 | 0.455 | 0.00 | 0.0000 | 0.594 | 0.000 | 0.187 |
+| T1 | rules | 120009 | 0.627 | JOIN,SPACE,NL,PARA | 0.508 | 0.684 | 0.436 | 0.00 | 0.0188 | 0.846 | 0.823 | 0.174 |
+| T1 | scratch | 120009 | 0.921 | JOIN,SPACE,NL,PARA | 0.884 | 0.968 | 0.861 | 0.13 | 0.0382 | 0.869 | 0.869 | 0.667 |
+| T2 | identity | 3645 | 0.487 | JOIN,SPACE,NL,PARA | 0.587 | 0.000 | 0.708 | 0.00 | 0.0000 | 0.000 | 0.000 | 0.368 |
+| T2 | rules | 3645 | 0.498 | JOIN,SPACE,NL,PARA | 0.760 | 0.000 | 0.667 | 0.00 | 0.0601 | 0.975 | 0.975 | 0.382 |
+| T2 | scratch | 3645 | 0.536 | JOIN,SPACE,NL,PARA | 0.669 | 0.077 | 0.651 | 6.58 | 0.0829 | 1.000 | 1.000 | 0.375 |
+| T3 | identity | 18392 | 1.000 | SPACE,NL,PARA | 1.000 | 0.000 | 1.000 | 0.00 | 0.0000 | 0.000 | 0.000 | 1.000 |
+| T3 | rules | 18392 | 0.811 | SPACE,NL,PARA | 0.978 | 0.000 | 0.759 | 0.00 | 0.0102 | 0.190 | 0.190 | 0.893 |
+| T3 | scratch | 18392 | 0.977 | SPACE,NL,PARA | 0.968 | 0.000 | 0.982 | 0.11 | 0.0023 | 0.140 | 0.140 | 0.929 |
+
+
 ## Training runs
 
 | run | commit | class weights | best epoch / run | V1 macro-F1 | V2 macro-F1 | V3 damage | params | device | minutes |
 |---|---|---|---|---:|---:|---:|---:|---|---:|
 | scratch-v1-inverse | `dd2a39b955d0` | inverse | 3 / 5 | 0.741 |  | 0.0447 | 5,551,692 | cuda | 5.2 |
 | scratch-v1 | `dd2a39b955d0` | none | 8 / 8 | 0.922 |  | 0.0016 | 5,551,692 | cuda | 8.6 |
+
+
+## Service benchmark
+
+Latency is one request at a time; throughput is eight concurrent requests of 2,000 characters. In-process rows are measured on the named machine; http rows go through a running server and carry no size or memory figures. Rows labelled `container-*` were measured through HTTP against the image running in Docker Desktop's Linux VM on the same M1 Mac; the design's latency rule is evaluated on the host CPU rows.
+
+| label | system | mode | device | disk MB | RSS MB | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | commit |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| container-rules | rules | http | cpu | - | - | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | `3ef9677a888b` |
+| container-scratch | scratch | http | cpu | - | - | 54.7 / 61.8 | 304.1 / 318.5 | 1977.4 / 2056.9 | 23,563 | `3ef9677a888b` |
+| m1-mac-cpu | identity | in-process | cpu | 0.0 | 24 | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.5 | 7,204,882 | `c181dae5d6cb` |
+| m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,412,221 | `c181dae5d6cb` |
+| m1-mac-cpu | scratch | in-process | cpu | 22.6 | 274 | 7.5 / 7.6 | 40.6 / 41.9 | 268.1 / 274.1 | 71,266 | `c181dae5d6cb` |
