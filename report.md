@@ -2,7 +2,7 @@
 
 ## 1. Abstract
 
-This service repairs whitespace in English text. It splits the input into non-whitespace tokens, predicts for each gap between two tokens one of four classes (JOIN, SPACE, NL, PARA), and re-joins the tokens with the predicted gaps. It never changes a non-whitespace character. Three systems are built and measured on the same sets: an identity baseline (B0), a rule baseline (B1), and a from-scratch BiLSTM with character features (scratch). The service serves the rules baseline B1 by default, because the decision rule picked it (decision 0008). The learned model wins by a wide margin on synthetic corruptions and loses to the rules on real passages, so it ships behind a flag (`NF_MODEL=scratch`). The demo page is at `/` of the running service. A Hugging Face Space is not deployed: that is the optional deliverable D6, planned as milestone M6.
+This service repairs whitespace in English text. It splits the input into non-whitespace tokens, predicts for each gap between two tokens one of four classes (JOIN, SPACE, NL, PARA), and re-joins the tokens with the predicted gaps. It never changes a non-whitespace character. Three systems are built and measured on the same sets: an identity baseline (B0), a rule baseline (B1), and a from-scratch BiLSTM with character features (scratch). The service serves the rules baseline B1 by default, because the decision rule picked it (decision 0008). The learned model wins by a wide margin on synthetic corruptions and loses to the rules on the realistic dev set and breaks more words on both realistic sets, so it ships behind a flag (`NF_MODEL=scratch`). The demo page is at `/` of the running service. A Hugging Face Space is not deployed: that is the optional deliverable D6, planned as milestone M6.
 
 ## 2. How to run
 
@@ -61,7 +61,7 @@ Configuration, all optional:
 
 Inside the image the scratch revision is fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>`), so `NF_MODEL_REVISION` has no effect on a running container. One JSON line per request goes to stdout; request text is never logged. The [README](README.md) has the offline build.
 
-Tests. `make check` runs lint, type check and the pytest suite. CI ([workflow](.github/workflows/ci.yml)) has two jobs: `check` runs `uv sync --all-extras` and `make check`; `container` runs `scripts/container_check.py`, which builds the image, starts it, waits for health, posts the challenge example and fails unless the output matches. The suite covers the classes the requirements name: API contract and error codes (`tests/test_service_api.py`), content preservation for any text (Hypothesis tests in `tests/test_service_api.py`, `tests/test_scratch_fixer.py` and `tests/test_text.py`), clean input unchanged, a long input that needs windows, the size limit (413), readiness (503 before load), metrics and request logging (`tests/test_service_observability.py`), configuration, and the container check.
+Tests. `make check` runs lint, type check and pytest. CI ([workflow](.github/workflows/ci.yml)) has two jobs: `check` runs `make check`; `container` runs `scripts/container_check.py`, which builds the image, starts it, waits for health, posts the challenge example and fails unless the output matches. The suite covers the API contract and error codes (`tests/test_service_api.py`), content preservation for any text (Hypothesis tests in `tests/test_service_api.py`, `tests/test_scratch_fixer.py`, `tests/test_text.py`), clean input unchanged, a long input that needs windows, the size limit (413), readiness (503 before load), metrics and request logging (`tests/test_service_observability.py`), configuration, and the container check.
 
 ## 3. The problem as formulated
 
@@ -92,7 +92,7 @@ Evaluation sets. Development sets drive every choice; test sets were evaluated o
 | T2 | test | realistic, 6 source documents | 40 | 3645 |
 | T3 | test | clean, test split | 200 | 18392 |
 
-Realistic sets. They come from ten real PDFs: word2vec, fasttext, nist-800-63 and the GNU Bash manual (V2); attention, bert, resnet, adam, nist-ai-rmf and gnu-make (T2). Text was extracted with `pdftotext` and cut into passages, 8 per document at most, and every passage is split between V2 and T2 by document. Targets were proposed in a Claude session (whitespace only) and then reviewed: the four dev documents and `attention` by the author; the other five by Claude Fable 5.1 against the review questions, signed off by the author. Hyphenations are joined before labelling; the number of passages that needed this adjustment is 0 for both sets. Eleven passages were excluded as having no sensible newline target: tables and diagram labels, equation debris, and one two-column table extracted with its columns interleaved (3 from V2, 8 from T2). The unreachable boundaries are 0 for V2 and 0 for T2. Ten documents is limited breadth: the realistic result is evidence, not an estimate for all text.
+Realistic sets. They come from ten real PDFs: word2vec, fasttext, nist-800-63 and the GNU Bash manual (V2); attention, bert, resnet, adam, nist-ai-rmf and gnu-make (T2). Text was extracted with `pdftotext` and cut into passages, 8 per document at most, and every passage is split between V2 and T2 by document. Targets were proposed in a Claude session (whitespace only) and then reviewed: the four dev documents and `attention` by the author; the other five by Claude Fable 5.1 against the review questions, signed off by the author. Hyphenations are joined before labelling; the number of passages that needed this adjustment is 0 for both sets (counted by comparing each raw extraction with its adjusted input), so no kept passage contained a hyphenated line end. Two targets were edited during review (`adam/00`, `adam/07`, a section number joined with its heading; see `data/README.md`). Eleven passages were excluded as having no sensible newline target: tables and diagram labels, equation debris, and one two-column table extracted with its columns interleaved (3 from V2, 8 from T2). The unreachable boundaries are 0 for V2 and 0 for T2. Ten documents is limited breadth: the realistic result is evidence, not an estimate for all text.
 
 ## 5. Systems
 
@@ -102,7 +102,7 @@ Realistic sets. They come from ten real PDFs: word2vec, fasttext, nist-800-63 an
 
 **Scratch, a model written from scratch.** A 30,000-word embedding, a character CNN per token (so that fragments such as `que` and capitalization are visible), an embedding of the current gap class, a two-layer BiLSTM, and a classifier over the states on both sides of the gap: 5,551,692 parameters (design 4.4). Training examples are re-corrupted every epoch. It was trained on a Colab T4 at about 52 s per epoch; the M1 Mac measured 12.1 minutes per epoch on MPS, so training moved. [Decision 0007](docs/decisions/0007-scratch-model-class-weighting.md): unweighted cross-entropy beat inverse-frequency class weights on every metric. The weights are on the Hub at the pinned revision `6c311e757d17e89c80b7b86908043637a4f56e28`, never in git ([decision 0003](docs/decisions/0003-weights-on-hub-not-in-git.md)).
 
-<!-- rendered by scripts/report_tables.py at a43bf4d -->
+<!-- rendered by scripts/report_tables.py at b049f9f -->
 | run | device | epochs | minutes | best epoch | V1 macro-F1 | V3 damage | params | commit |
 |---|---|---:|---:|---:|---:|---:|---:|---|
 | scratch-v1-inverse | cuda | 5 | 5.2 | 3 | 0.741 | 0.0447 | 5,551,692 | `dd2a39b955d0` |
@@ -121,7 +121,7 @@ Metrics (design 5.2), per system and set:
 - string-level change: the fraction of passages whose output differs from the raw or the normalized input;
 - paragraph match: the fraction of reference paragraphs that occur unchanged among the output paragraphs.
 
-The tables below show macro-F1, break-F1, PARA F1, wrong-join rate, clean damage and paragraph match. The JSON records under `experiments/results/` hold the precision, recall and F1 of all four classes; `experiments/README.md` adds JOIN F1 and the string-level numbers.
+The tables below show macro-F1, break-F1, PARA F1, wrong-join rate, clean damage and paragraph match. The per-class precision, recall and F1 for the four classes, with support, are in the per-class tables in section 7; `experiments/README.md` adds the string-level numbers.
 
 The decision rule (design 5.3), verbatim:
 
@@ -133,11 +133,13 @@ The discipline: every choice (B1's thresholds, the class weighting, the served m
 
 ## 7. Results
 
-**The verdict on requirement Q2.** The requirement is "The learned model must be shown to add value over both, or the report must say that it does not." The learned model adds value over both baselines on synthetic corruptions: V1 macro-F1 0.922 against 0.635 for the rules and 0.418 for identity, and T1 0.921 against 0.627 and 0.426. It also damages less clean text than the rules: V3 0.0016 against 0.0026, T3 0.0023 against 0.0102. It does not add value on the real passages that decide the serving choice. On V2 it scores 0.733, below the rules (0.806) and below identity (0.753), with 9.16 wrong joins per thousand gaps where the rules make none. On T2 its macro-F1 is higher than both (0.536 against 0.498 and 0.487), but its break-F1 is lower than the rules' (0.669 against 0.760) and it makes 6.58 wrong joins per thousand against 0.00. On the challenge example (T0) the rules score 1.000 and the model 0.620. This report therefore says that the learned model is not shown to add value on real text, and the rules are served.
+**The verdict on requirement Q2.** The requirement is "The learned model must be shown to add value over both, or the report must say that it does not." The learned model adds value over both baselines on synthetic corruptions: V1 macro-F1 0.922 against 0.635 for the rules and 0.418 for identity, and T1 0.921 against 0.627 and 0.426. On the clean sets V3 and T3 it changes fewer gaps than the rules (damage 0.0016 against 0.0026 on V3, 0.0023 against 0.0102 on T3), but it makes 0.11 wrong joins per thousand gaps on T3 where the rules make none. It does not add value on the real passages that decide the serving choice. On V2 it scores 0.733, below the rules (0.806) and below identity (0.753), with 9.16 wrong joins per thousand gaps where the rules make none. On T2 its macro-F1 is higher than both (0.536 against 0.498 and 0.487), but its break-F1 is lower than the rules' (0.669 against 0.760) and it makes 6.58 wrong joins per thousand against 0.00. On the challenge example (T0) the rules score 1.000 and the model 0.620. This report therefore says that the learned model is not shown to add value on real text, and the rules are served.
 
 Dev sets:
 
-<!-- rendered by scripts/report_tables.py at a43bf4d -->
+<!-- rendered by scripts/report_tables.py at b049f9f -->
+Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315.
+
 | set | system | gaps | macro-F1 | break-F1 | PARA F1 | wrong-join /1k | clean damage | paragraph match |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | V1 | identity | 123610 | 0.418 | 0.346 | 0.424 | 0.00 | 0.0000 | 0.161 |
@@ -152,7 +154,9 @@ Dev sets:
 
 Test sets (evaluated once; the record was rendered from a dirty tree, see section 10):
 
-<!-- rendered by scripts/report_tables.py at a43bf4d -->
+<!-- rendered by scripts/report_tables.py at b049f9f -->
+Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
+
 | set | system | gaps | macro-F1 | break-F1 | PARA F1 | wrong-join /1k | clean damage | paragraph match |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | T0 | identity | 29 | 0.231 | 0.000 | 0.000 | 0.00 | 0.0000 | 0.000 |
@@ -168,9 +172,75 @@ Test sets (evaluated once; the record was rendered from a dirty tree, see sectio
 | T3 | rules | 18392 | 0.811 | 0.978 | 0.759 | 0.00 | 0.0102 | 0.893 |
 | T3 | scratch | 18392 | 0.977 | 0.968 | 0.982 | 0.11 | 0.0023 | 0.929 |
 
+### Per class, dev sets (V1, V2)
+
+<!-- rendered by scripts/report_tables.py at b049f9f -->
+Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315.
+
+| set | system | class | support | precision | recall | F1 |
+|---|---|---|---:|---:|---:|---:|
+| V1 | identity | JOIN | 967 | 0.000 | 0.000 | 0.000 |
+| V1 | identity | SPACE | 118422 | 0.976 | 0.991 | 0.983 |
+| V1 | identity | NL | 1680 | 0.224 | 0.328 | 0.266 |
+| V1 | identity | PARA | 2541 | 0.798 | 0.288 | 0.424 |
+| V1 | rules | JOIN | 967 | 1.000 | 0.517 | 0.682 |
+| V1 | rules | SPACE | 118422 | 0.974 | 0.998 | 0.986 |
+| V1 | rules | NL | 1680 | 0.656 | 0.355 | 0.460 |
+| V1 | rules | PARA | 2541 | 0.756 | 0.281 | 0.410 |
+| V1 | scratch | JOIN | 967 | 0.986 | 0.963 | 0.974 |
+| V1 | scratch | SPACE | 118422 | 0.994 | 0.998 | 0.996 |
+| V1 | scratch | NL | 1680 | 0.881 | 0.835 | 0.857 |
+| V1 | scratch | PARA | 2541 | 0.954 | 0.786 | 0.861 |
+| V2 | identity | JOIN | 0 | 0.000 | 0.000 | 0.000 |
+| V2 | identity | SPACE | 2239 | 1.000 | 0.942 | 0.970 |
+| V2 | identity | NL | 54 | 0.269 | 1.000 | 0.424 |
+| V2 | identity | PARA | 108 | 0.945 | 0.796 | 0.864 |
+| V2 | rules | JOIN | 0 | 0.000 | 0.000 | 0.000 |
+| V2 | rules | SPACE | 2239 | 0.991 | 0.990 | 0.990 |
+| V2 | rules | NL | 54 | 0.569 | 0.759 | 0.651 |
+| V2 | rules | PARA | 108 | 0.839 | 0.722 | 0.776 |
+| V2 | scratch | JOIN | 0 | 0.000 | 0.000 | 0.000 |
+| V2 | scratch | SPACE | 2239 | 0.984 | 0.992 | 0.988 |
+| V2 | scratch | NL | 54 | 0.500 | 0.370 | 0.426 |
+| V2 | scratch | PARA | 108 | 0.904 | 0.694 | 0.785 |
+
+### Per class, test sets (T1, T2)
+
+<!-- rendered by scripts/report_tables.py at b049f9f -->
+Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
+
+| set | system | class | support | precision | recall | F1 |
+|---|---|---|---:|---:|---:|---:|
+| T1 | identity | JOIN | 961 | 0.000 | 0.000 | 0.000 |
+| T1 | identity | SPACE | 114599 | 0.974 | 0.991 | 0.982 |
+| T1 | identity | NL | 1884 | 0.237 | 0.301 | 0.265 |
+| T1 | identity | PARA | 2565 | 0.798 | 0.318 | 0.455 |
+| T1 | rules | JOIN | 961 | 1.000 | 0.520 | 0.684 |
+| T1 | rules | SPACE | 114599 | 0.972 | 0.997 | 0.985 |
+| T1 | rules | NL | 1884 | 0.633 | 0.293 | 0.401 |
+| T1 | rules | PARA | 2565 | 0.728 | 0.312 | 0.436 |
+| T1 | scratch | JOIN | 961 | 0.983 | 0.953 | 0.968 |
+| T1 | scratch | SPACE | 114599 | 0.993 | 0.998 | 0.996 |
+| T1 | scratch | NL | 1884 | 0.883 | 0.840 | 0.861 |
+| T1 | scratch | PARA | 2565 | 0.947 | 0.789 | 0.861 |
+| T2 | identity | JOIN | 1 | 0.000 | 0.000 | 0.000 |
+| T2 | identity | SPACE | 3486 | 1.000 | 0.937 | 0.967 |
+| T2 | identity | NL | 46 | 0.159 | 0.978 | 0.274 |
+| T2 | identity | PARA | 112 | 0.763 | 0.661 | 0.708 |
+| T2 | rules | JOIN | 1 | 0.000 | 0.000 | 0.000 |
+| T2 | rules | SPACE | 3486 | 0.991 | 0.985 | 0.988 |
+| T2 | rules | NL | 46 | 0.262 | 0.478 | 0.338 |
+| T2 | rules | PARA | 112 | 0.726 | 0.616 | 0.667 |
+| T2 | scratch | JOIN | 1 | 0.040 | 1.000 | 0.077 |
+| T2 | scratch | SPACE | 3486 | 0.989 | 0.983 | 0.986 |
+| T2 | scratch | NL | 46 | 0.393 | 0.478 | 0.431 |
+| T2 | scratch | PARA | 112 | 0.690 | 0.616 | 0.651 |
+
 T1 by severity band, rules and scratch:
 
-<!-- rendered by scripts/report_tables.py at a43bf4d -->
+<!-- rendered by scripts/report_tables.py at b049f9f -->
+Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
+
 | severity band | system | items | gaps | macro-F1 | wrong-join /1k | damage |
 |---|---|---:|---:|---:|---:|---:|
 | 0 | rules | 53 | 18575 | 0.806 | 0.00 | 0.0095 |
@@ -184,13 +254,13 @@ T1 by severity band, rules and scratch:
 
 Where the model wins. JOIN: on V1 its JOIN F1 is 0.974 against 0.682 for the rules (`experiments/README.md`); the rules join a split word only when a lexicon lookup succeeds. PARA structure on clean text: scratch has paragraph match 0.959 on V3 and 0.929 on T3 against 0.921 and 0.893 for the rules, and fewer damaged gaps. The severity table shows a gain in every band: macro-F1 0.987 against 0.806 at severity 0, and 0.895 against 0.502 at the highest band. Its own cost grows with severity: wrong joins go from 0.00 to 0.31 per thousand and damage from 0.0012 to 0.0658.
 
-Where it loses. On V2 and T2 the model has a lower break-F1 than the rules (0.737 against 0.869 on V2, 0.669 against 0.760 on T2), and it glues words together. Decision 0007 measured NL recall of 0.37 on V2. Paragraph match is lower than the rules' on V2 (0.453 against 0.526) and on T2 (0.375 against 0.382).
+Where it loses. On V2 and T2 the model has a lower break-F1 than the rules (0.737 against 0.869 on V2, 0.669 against 0.760 on T2), and it glues words together. Decision 0007 measured NL recall of 0.37 on V2. Paragraph match is lower than the rules' on V2 (0.453 against 0.526) and on T2 it is a near-tie (0.375 against 0.382).
 
 Why. The design's risk table predicted that models learn the corruptor, not the task. The synthetic corruptions are uniform random breaks at the same rates in training and in V1 and T1; the PDF extractions differ from them. The gap between the V1 and V2 scores (0.922 and 0.733) is the size of that difference for this model. The explanation was not tested beyond this comparison.
 
 ## 8. Service numbers
 
-<!-- rendered by scripts/report_tables.py at a43bf4d -->
+<!-- rendered by scripts/report_tables.py at b049f9f -->
 | label | system | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | RSS MB | disk MB | commit |
 |---|---|---:|---:|---:|---:|---:|---:|---|
 | container-rules | rules | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | - | - | `3ef9677a888b` |
@@ -205,7 +275,7 @@ The design states the latency rule on the host CPU, so the host p50 at 2,000 cha
 
 ## 9. Decisions
 
-Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a change is a new record that supersedes the old one.
+Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a change is a new record.
 
 - [0001](docs/decisions/0001-gap-classification-formulation.md): four-way classification of each whitespace gap, over a binary newline decision and over free-form rewriting. The four classes express every operation in the example, and only gaps change, so content is preserved by construction.
 - [0002](docs/decisions/0002-self-hosted-small-models.md): serve self-hosted small models and compare a from-scratch model with a fine-tuned one; superseded by 0004.
