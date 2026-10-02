@@ -22,7 +22,7 @@ from pathlib import Path
 from newline_fixer.corrupt import CorruptConfig
 from newline_fixer.data.build import assemble, build_lexicon, make_clean_set, make_corrupted_set
 from newline_fixer.data.generated import generate_docs
-from newline_fixer.data.manifest import file_sha256, write_manifest
+from newline_fixer.data.manifest import PUBLISH_PATTERNS, build_manifest, write_manifest
 from newline_fixer.data.records import CleanDoc, EvalItem, read_jsonl, write_jsonl
 from newline_fixer.data.wikipedia import iter_wikipedia, resolve_revision
 from newline_fixer.example import EXAMPLE_INPUT, EXAMPLE_OUTPUT
@@ -107,20 +107,14 @@ def cmd_lexicon(args: argparse.Namespace) -> None:
 def cmd_publish(args: argparse.Namespace) -> None:
     from huggingface_hub import HfApi
 
-    files = [
-        *CLEAN.glob("*.jsonl"),
-        *SETS.glob("*.jsonl"),
-        *RAW.glob("*.meta.json"),
-        DATA / "split.json",
-    ]
     write_manifest(
         DATA / "manifest.json",
-        {
-            "dataset_version": DATASET_VERSION,
-            "git_commit": git_commit(),
-            "built": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
-            "files": {str(p.relative_to(DATA)): file_sha256(p) for p in files},
-        },
+        build_manifest(
+            DATA,
+            DATASET_VERSION,
+            git_commit(),
+            dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
+        ),
     )
     api = HfApi()
     api.create_repo(args.repo, repo_type="dataset", exist_ok=True, private=False)
@@ -128,15 +122,7 @@ def cmd_publish(args: argparse.Namespace) -> None:
         folder_path=str(DATA),
         repo_id=args.repo,
         repo_type="dataset",
-        allow_patterns=[
-            "clean/*.jsonl",
-            "sets/*.jsonl",
-            "raw/*.meta.json",
-            "raw/generated/*.txt",
-            "split.json",
-            "manifest.json",
-            "README.md",
-        ],
+        allow_patterns=[*PUBLISH_PATTERNS, "manifest.json"],
         commit_message=f"dataset v{DATASET_VERSION} from {git_commit()[:12]}",
     )
     print(f"published to https://huggingface.co/datasets/{args.repo}")
