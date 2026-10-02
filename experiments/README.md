@@ -70,6 +70,23 @@ Sets: V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315 (built from seed 1 at co
 | V3 | finetuned-ablation | 9187 | 0.926 | SPACE,NL,PARA | 0.900 | 0.000 | 0.909 | 0.44 | 0.0057 | 0.330 | 0.330 | 0.794 |
 
 
+## test-sets-m5
+
+Results at commit `44480da7717a`, 2026-10-02T18:28:45+00:00.
+Sets: T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8 (built from seed 1 at commit 2d3885bd31a2)
+
+| set | system | gaps | macro-F1 | classes | break-F1 | JOIN F1 | PARA F1 | wrong-join /1k | damage | str≠raw | str≠norm | para match |
+|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| T0 | finetuned | 29 | 0.667 | JOIN,SPACE,NL,PARA | 1.000 | 1.000 | 0.667 | 0.00 | 0.1724 | 1.000 | 1.000 | 0.500 |
+| T0 | finetuned-ablation | 29 | 0.667 | JOIN,SPACE,NL,PARA | 1.000 | 1.000 | 0.667 | 0.00 | 0.1724 | 1.000 | 1.000 | 0.500 |
+| T1 | finetuned | 120009 | 0.954 | JOIN,SPACE,NL,PARA | 0.937 | 0.989 | 0.897 | 0.07 | 0.0403 | 0.854 | 0.854 | 0.750 |
+| T1 | finetuned-ablation | 120009 | 0.845 | JOIN,SPACE,NL,PARA | 0.777 | 0.902 | 0.753 | 0.62 | 0.0342 | 0.897 | 0.897 | 0.449 |
+| T2 | finetuned | 3645 | 0.637 | JOIN,SPACE,NL,PARA | 0.801 | 0.200 | 0.762 | 2.19 | 0.0782 | 1.000 | 1.000 | 0.553 |
+| T2 | finetuned-ablation | 3645 | 0.441 | JOIN,SPACE,NL,PARA | 0.537 | 0.091 | 0.385 | 5.49 | 0.0941 | 1.000 | 1.000 | 0.145 |
+| T3 | finetuned | 18392 | 0.989 | SPACE,NL,PARA | 0.984 | 0.000 | 0.970 | 0.11 | 0.0011 | 0.085 | 0.085 | 0.964 |
+| T3 | finetuned-ablation | 18392 | 0.925 | SPACE,NL,PARA | 0.891 | 0.000 | 0.927 | 0.22 | 0.0073 | 0.290 | 0.290 | 0.832 |
+
+
 ## test-sets
 
 Results at commit `4955e06adaa2` (dirty tree), 2026-10-02T14:16:08+00:00.
