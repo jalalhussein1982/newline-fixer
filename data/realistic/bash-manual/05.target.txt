@@ -1,0 +1,9 @@
+Chapter 6: Bash Features
+
+103
+
+expanded value as the name of a file to read and execute. Bash behaves as if the following command were executed:
+if [ -n "$BASH_ENV" ]; then . "$BASH_ENV"; fi
+but does not the value of the PATH variable to search for the filename.
+
+As noted above, if a non-interactive shell is invoked with the --login option, Bash attempts to read and execute commands from the login shell startup files.

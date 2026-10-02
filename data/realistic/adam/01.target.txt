@@ -1,0 +1,16 @@
+Published as a conference paper at ICLR 2015
+
+4
+
+C ONVERGENCE ANALYSIS
+
+We analyze the convergence of Adam using the online learning framework proposed in (Zinkevich, 2003). Given an arbitrary, unknown sequence of convex cost functions f1 (θ), f2 (θ),..., fT (θ). At each time t, our goal is to predict the parameter θt and evaluate it on a previously unknown cost function ft . Since the nature of the sequence is unknown in advance, we evaluate our algorithm using the regret, that is the sum of all the previous difference between the online prediction ft (θt ) and the best fixed point parameter ft (θ∗ ) from a feasible set X for all the previous steps. Concretely, the regret is defined as:
+R(T ) =
+
+T
+X
+[ft (θt ) − ft (θ∗ )]
+
+(5)
+
+t=1

@@ -1,0 +1,5 @@
+We provide examples of the pre-training tasks in the following.
+
+Masked LM and the Masking Procedure Assuming the unlabeled sentence is my dog is hairy, and during the random masking procedure we chose the 4-th token (which corresponding to hairy), our masking procedure can be further illustrated by
+• 80% of the time: Replace the word with the [MASK] token, e.g., my dog is hairy → my dog is [MASK]
+• 10% of the time: Replace the word with a random word, e.g., my dog is hairy → my dog is apple

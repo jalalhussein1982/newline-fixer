@@ -8,18 +8,16 @@ the Hugging Face Hub with a manifest of content hashes. See `docs/02-design.md` 
 ## Current build
 
 - Hub dataset URL: pending (see Pending below).
-- Dataset version: 1 (partial, Wikipedia only).
+- Dataset version: 1 (Wikipedia and generated documents; not yet published).
 - Wikipedia: 5000 documents, pinned revision `b04c8d1ceb2f5cd4588862100d08de323dccfbaa` (seed 1; reduced from the 20000 target).
-- Generated documents: 0. `ANTHROPIC_API_KEY` was unset, so `generate` was skipped (see `raw/generated.meta.json`).
-- Splits after filtering and deduplication (seed 1): train 4499, val 250, test 250 documents.
-- Evaluation sets under `sets/`: V1 250, V3 100, T1 250, T3 200, T0 1 items. V1 and T1 are capped by the 250-document val and test splits.
-- Lexicon: 22726 words built from the train split.
+- Generated documents: 2000 (seed 1), written in a Claude session under the pipeline's prompt rules rather than through the API, and cached as `raw/generated/00000.txt` to `01999.txt`; `generate` recorded the model id `claude-cowork` (see `raw/generated.meta.json`). All 2000 passed `validate_generated` and survived filtering and deduplication.
+- Splits after filtering and deduplication (seed 1): train 6299, val 350, test 350 documents.
+- Evaluation sets under `sets/`: V1 350, V3 100, T1 350, T3 200, T0 1 items. V1 and T1 are capped by the 350-document val and test splits.
+- Lexicon: 27948 words built from the train split.
 
 ### Pending
 
 ```bash
-uv run python scripts/build_data.py generate --n 2000 --seed 1
-uv run python scripts/build_data.py assemble --seed 1 && uv run python scripts/build_data.py sets --seed 1 && uv run python scripts/build_data.py lexicon
 uv run python scripts/build_data.py publish --repo <your-hf-user>/newline-fixer-data
 ```
 
@@ -27,7 +25,7 @@ Re-running `assemble` redraws every split, every evaluation set and the lexicon;
 
 ## Realistic sets (pending)
 
-Raw passages were extracted with `pdftotext` and cut (seed 1), but no targets exist yet: V2 and T2 are not built. Targets must be proposed by the model (needs `ANTHROPIC_API_KEY`) and then reviewed by hand by the author.
+Raw passages were extracted with `pdftotext` and cut (seed 1). Proposed targets now exist for all 80 passages (`<nn>.target.txt`, written in a Claude session, whitespace-only, 0 unreachable breaks each) and await review by the author; none is in `review.json` yet, so V2 and T2 are not built. Step 1 below is therefore done; continue at step 2.
 
 Source change: `python-tutorial` (a zip of many PDFs) was replaced in the dev list by `bash-manual` (GNU Bash Reference Manual). All ten downloads and extractions succeeded.
 

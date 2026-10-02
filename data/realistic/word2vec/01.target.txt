@@ -1,0 +1,5 @@
+Goals of the Paper
+
+The main goal of this paper is to introduce techniques that can be used for learning high-quality word vectors from huge data sets with billions of words, and with millions of words in the vocabulary. As far as we know, none of the previously proposed architectures has been successfully trained on more
+
+1

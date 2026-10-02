@@ -1,0 +1,19 @@
+The top-level directory for installing the man pages (if any) for this package. It will normally be /usr/local/share/man, but you should write it as $(datarootdir)/man. (If you are using Autoconf, write it as ‘@mandir@’.)
+
+‘man1dir’
+
+The directory for installing section 1 man pages. Write it as $(mandir)/man1.
+
+‘man2dir’
+
+The directory for installing section 2 man pages. Write it as $(mandir)/man2
+
+‘...’
+
+Don’t make the primary documentation for any GNU software be a man page. Write a manual in Texinfo instead. Man pages are just for the sake of people running GNU software on Unix, which is a secondary application only.
+
+‘manext’
+
+The file name extension for the installed man page. This should contain a period followed by the appropriate digit; it should normally be ‘.1’.
+
+‘man1ext’

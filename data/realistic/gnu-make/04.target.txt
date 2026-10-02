@@ -1,0 +1,5 @@
+5.3.2 Choosing the Shell
+
+The program used as the shell is taken from the variable SHELL. If this variable is not set in your makefile, the program /bin/sh is used as the shell. The argument(s) passed to the shell are taken from the variable .SHELLFLAGS. The default value of .SHELLFLAGS is -c normally, or -ec in POSIX-conforming mode.
+
+Unlike most variables, the variable SHELL is never set from the environment. This is because the SHELL environment variable is used to specify your personal choice of shell

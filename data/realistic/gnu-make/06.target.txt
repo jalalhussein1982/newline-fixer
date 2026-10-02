@@ -1,0 +1,9 @@
+will fail when the build directory is not the source directory, because foo.man and sedscript are in the source directory.
+
+When using GNU make, relying on ‘VPATH’ to find the source file will work in the case where there is a single dependency file, since the make automatic variable ‘$<’ will represent the source file wherever it is. (Many versions of make set ‘$<’ only in implicit rules.) A Makefile target like
+foo.o : bar.c
+$(CC) -I. -I$(srcdir) $(CFLAGS) -c bar.c -o foo.o
+
+should instead be written as
+foo.o : bar.c
+$(CC) -I. -I$(srcdir) $(CFLAGS) -c $< -o $@

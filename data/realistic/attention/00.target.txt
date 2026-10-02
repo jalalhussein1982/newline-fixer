@@ -1,0 +1,12 @@
+3.2.2 Multi-Head Attention
+
+Instead of performing a single attention function with dmodel -dimensional keys, values and queries, we found it beneficial to linearly project the queries, keys and values h times with different, learned linear projections to dk , dk and dv dimensions, respectively. On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding dv -dimensional
+
+4
+
+To illustrate why the dot products get large, assume that the components of q and k are independent random
+P k
+variables with mean 0 and variance 1. Then their dot product, q · k = di=1
+qi ki , has mean 0 and variance dk .
+
+4
