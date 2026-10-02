@@ -5,13 +5,18 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from newline_fixer.eval.report import candidates_table
 from newline_fixer.eval.table import render_bench_table, render_table, render_training_table
 
 
 def main() -> None:
     parts = ["# Experiments\n", "Rendered by `scripts/results_table.py`; do not edit by hand.\n"]
     for path in sorted(Path("experiments/results").glob("*.json")):
-        parts.append(f"\n## {path.stem}\n\n" + render_table(json.loads(path.read_text())))
+        record = json.loads(path.read_text())
+        table = (
+            candidates_table(record) if path.name == "m5-candidates.json" else render_table(record)
+        )
+        parts.append(f"\n## {path.stem}\n\n" + table)
     training = sorted(Path("experiments/training").glob("*.json"))
     if training:
         parts.append(

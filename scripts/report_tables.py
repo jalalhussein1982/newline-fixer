@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Any
 
 from newline_fixer.eval.report import (
+    candidates_table,
+    merge_results,
     per_class_table,
     realistic_facts,
     service_table,
@@ -18,7 +20,7 @@ from newline_fixer.eval.report import (
     training_table,
 )
 
-SYSTEMS = ["identity", "rules", "scratch"]
+SYSTEMS = ["identity", "rules", "scratch", "finetuned", "finetuned-ablation"]
 
 
 def load(path: str) -> dict[str, Any]:
@@ -27,13 +29,18 @@ def load(path: str) -> dict[str, Any]:
 
 
 def main() -> None:
-    dev = load("experiments/results/m2-scratch.json")
-    test = load("experiments/results/test-sets.json")
+    dev = load("experiments/results/m5-finetuned.json")  # all five systems on V1-V3
+    test = merge_results(
+        load("experiments/results/test-sets.json"), load("experiments/results/test-sets-m5.json")
+    )
     print("## dev sets\n\n" + summary_table(dev, ["V1", "V2", "V3"], SYSTEMS))
     print("## test sets\n\n" + summary_table(test, ["T0", "T1", "T2", "T3"], SYSTEMS))
     print("## per class, dev sets\n\n" + per_class_table(dev, ["V1", "V2"], SYSTEMS))
     print("## per class, test sets\n\n" + per_class_table(test, ["T1", "T2"], SYSTEMS))
-    print("## T1 by severity band\n\n" + severity_table(test, "T1", ["rules", "scratch"]))
+    print(
+        "## T1 by severity band\n\n" + severity_table(test, "T1", ["rules", "scratch", "finetuned"])
+    )
+    print("## candidates\n\n" + candidates_table(load("experiments/results/m5-candidates.json")))
     bench = [load(str(p)) for p in sorted(Path("experiments/bench").glob("*.json"))]
     print("## service\n\n" + service_table(bench))
     training = [load(str(p)) for p in sorted(Path("experiments/training").glob("*.json"))]

@@ -86,3 +86,38 @@ def test_response_models_serialize_the_contract() -> None:
         "model": "rules",
         "ready": True,
     }
+
+
+def test_weights_source_per_model() -> None:
+    from newline_fixer.service.config import HUB_REPO_FINETUNED
+
+    s = Settings.from_env(
+        {"NF_MODEL": "finetuned", "NF_WEIGHTS_FINETUNED": "experiments/runs/finetuned"}
+    )
+    assert s.weights_source() == "experiments/runs/finetuned"
+    s = Settings.from_env({"NF_MODEL": "finetuned", "NF_WEIGHTS": "x", "NF_WEIGHTS_FINETUNED": "y"})
+    assert s.weights_source() == "x"
+    s = Settings.from_env({"NF_MODEL": "finetuned", "NF_MODEL_REVISION": "abc"})
+    assert s.weights_source() == f"hf:{HUB_REPO_FINETUNED}@abc"
+    s = Settings.from_env({"NF_MODEL": "scratch", "NF_WEIGHTS_SCRATCH": "z"})
+    assert s.weights_source() == "z"
+    s = Settings.from_env({"NF_MODEL": "scratch", "NF_WEIGHTS_FINETUNED": "z"})
+    assert s.weights_source() == f"hf:{HUB_REPO}@{PUBLISHED_REVISION}"
+    with pytest.raises(ValueError, match="not servable"):
+        Settings(model="finetuned-ablation")
+
+
+def test_finetuned_is_the_default_at_its_published_revision() -> None:
+    from newline_fixer.service.config import HUB_REPO_FINETUNED, PUBLISHED_REVISION_FINETUNED
+
+    assert DEFAULT_MODEL == "finetuned"
+    assert len(PUBLISHED_REVISION_FINETUNED) == 40
+    s = Settings.from_env({})
+    assert s.weights_source() == f"hf:{HUB_REPO_FINETUNED}@{PUBLISHED_REVISION_FINETUNED}"
+    assert Settings(model="finetuned", weights="w").weights_source() == "w"
+
+
+def test_registry_knows_both_finetuned_entries() -> None:
+    from newline_fixer.models.registry import FIXER_NAMES
+
+    assert {"finetuned", "finetuned-ablation"} <= set(FIXER_NAMES)

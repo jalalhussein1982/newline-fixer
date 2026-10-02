@@ -1,6 +1,10 @@
 """Build the image, start it, wait for health, post the challenge example, check, stop (design 7).
-Usage: uv run python scripts/container_check.py [--image newline-fixer:local] [--port 8000] [--model rules] [--no-build]
+Usage: uv run python scripts/container_check.py [--image newline-fixer:local] [--port 8000] [--model rules] [--no-build] [--expect-mismatch]
 Exits 0 only when the example round-trips through the container.
+With --expect-mismatch (for --model finetuned, decision 0010) the example is expected NOT to
+round-trip exactly: the check requires health 200 and that the content (non-whitespace
+characters) is preserved, and passes when the output differs from the example; an unexpected
+exact match is reported but is not a failure.
 """
 
 from __future__ import annotations
@@ -14,7 +18,7 @@ import urllib.error
 import urllib.request
 
 from newline_fixer.example import EXAMPLE_INPUT, EXAMPLE_OUTPUT
-from newline_fixer.text import normalize
+from newline_fixer.text import content, normalize
 
 
 def sh(*args: str) -> str:
@@ -50,6 +54,11 @@ def main() -> None:
     p.add_argument("--port", type=int, default=8000)
     p.add_argument("--model", default="rules")
     p.add_argument("--no-build", action="store_true")
+    p.add_argument(
+        "--expect-mismatch",
+        action="store_true",
+        help="expect the known one-gap difference on the example (decision 0010)",
+    )
     a = p.parse_args()
     if not a.no_build:
         subprocess.run(["docker", "build", "-t", a.image, "."], check=True)
@@ -65,6 +74,22 @@ def main() -> None:
         with urllib.request.urlopen(req, timeout=60) as r:
             body = json.loads(r.read())
         expected = normalize(EXAMPLE_OUTPUT)
+        if a.expect_mismatch:
+            if content(body["text"]) != content(EXAMPLE_INPUT):
+                print("CONTENT CHANGED\n--- got ---\n" + body["text"])
+                sys.exit(1)
+            model = body["stats"]["model"]
+            if body["text"] == expected:
+                print(
+                    f"NOTE: {a.image} ({model}) unexpectedly reproduces the example exactly; "
+                    "a match is not a failure"
+                )
+            else:
+                print(
+                    f"PASS (expected mismatch): {a.image} ({model}) serves and preserves content; "
+                    "output differs from the example as decision 0010 records"
+                )
+            return
         if body["text"] != expected:
             print("MISMATCH\n--- got ---\n" + body["text"] + "\n--- expected ---\n" + expected)
             sys.exit(1)

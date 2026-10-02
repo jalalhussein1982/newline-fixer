@@ -70,3 +70,13 @@ def test_registry_scratch_needs_weights(tmp_path: Path, monkeypatch: pytest.Monk
     tiny_fixer().save(tmp_path)
     monkeypatch.setenv(WEIGHTS_ENV, str(tmp_path))
     assert get_fixer("scratch").name == "scratch"
+
+
+def test_default_weights_prefers_nf_weights(monkeypatch: pytest.MonkeyPatch) -> None:
+    from newline_fixer.models.scratch import default_weights
+
+    monkeypatch.setenv("NF_WEIGHTS_SCRATCH", "per-model")
+    monkeypatch.setenv("NF_WEIGHTS", "global")
+    assert default_weights() == "global"
+    monkeypatch.delenv("NF_WEIGHTS")
+    assert default_weights() == "per-model"

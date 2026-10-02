@@ -2,7 +2,7 @@
   uv run python scripts/bench.py --systems identity,rules,scratch --label m1-mac-cpu --out experiments/bench/m1-mac-cpu.json
   uv run python scripts/bench.py --url http://localhost:8000 --label container-rules --out experiments/bench/container-rules.json
 In-process mode loads each system on CPU in its own subprocess (--worker), so memory is per system
-(scratch from NF_WEIGHTS or the published revision);
+(scratch and finetuned from NF_WEIGHTS / NF_WEIGHTS_<MODEL> or the published revision);
 HTTP mode measures whatever model the server at --url serves.
 """
 
@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -39,7 +40,9 @@ def main() -> None:
     a = p.parse_args()
     inputs = bench_inputs(read_jsonl(Path(a.sets_dir) / "V3.jsonl", EvalItem))
     if a.worker:
-        fixer = load_fixer(Settings(model=a.systems, device="cpu"))
+        fixer = load_fixer(
+            Settings.from_env({**os.environ, "NF_MODEL": a.systems, "NF_DEVICE": "cpu"})
+        )
         print(json.dumps(bench_fixer(fixer, inputs, n=a.n)))
         return
     if not a.label or not a.out:

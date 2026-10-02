@@ -35,24 +35,28 @@ curl -s localhost:8000/v1/fix -H 'content-type: application/json' \
   -d '{"text": "3.2.3 Applications of Attention\n in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers,\n the que\nries come from the previous decoder layer."}'
 ```
 
-The default model is `rules` (B1) by decision 0008; `NF_MODEL=scratch` serves the published from-scratch model.
+With the default model (`finetuned`, decision 0010) this request returns the example with one gap different: a paragraph break before the first bullet instead of a single newline. `NF_MODEL=rules` reproduces the expected output exactly (requirement A2). The default serves the model the decision rule chose on the realistic dev set; that trade-off is deliberate and recorded in decision 0010 and the report.
 
-With Docker (the image fetches the scratch weights at build time by the pinned revision):
+The default model is `finetuned`, the fine-tuned pretrained encoder, by decision 0010; `NF_MODEL=rules` and `NF_MODEL=scratch` serve the baselines.
+
+With Docker (the image fetches both learned models' weights at build time by their pinned revisions):
 
 ```bash
 docker build -t newline-fixer:local .
-docker run --rm -p 8000:8000 newline-fixer:local                    # serves NF_MODEL=rules by default
+docker run --rm -p 8000:8000 newline-fixer:local                    # serves NF_MODEL=finetuned by default
 docker run --rm -p 8000:8000 -e NF_MODEL=scratch newline-fixer:local
+docker run --rm -p 8000:8000 -e NF_MODEL=rules newline-fixer:local
 make container-check   # builds, starts, waits for health, posts the example, checks, stops
 ```
 
-Inside the image the scratch revision is fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>`, default the published scratch-v1) and `NF_WEIGHTS=/app/weights` points at it, so `NF_MODEL_REVISION` has no effect on a running container; the same default revision is `PUBLISHED_REVISION` in `src/newline_fixer/service/config.py`.
+Both models are baked into the image: the revisions are fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>` for scratch, default the published scratch-v1; `--build-arg NF_FINETUNED_REVISION=<rev>` for the fine-tuned encoder, default the published revision), `NF_WEIGHTS_SCRATCH=/app/weights` and `NF_WEIGHTS_FINETUNED=/app/weights-finetuned` point at them, so `NF_MODEL_REVISION` has no effect on a running container; the same default revisions are `PUBLISHED_REVISION` and `PUBLISHED_REVISION_FINETUNED` in `src/newline_fixer/service/config.py`.
 
-If the Hub is unreachable at build time, build without weights and mount a local run directory at run time:
+If the Hub is unreachable at build time, build without weights and mount a local run directory at the matching path (`/app/weights` for scratch, `/app/weights-finetuned` for finetuned) at run time:
 
 ```bash
 docker build --build-arg WITH_WEIGHTS=0 -t newline-fixer:local .
 docker run --rm -p 8000:8000 -e NF_MODEL=scratch -v "$PWD/experiments/runs/current:/app/weights:ro" newline-fixer:local
+docker run --rm -p 8000:8000 -v "$PWD/experiments/runs/finetuned:/app/weights-finetuned:ro" newline-fixer:local   # the default, finetuned
 ```
 
 `experiments/runs/current` is a git-ignored run directory produced by training (see "Train the from-scratch model").
@@ -61,12 +65,16 @@ Configuration, all optional:
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `NF_MODEL` | `rules` | `identity`, `rules` or `scratch` (decision 0008 sets the default) |
-| `NF_MODEL_REVISION` | the published scratch-v1 revision | Hub revision of the scratch weights |
+| `NF_MODEL` | `finetuned` | `identity`, `rules`, `scratch` or `finetuned` (decision 0010 sets the default) |
+| `NF_MODEL_REVISION` | the published revision of the selected model | Hub revision of the selected model's weights |
 | `NF_WEIGHTS` | unset | a local run directory or `hf:repo@revision`; overrides `NF_MODEL_REVISION` |
+| `NF_WEIGHTS_SCRATCH` | unset | weights source for `NF_MODEL=scratch` (run directory or `hf:repo@revision`) |
+| `NF_WEIGHTS_FINETUNED` | unset | weights source for `NF_MODEL=finetuned`; with neither it nor `NF_WEIGHTS` set, the published revision is downloaded from the Hub |
 | `NF_MAX_CHARS` | `100000` | inputs longer than this get 413 |
 | `NF_LOG_LEVEL` | `INFO` | level of the JSON request log on stdout |
-| `NF_DEVICE` | `cpu` | torch device for the scratch model |
+| `NF_DEVICE` | `cpu` | torch device for the learned model |
+
+`NF_WEIGHTS` overrides the per-model variable (`NF_WEIGHTS_SCRATCH`, `NF_WEIGHTS_FINETUNED`) for the selected model.
 
 `GET /healthz` answers 503 until the model is loaded; `GET /metrics` is Prometheus text. One JSON line per request goes to stdout; request text is never logged.
 
@@ -88,6 +96,8 @@ make check             # lint, type check, tests
 ```
 
 The from-scratch model needs the `model` extra (PyTorch); `uv sync --all-extras` installs it. Training uses CUDA or Apple MPS when available and falls back to CPU. On the M1 a full eight-epoch run takes about 100 minutes, so the two Task 7 runs are meant for a free Colab GPU: open `notebooks/train_scratch_colab.ipynb` in Colab, which clones this repository, trains both runs and hands back `experiments/runs/` and `experiments/training/` as a zip.
+
+Train the fine-tuned encoder (design 4.5): `uv run python scripts/train_finetune.py --run-id finetuned --model microsoft/deberta-v3-xsmall --epochs 3` on a GPU; on the M1 use the Colab notebook `notebooks/train_finetune_colab.ipynb`, which runs the two candidate selections, then the chosen model and its random-initialization ablation, and hands back the run directories. `uv run python scripts/select_encoder.py --runs ft-deberta-select,ft-distilbert-select --out experiments/results/m5-candidates.json` measures CPU latency per 256-token window against the scratch model's.
 
 On macOS, if `uv run python -c 'import newline_fixer'` fails with ModuleNotFoundError, run `make sync`: some setups mark `.venv` hidden and Python 3.12+ then ignores its `.pth` files.
 

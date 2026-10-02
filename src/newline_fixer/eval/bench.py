@@ -13,6 +13,7 @@ from pathlib import Path
 
 from ..data.records import EvalItem
 from ..models.base import Fixer
+from ..text import Gap, split
 from ..windows import fix
 
 LENGTHS: tuple[int, ...] = (500, 2000, 10000)
@@ -25,6 +26,21 @@ def bench_inputs(items: Sequence[EvalItem], lengths: Sequence[int] = LENGTHS) ->
     if len(text) < need:
         raise ValueError(f"benchmark text has {len(text)} characters, need {need}")
     return {n: text[:n] for n in lengths}
+
+
+def select_window(items: Sequence[EvalItem], n_tokens: int = 256) -> tuple[list[str], list[Gap]]:
+    """The first `n_tokens` tokens of the concatenated passages with their current gaps."""
+    parts: list[str] = []
+    count = 0
+    for item in items:
+        parts.append(item.input)
+        count += len(item.input.split())
+        if count >= n_tokens:
+            break
+    if count < n_tokens:
+        raise ValueError(f"benchmark text has {count} tokens, need {n_tokens}")
+    tokens, gaps = split("\n\n".join(parts))
+    return tokens[:n_tokens], gaps[: n_tokens - 1]
 
 
 def percentile(values: Sequence[float], p: float) -> float:

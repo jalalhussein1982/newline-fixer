@@ -10,6 +10,7 @@ from newline_fixer.eval.bench import (
     disk_mb,
     percentile,
     rss_mb,
+    select_window,
     throughput,
     time_calls,
 )
@@ -105,3 +106,13 @@ def test_render_bench_table_has_one_row_per_system() -> None:
     }
     out = render_bench_table([record])
     assert out.count("| test | identity |") == 1 and "p50" in out
+
+
+def test_select_window_is_exactly_256_tokens_and_255_gaps() -> None:
+    tokens, gaps = select_window(items(3))
+    assert len(tokens) == 256 and len(gaps) == 255
+
+
+def test_select_window_fails_loudly_when_text_is_short() -> None:
+    with pytest.raises(ValueError, match="5000"):
+        select_window(items(1)[:1], n_tokens=5000)

@@ -13,21 +13,27 @@ from pathlib import Path
 
 RUNS = Path("experiments/runs")
 RECORDS = Path("experiments/training")
-FILES = ["config.json", "words.json", "chars.json", "model.pt", "run.json", "README.md"]
+IGNORE = ["*.log", ".cache/**"]
 
 
 def model_card(record: dict[str, object], repo: str) -> str:
     best = record.get("best", {})
     assert isinstance(best, dict)
+    arch = "A character-aware BiLSTM"
+    extra = ""
+    if "pretrained" in record:
+        arch = "A fine-tuned pretrained encoder"
+        extra = f"- Pretrained encoder `{record['pretrained']}`; random_init {record.get('random_init')}\n"
     return (
         "---\nlibrary_name: pytorch\ntags: [text-cleaning, newline-restoration]\n---\n\n"
-        f"# newline-fixer from-scratch model ({record['run_id']})\n\n"
-        "A character-aware BiLSTM that predicts the whitespace class (join, space, newline, paragraph) "
+        f"# newline-fixer model ({record['run_id']})\n\n"
+        f"{arch} that predicts the whitespace class (join, space, newline, paragraph) "
         "between consecutive tokens of English text. Trained with https://github.com/jalalhussein1982/newline-fixer "
         f"at commit `{str(record.get('git_commit', ''))[:12]}`.\n\n"
         f"- Dev macro-F1 V1 {best.get('V1_macro_f1', 0.0):.3f}, clean-text damage V3 {best.get('V3_damage', 0.0):.4f}\n"
-        f"- Parameters {int(str(record.get('n_params', 0))):,}; seed {record.get('seed')}; best epoch {record.get('best_epoch')}\n\n"
-        f"Load with `ScratchFixer.load('hf:{repo}@<revision>')`; files: config.json, words.json, chars.json, model.pt, run.json.\n"
+        f"- Parameters {int(str(record.get('n_params', 0))):,}; seed {record.get('seed')}; best epoch {record.get('best_epoch')}\n"
+        f"{extra}\n"
+        f"Load with `ScratchFixer.load` or `FinetunedFixer.load` on `hf:{repo}@<revision>`; files: the run directory (weights, config, run.json).\n"
     )
 
 
@@ -42,7 +48,7 @@ def main() -> None:
     a = p.parse_args()
     run_dir = RUNS / a.run_id
     record_path = RECORDS / f"{a.run_id}.json"
-    if not (run_dir / "model.pt").exists():
+    if not any(run_dir.glob("*.pt")) and not any(run_dir.glob("*.safetensors")):
         raise SystemExit(f"no weights at {run_dir}")
     record = json.loads(record_path.read_text(encoding="utf-8"))
     (run_dir / "README.md").write_text(model_card(record, a.repo), encoding="utf-8")
@@ -52,7 +58,8 @@ def main() -> None:
         folder_path=str(run_dir),
         repo_id=a.repo,
         repo_type="model",
-        allow_patterns=FILES,
+        allow_patterns=None,
+        ignore_patterns=IGNORE,
         commit_message=f"{a.run_id} from {str(record.get('git_commit', ''))[:12]}",
     )
     revision = info.oid

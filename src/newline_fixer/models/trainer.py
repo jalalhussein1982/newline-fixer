@@ -16,6 +16,7 @@ from torch import Tensor, nn
 from ..data.records import CleanDoc, EvalItem
 from ..eval.runner import evaluate_set
 from ..text import split
+from .base import Fixer
 from .scratch import ScratchFixer
 from .scratch_config import ScratchConfig
 from .scratch_net import GapTagger, count_parameters
@@ -58,7 +59,7 @@ def _git_commit() -> str:
         return ""
 
 
-def _dev_metrics(fixer: ScratchFixer, dev: dict[str, list[EvalItem]]) -> dict[str, float]:
+def dev_metrics(fixer: Fixer, dev: dict[str, list[EvalItem]]) -> dict[str, float]:
     out: dict[str, float] = {}
     for name, items in dev.items():
         r = evaluate_set(fixer, items)
@@ -68,6 +69,9 @@ def _dev_metrics(fixer: ScratchFixer, dev: dict[str, list[EvalItem]]) -> dict[st
         out[f"{name}_damage"] = float(gap["damage_rate"])
         out[f"{name}_wrong_join_per_1000"] = float(gap["wrong_join_per_1000"])
     return out
+
+
+_dev_metrics = dev_metrics
 
 
 def train(
@@ -136,7 +140,7 @@ def train(
             steps += 1
         net.eval()
         fixer = ScratchFixer(cfg, words, chars, net, device)
-        metrics = _dev_metrics(fixer, dev)
+        metrics = dev_metrics(fixer, dev)
         row: dict[str, object] = {
             "epoch": epoch + 1,
             "train_loss": total / max(steps, 1),

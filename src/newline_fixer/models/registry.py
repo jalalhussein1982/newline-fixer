@@ -20,10 +20,24 @@ def _scratch() -> Fixer:
     return ScratchFixer.load(default_weights())
 
 
+def _finetuned() -> Fixer:
+    from .finetuned import FinetunedFixer, default_weights_finetuned
+
+    return FinetunedFixer.load(default_weights_finetuned())
+
+
+def _finetuned_ablation() -> Fixer:
+    from .finetuned import FinetunedFixer, default_weights_ablation
+
+    return FinetunedFixer.load(default_weights_ablation(), name="finetuned-ablation")
+
+
 _REGISTRY: dict[str, Callable[[], Fixer]] = {
     "identity": IdentityFixer,
     "rules": _rules,
     "scratch": _scratch,
+    "finetuned": _finetuned,
+    "finetuned-ablation": _finetuned_ablation,
 }
 FIXER_NAMES = sorted(_REGISTRY)
 

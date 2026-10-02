@@ -2,20 +2,21 @@
 
 ## 1. Abstract
 
-This service repairs whitespace in English text. It splits the input into non-whitespace tokens, predicts for each gap between two tokens one of four classes (JOIN, SPACE, NL, PARA), and re-joins the tokens with the predicted gaps. It never changes a non-whitespace character. Three systems are built and measured on the same sets: an identity baseline (B0), a rule baseline (B1), and a from-scratch BiLSTM with character features (scratch). The service serves the rules baseline B1 by default, because the decision rule picked it (decision 0008). The learned model wins by a wide margin on synthetic corruptions and loses to the rules on the realistic dev set and breaks more words on both realistic sets, so it ships behind a flag (`NF_MODEL=scratch`). The demo page is at `/` of the running service. A Hugging Face Space is not deployed: that is the optional deliverable D6, planned as milestone M6.
+This service repairs whitespace in English text. It splits the input into non-whitespace tokens, predicts for each gap between two tokens one of four classes (JOIN, SPACE, NL, PARA), and re-joins the tokens with the predicted gaps. It never changes a non-whitespace character. Five systems are built and measured on the same sets: an identity baseline (B0), a rule baseline (B1), a from-scratch BiLSTM with character features (scratch), a pretrained encoder fine-tuned for the task (finetuned, `microsoft/deberta-v3-xsmall`), and the same encoder trained from random initialization (finetuned-ablation), which isolates the value of pretraining. The service serves the fine-tuned encoder by default, because the decision rule picked it (decision 0010, which supersedes 0008): it beats the rules on the realistic dev set (V2 macro-F1 0.898 against 0.806) and on the realistic test set, but it still makes some wrong joins where the rules make none (4.58 per thousand gaps on V2, 2.19 on T2), it does not reproduce the challenge example exactly, and in the container it is slower than the 300 ms limit (342.9 ms at 2,000 characters; the limit is stated on the host, where it takes 92.8 ms). `NF_MODEL=rules` and `NF_MODEL=scratch` serve the baselines. The demo page is at `/` of the running service. A Hugging Face Space is not deployed: that is the optional deliverable D6, planned as milestone M6.
 
 ## 2. How to run
 
-Docker, serving the rules baseline (the default):
+Docker, serving the fine-tuned encoder (the default; the image holds the weights of both learned models, fetched at build time by pinned Hub revisions):
 
 ```bash
 docker build -t newline-fixer:local .
 docker run --rm -p 8000:8000 newline-fixer:local
 ```
 
-Docker, serving the from-scratch model (the image fetches its weights at build time by a pinned Hub revision):
+Docker, serving a baseline instead:
 
 ```bash
+docker run --rm -p 8000:8000 -e NF_MODEL=rules newline-fixer:local
 docker run --rm -p 8000:8000 -e NF_MODEL=scratch newline-fixer:local
 ```
 
@@ -33,7 +34,13 @@ curl -s localhost:8000/v1/fix -H 'content-type: application/json' \
   -d '{"text": "3.2.3 Applications of Attention\n in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers,\n the que\nries come from the previous decoder layer."}'
 ```
 
-The response with the default model (`latency_ms` varies from run to run):
+The response with the default model (`finetuned`; `latency_ms` varies from run to run and the first request after start-up is the slowest):
+
+```json
+{"text":"3.2.3 Applications of Attention in our Model\n\nThe Transformer uses multi-head attention in three different ways:\n\n• In \"encoder-decoder attention\" layers, the queries come from the previous decoder layer.","stats":{"tokens":30,"gaps":29,"changed":5,"model":"finetuned","latency_ms":503.03}}
+```
+
+This is not the expected output: the model puts a paragraph break (a blank line) before the first bullet where the expected output has a single newline (section 10). With `NF_MODEL=rules` the response matches the expected output exactly:
 
 ```json
 {"text":"3.2.3 Applications of Attention in our Model\n\nThe Transformer uses multi-head attention in three different ways:\n• In \"encoder-decoder attention\" layers, the queries come from the previous decoder layer.","stats":{"tokens":30,"gaps":29,"changed":5,"model":"rules","latency_ms":1.08}}
@@ -52,16 +59,17 @@ Configuration, all optional:
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `NF_MODEL` | `rules` | `identity`, `rules` or `scratch` (decision 0008 sets the default) |
-| `NF_MODEL_REVISION` | the published scratch-v1 revision | Hub revision of the scratch weights |
-| `NF_WEIGHTS` | unset | a local run directory or `hf:repo@revision`; overrides `NF_MODEL_REVISION` |
+| `NF_MODEL` | `finetuned` | `identity`, `rules`, `scratch` or `finetuned` (decision 0010 sets the default) |
+| `NF_MODEL_REVISION` | the published revision of the selected model | Hub revision of the selected model's weights |
+| `NF_WEIGHTS` | unset | a local run directory or `hf:repo@revision`; overrides `NF_MODEL_REVISION` and the per-model variables |
+| `NF_WEIGHTS_SCRATCH`, `NF_WEIGHTS_FINETUNED` | unset | weights source for that model (the image sets them to `/app/weights` and `/app/weights-finetuned`) |
 | `NF_MAX_CHARS` | `100000` | inputs longer than this get 413 |
 | `NF_LOG_LEVEL` | `INFO` | level of the JSON request log on stdout |
-| `NF_DEVICE` | `cpu` | torch device for the scratch model |
+| `NF_DEVICE` | `cpu` | torch device for the learned models |
 
-Inside the image the scratch revision is fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>`), so `NF_MODEL_REVISION` has no effect on a running container. One JSON line per request goes to stdout; request text is never logged. The [README](README.md) has the offline build.
+Inside the image both revisions are fixed at build time (`--build-arg NF_MODEL_REVISION=<rev>` for scratch, `--build-arg NF_FINETUNED_REVISION=<rev>` for the fine-tuned encoder), so `NF_MODEL_REVISION` has no effect on a running container. One JSON line per request goes to stdout; request text is never logged. The [README](README.md) has the offline build.
 
-Tests. `make check` runs lint, type check and pytest. CI ([workflow](.github/workflows/ci.yml)) has two jobs: `check` runs `make check`; `container` runs `scripts/container_check.py`, which builds the image, starts it, waits for health, posts the challenge example and fails unless the output matches. The suite covers the API contract and error codes (`tests/test_service_api.py`), content preservation for any text (Hypothesis tests in `tests/test_service_api.py`, `tests/test_scratch_fixer.py`, `tests/test_text.py`), clean input unchanged, a long input that needs windows, the size limit (413), readiness (503 before load), metrics and request logging (`tests/test_service_observability.py`), configuration, and the container check.
+Tests. `make check` runs lint, type check and pytest. CI ([workflow](.github/workflows/ci.yml)) has two jobs: `check` runs `make check`; `container` runs `scripts/container_check.py`, which builds the image, starts it with `NF_MODEL=rules` (its default), waits for health, posts the challenge example and fails unless the output matches; `uv run python scripts/container_check.py --no-build --model finetuned --expect-mismatch` starts the image's default model, requires health 200 and content preservation, and expects the known one-gap difference on the example; CI runs both checks. The suite covers the API contract and error codes (`tests/test_service_api.py`), content preservation for any text (Hypothesis tests in `tests/test_service_api.py`, `tests/test_scratch_fixer.py`, `tests/test_text.py`), clean input unchanged, a long input that needs windows, the size limit (413), readiness (503 before load), metrics and request logging (`tests/test_service_observability.py`), configuration, the fine-tuned encoder's window encoding, fixer and trainer (`tests/test_finetune_encoding.py`, `tests/test_finetuned_fixer.py`, `tests/test_finetune_trainer.py`), and the container check.
 
 ## 3. The problem as formulated
 
@@ -101,16 +109,31 @@ Realistic sets. They come from ten real PDFs: word2vec, fasttext, nist-800-63 an
 
 **Scratch, a model written from scratch.** A 30,000-word embedding, a character CNN per token (so that fragments such as `que` and capitalization are visible), an embedding of the current gap class, a two-layer BiLSTM, and a classifier over the states on both sides of the gap: 5,551,692 parameters (design 4.4). Training examples are re-corrupted every epoch. It was trained on a Colab T4 at about 52 s per epoch; the M1 Mac measured 12.1 minutes per epoch on MPS, so training moved. [Decision 0007](docs/decisions/0007-scratch-model-class-weighting.md): unweighted cross-entropy beat inverse-frequency class weights on every metric. The weights are on the Hub at the pinned revision `6c311e757d17e89c80b7b86908043637a4f56e28`, never in git ([decision 0003](docs/decisions/0003-weights-on-hub-not-in-git.md)).
 
-<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+<!-- rendered by scripts/report_tables.py at a94a947 -->
 
 | run | device | epochs | minutes | best epoch | V1 macro-F1 | V3 damage | params | commit |
 |---|---|---:|---:|---:|---:|---:|---:|---|
+| finetuned-ablation | cuda | 3 | 15.4 | 3 | 0.839 | 0.0057 | 70,646,404 | `6093ac8f9125` |
+| finetuned | cuda | 3 | 15.0 | 3 | 0.954 | 0.0008 | 70,646,404 | `6093ac8f9125` |
+| ft-deberta-select | cuda | 1 | 3.8 | 1 | 0.937 | 0.0023 | 70,646,404 | `6093ac8f9125` |
+| ft-distilbert-select | cuda | 1 | 2.4 | 1 | 0.901 | 0.0024 | 65,195,524 | `6093ac8f9125` |
 | scratch-v1-inverse | cuda | 5 | 5.2 | 3 | 0.741 | 0.0447 | 5,551,692 | `dd2a39b955d0` |
 | scratch-v1 | cuda | 8 | 8.6 | 8 | 0.922 | 0.0016 | 5,551,692 | `dd2a39b955d0` |
 
-`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+`scratch` and `finetuned` rows: weights revisions `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` and `11d6b26e80dfa2c9606702cd2755a63c9dce99ed` of `jalalhussein1982/newline-fixer-finetuned` (section 12). `finetuned-ablation` rows: the same architecture from random initialization, weights not published.
 
-**The fine-tuned pretrained encoder (design 4.5) is planned work, not done.** The report has no result for it. It was not started within this submission's time budget; design section 9 allows sending the bundle after M4 with that stated.
+**The fine-tuned pretrained encoder (design 4.5), `finetuned`.** Two pretrained encoders were trained for one epoch on a Colab T4 and compared on V1 macro-F1 under a latency condition on the M1 Mac CPU: p50 per 256-token window within three times the scratch model's (22.5 ms, so 67.4 ms). [Decision 0009](docs/decisions/0009-encoder-candidate.md) picked `microsoft/deberta-v3-xsmall` (V1 macro-F1 0.937, 65.5 ms per window) over `distilbert-base-cased` (0.901, 51.2 ms); both were within the limit, and DeBERTa's margin on it is thin. The selection used one epoch and one seed, so the 0.035 gap is not a significance claim. The full run uses the same training data and window scheme as scratch, with the `[NL]` and `[PP]` markers added as special tokens (embeddings resized) and labels on the first subword of each token. Schedule: learning rate 5e-5, batch size 16, three epochs (best epoch 3), weight decay 0.01, warmup fraction 0.06, mixed precision (fp16) on a T4, seed 1; 70,646,404 parameters; 15.0 minutes of training. The learning rate is the top of the 3e-5 to 5e-5 range design 4.5 gives, used for both candidates; it was not tuned.
+
+<!-- rendered by scripts/report_tables.py at a94a947 -->
+
+Scratch p50 per 256-token window: 22.5 ms; limit (3x): 67.4 ms.
+
+| run | pretrained | params | V1 macro-F1 | p50 ms / window | p95 ms | within limit |
+|---|---|---:|---:|---:|---:|---|
+| ft-deberta-select | microsoft/deberta-v3-xsmall | 70,646,404 | 0.937 | 65.5 | 76.0 | yes |
+| ft-distilbert-select | distilbert-base-cased | 65,195,524 | 0.901 | 51.2 | 53.6 | yes |
+
+**The ablation, `finetuned-ablation`.** The same architecture (70.6M parameters) from random initialization, with identical data, windows and schedule (15.4 minutes on the same T4; [decision 0004](docs/decisions/0004-model-strategy-restated.md)). Only the weights at initialization differ, so the difference between `finetuned` and `finetuned-ablation` is the measured value of pretraining, from one seed per arm. Its weights are not published: it is evidence, not a servable model.
 
 ## 6. Evaluation method
 
@@ -131,62 +154,76 @@ The decision rule (design 5.3), verbatim:
 2. Among candidates, the one with the highest macro-F1 on V2 is served, with wrong-join rate as the tie-breaker.
 3. If no learned model qualifies, B1 is served and the report says why.
 
-The discipline: every choice (B1's thresholds, the class weighting, the served model) used dev sets only. Test sets T0 to T3 were evaluated once for all systems, at commit `4955e06adaa2`, after decision 0008.
+The discipline: every choice (B1's thresholds, the class weighting, the served model) used dev sets only. Test sets T0 to T3 were evaluated once for identity, rules and scratch at commit `4955e06adaa2`, after decision 0008, and once for finetuned and finetuned-ablation at commit `44480da7717a`, after decision 0010 had chosen the served model on the dev sets; the two records are merged for the tables below (equal set hashes required). No choice used a test set.
 
 ## 7. Results
 
-**The verdict on requirement Q2.** The requirement is "The learned model must be shown to add value over both, or the report must say that it does not." The learned model adds value over both baselines on synthetic corruptions: V1 macro-F1 0.922 against 0.635 for the rules and 0.418 for identity, and T1 0.921 against 0.627 and 0.426. On the clean sets V3 and T3 it changes fewer gaps than the rules (damage 0.0016 against 0.0026 on V3, 0.0023 against 0.0102 on T3), but it makes 0.11 wrong joins per thousand gaps on T3 where the rules make none. It does not add value on the real passages that decide the serving choice. On V2 it scores 0.733, below the rules (0.806) and below identity (0.753), with 9.16 wrong joins per thousand gaps where the rules make none. On T2 its macro-F1 is higher than both (0.536 against 0.498 and 0.487), but its break-F1 is lower than the rules' (0.669 against 0.760) and it makes 6.58 wrong joins per thousand against 0.00. On the challenge example (T0) the rules score 1.000 and the model 0.620. This report therefore says that the learned model is not shown to add value on real text, and the rules are served.
+**The verdict on requirement Q2.** The requirement is "The learned model must be shown to add value over both, or the report must say that it does not." The fine-tuned encoder adds value over both baselines and over the from-scratch model, on the real passages as well as the synthetic ones. On the realistic dev set V2 its macro-F1 is 0.898, against 0.806 for the rules, 0.753 for identity and 0.733 for scratch; on the realistic test set T2 it is 0.637, against 0.498, 0.487 and 0.536, and its break-F1 is 0.801, above the rules' 0.760 (scratch 0.669). On synthetic corruptions it scores 0.954 on V1 and on T1, against 0.635 and 0.627 for the rules. On the clean sets it changes fewer gaps than the rules or scratch (damage 0.0008 on V3 against 0.0026 and 0.0016; 0.0011 on T3 against 0.0102 and 0.0023). The ablation shows where the value comes from: the same encoder from random initialization scores 0.614 on V2 and 0.441 on T2, below identity on both, so pretraining is worth 0.284 macro-F1 on V2, 0.196 on T2, 0.115 on V1 and 0.109 on T1 (one seed per arm). The remaining costs are real. The model makes wrong joins where the rules make none: 4.58 per thousand gaps on V2, 2.19 on T2 and 0.11 on T3 (scratch: 9.16, 6.58 and 0.11). Its V2 damage, 0.0641, is above the rules' 0.0604. On the challenge example (T0) it scores 0.667 macro-F1 and paragraph match 0.500, against 1.000 and 1.000 for the rules: it puts a paragraph break before the first bullet. This report therefore says that the fine-tuned model is shown to add value over both baselines on real text, and it is served (decision 0010); the scratch model is not.
 
 Dev sets:
 
-<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+<!-- rendered by scripts/report_tables.py at a94a947 -->
 
-Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315.
+Rendered from commit `20eb57a61d0a`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315.
 
 | set | system | gaps | macro-F1 | break-F1 | PARA F1 | wrong-join /1k | changed gaps | paragraph match |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | V1 | identity | 123610 | 0.418 | 0.346 | 0.424 | 0.00 | 0.0000 | 0.161 |
 | V1 | rules | 123610 | 0.635 | 0.513 | 0.410 | 0.00 | 0.0186 | 0.145 |
 | V1 | scratch | 123610 | 0.922 | 0.885 | 0.861 | 0.11 | 0.0365 | 0.656 |
+| V1 | finetuned | 123610 | 0.954 | 0.940 | 0.899 | 0.02 | 0.0384 | 0.747 |
+| V1 | finetuned-ablation | 123610 | 0.839 | 0.763 | 0.749 | 0.68 | 0.0337 | 0.428 |
 | V2 | identity | 2401 | 0.753 | 0.714 | 0.864 | 0.00 | 0.0000 | 0.555 |
 | V2 | rules | 2401 | 0.806 | 0.869 | 0.776 | 0.00 | 0.0604 | 0.526 |
 | V2 | scratch | 2401 | 0.733 | 0.737 | 0.785 | 9.16 | 0.0804 | 0.453 |
+| V2 | finetuned | 2401 | 0.898 | 0.915 | 0.886 | 4.58 | 0.0641 | 0.708 |
+| V2 | finetuned-ablation | 2401 | 0.614 | 0.547 | 0.548 | 6.66 | 0.0979 | 0.226 |
 | V3 | identity | 9187 | 1.000 | 1.000 | 1.000 | 0.00 | 0.0000 | 1.000 |
 | V3 | rules | 9187 | 0.940 | 0.988 | 0.933 | 0.00 | 0.0026 | 0.921 |
 | V3 | scratch | 9187 | 0.975 | 0.971 | 0.988 | 0.00 | 0.0016 | 0.959 |
+| V3 | finetuned | 9187 | 0.991 | 0.986 | 0.985 | 0.00 | 0.0008 | 0.974 |
+| V3 | finetuned-ablation | 9187 | 0.926 | 0.900 | 0.909 | 0.44 | 0.0057 | 0.794 |
 
-`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+`scratch` and `finetuned` rows: weights revisions `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` and `11d6b26e80dfa2c9606702cd2755a63c9dce99ed` of `jalalhussein1982/newline-fixer-finetuned` (section 12). `finetuned-ablation` rows: the same architecture from random initialization, weights not published.
 
-Test sets (evaluated once; the record was rendered from a dirty tree, see section 10):
+Test sets (each system evaluated once; the provenance line lists the commits of both records and is marked dirty because the older one was, see section 10):
 
-<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+<!-- rendered by scripts/report_tables.py at a94a947 -->
 
-Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
+Rendered from commits `4955e06adaa2` + `44480da7717a` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
 
 | set | system | gaps | macro-F1 | break-F1 | PARA F1 | wrong-join /1k | changed gaps | paragraph match |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
 | T0 | identity | 29 | 0.231 | 0.000 | 0.000 | 0.00 | 0.0000 | 0.000 |
 | T0 | rules | 29 | 1.000 | 1.000 | 1.000 | 0.00 | 0.1724 | 1.000 |
 | T0 | scratch | 29 | 0.620 | 0.800 | 0.500 | 0.00 | 0.2069 | 0.000 |
+| T0 | finetuned | 29 | 0.667 | 1.000 | 0.667 | 0.00 | 0.1724 | 0.500 |
+| T0 | finetuned-ablation | 29 | 0.667 | 1.000 | 0.667 | 0.00 | 0.1724 | 0.500 |
 | T1 | identity | 120009 | 0.426 | 0.356 | 0.455 | 0.00 | 0.0000 | 0.187 |
 | T1 | rules | 120009 | 0.627 | 0.508 | 0.436 | 0.00 | 0.0188 | 0.174 |
 | T1 | scratch | 120009 | 0.921 | 0.884 | 0.861 | 0.13 | 0.0382 | 0.667 |
+| T1 | finetuned | 120009 | 0.954 | 0.937 | 0.897 | 0.07 | 0.0403 | 0.750 |
+| T1 | finetuned-ablation | 120009 | 0.845 | 0.777 | 0.753 | 0.62 | 0.0342 | 0.449 |
 | T2 | identity | 3645 | 0.487 | 0.587 | 0.708 | 0.00 | 0.0000 | 0.368 |
 | T2 | rules | 3645 | 0.498 | 0.760 | 0.667 | 0.00 | 0.0601 | 0.382 |
 | T2 | scratch | 3645 | 0.536 | 0.669 | 0.651 | 6.58 | 0.0829 | 0.375 |
+| T2 | finetuned | 3645 | 0.637 | 0.801 | 0.762 | 2.19 | 0.0782 | 0.553 |
+| T2 | finetuned-ablation | 3645 | 0.441 | 0.537 | 0.385 | 5.49 | 0.0941 | 0.145 |
 | T3 | identity | 18392 | 1.000 | 1.000 | 1.000 | 0.00 | 0.0000 | 1.000 |
 | T3 | rules | 18392 | 0.811 | 0.978 | 0.759 | 0.00 | 0.0102 | 0.893 |
 | T3 | scratch | 18392 | 0.977 | 0.968 | 0.982 | 0.11 | 0.0023 | 0.929 |
+| T3 | finetuned | 18392 | 0.989 | 0.984 | 0.970 | 0.11 | 0.0011 | 0.964 |
+| T3 | finetuned-ablation | 18392 | 0.925 | 0.891 | 0.927 | 0.22 | 0.0073 | 0.832 |
 
-`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+`scratch` and `finetuned` rows: weights revisions `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` and `11d6b26e80dfa2c9606702cd2755a63c9dce99ed` of `jalalhussein1982/newline-fixer-finetuned` (section 12). `finetuned-ablation` rows: the same architecture from random initialization, weights not published.
 
-V2 macro-F1 averages three classes (JOIN has no support there) while T2 averages four (JOIN has a support of one gap, the per-class table shows it), so V2 and T2 values are not comparable; without JOIN, T2 macro-F1 is scratch 0.689, rules 0.664, identity 0.650.
+V2 macro-F1 averages three classes (JOIN has no support there) while T2 averages four (JOIN has a support of one gap, the per-class table shows it), so V2 and T2 values are not comparable; without JOIN, T2 macro-F1 is finetuned 0.782, scratch 0.689, rules 0.664, identity 0.650 and finetuned-ablation 0.558.
 
 ### Per class, dev sets (V1, V2)
 
-<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+<!-- rendered by scripts/report_tables.py at a94a947 -->
 
-Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315.
+Rendered from commit `20eb57a61d0a`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315.
 
 | set | system | class | support | precision | recall | F1 |
 |---|---|---|---:|---:|---:|---:|
@@ -202,6 +239,14 @@ Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=0
 | V1 | scratch | SPACE | 118422 | 0.994 | 0.998 | 0.996 |
 | V1 | scratch | NL | 1680 | 0.881 | 0.835 | 0.857 |
 | V1 | scratch | PARA | 2541 | 0.954 | 0.786 | 0.861 |
+| V1 | finetuned | JOIN | 967 | 0.997 | 0.994 | 0.995 |
+| V1 | finetuned | SPACE | 118422 | 0.997 | 0.999 | 0.998 |
+| V1 | finetuned | NL | 1680 | 0.932 | 0.917 | 0.924 |
+| V1 | finetuned | PARA | 2541 | 0.943 | 0.859 | 0.899 |
+| V1 | finetuned-ablation | JOIN | 967 | 0.913 | 0.911 | 0.912 |
+| V1 | finetuned-ablation | SPACE | 118422 | 0.988 | 0.997 | 0.992 |
+| V1 | finetuned-ablation | NL | 1680 | 0.808 | 0.621 | 0.702 |
+| V1 | finetuned-ablation | PARA | 2541 | 0.893 | 0.645 | 0.749 |
 | V2 | identity | JOIN | 0 | 0.000 | 0.000 | 0.000 |
 | V2 | identity | SPACE | 2239 | 1.000 | 0.942 | 0.970 |
 | V2 | identity | NL | 54 | 0.269 | 1.000 | 0.424 |
@@ -214,14 +259,22 @@ Rendered from commit `2e48caa41060`, sets V1=4f22b6469bbd, V2=574867bf0d4d, V3=0
 | V2 | scratch | SPACE | 2239 | 0.984 | 0.992 | 0.988 |
 | V2 | scratch | NL | 54 | 0.500 | 0.370 | 0.426 |
 | V2 | scratch | PARA | 108 | 0.904 | 0.694 | 0.785 |
+| V2 | finetuned | JOIN | 0 | 0.000 | 0.000 | 0.000 |
+| V2 | finetuned | SPACE | 2239 | 0.997 | 0.994 | 0.996 |
+| V2 | finetuned | NL | 54 | 0.750 | 0.889 | 0.814 |
+| V2 | finetuned | PARA | 108 | 0.957 | 0.824 | 0.886 |
+| V2 | finetuned-ablation | JOIN | 0 | 0.000 | 0.000 | 0.000 |
+| V2 | finetuned-ablation | SPACE | 2239 | 0.965 | 0.987 | 0.976 |
+| V2 | finetuned-ablation | NL | 54 | 0.412 | 0.259 | 0.318 |
+| V2 | finetuned-ablation | PARA | 108 | 0.767 | 0.426 | 0.548 |
 
-`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+`scratch` and `finetuned` rows: weights revisions `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` and `11d6b26e80dfa2c9606702cd2755a63c9dce99ed` of `jalalhussein1982/newline-fixer-finetuned` (section 12). `finetuned-ablation` rows: the same architecture from random initialization, weights not published.
 
 ### Per class, test sets (T1, T2)
 
-<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+<!-- rendered by scripts/report_tables.py at a94a947 -->
 
-Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
+Rendered from commits `4955e06adaa2` + `44480da7717a` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
 
 | set | system | class | support | precision | recall | F1 |
 |---|---|---|---:|---:|---:|---:|
@@ -237,6 +290,14 @@ Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16
 | T1 | scratch | SPACE | 114599 | 0.993 | 0.998 | 0.996 |
 | T1 | scratch | NL | 1884 | 0.883 | 0.840 | 0.861 |
 | T1 | scratch | PARA | 2565 | 0.947 | 0.789 | 0.861 |
+| T1 | finetuned | JOIN | 961 | 0.991 | 0.988 | 0.989 |
+| T1 | finetuned | SPACE | 114599 | 0.997 | 0.999 | 0.998 |
+| T1 | finetuned | NL | 1884 | 0.931 | 0.931 | 0.931 |
+| T1 | finetuned | PARA | 2565 | 0.942 | 0.857 | 0.897 |
+| T1 | finetuned-ablation | JOIN | 961 | 0.920 | 0.884 | 0.902 |
+| T1 | finetuned-ablation | SPACE | 114599 | 0.987 | 0.997 | 0.992 |
+| T1 | finetuned-ablation | NL | 1884 | 0.841 | 0.651 | 0.734 |
+| T1 | finetuned-ablation | PARA | 2565 | 0.898 | 0.648 | 0.753 |
 | T2 | identity | JOIN | 1 | 0.000 | 0.000 | 0.000 |
 | T2 | identity | SPACE | 3486 | 1.000 | 0.937 | 0.967 |
 | T2 | identity | NL | 46 | 0.159 | 0.978 | 0.274 |
@@ -249,51 +310,65 @@ Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16
 | T2 | scratch | SPACE | 3486 | 0.989 | 0.983 | 0.986 |
 | T2 | scratch | NL | 46 | 0.393 | 0.478 | 0.431 |
 | T2 | scratch | PARA | 112 | 0.690 | 0.616 | 0.651 |
+| T2 | finetuned | JOIN | 1 | 0.111 | 1.000 | 0.200 |
+| T2 | finetuned | SPACE | 3486 | 0.996 | 0.984 | 0.990 |
+| T2 | finetuned | NL | 46 | 0.480 | 0.783 | 0.595 |
+| T2 | finetuned | PARA | 112 | 0.739 | 0.786 | 0.762 |
+| T2 | finetuned-ablation | JOIN | 1 | 0.048 | 1.000 | 0.091 |
+| T2 | finetuned-ablation | SPACE | 3486 | 0.979 | 0.979 | 0.979 |
+| T2 | finetuned-ablation | NL | 46 | 0.257 | 0.391 | 0.310 |
+| T2 | finetuned-ablation | PARA | 112 | 0.500 | 0.312 | 0.385 |
 
-`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+`scratch` and `finetuned` rows: weights revisions `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` and `11d6b26e80dfa2c9606702cd2755a63c9dce99ed` of `jalalhussein1982/newline-fixer-finetuned` (section 12). `finetuned-ablation` rows: the same architecture from random initialization, weights not published.
 
-T1 by severity band, rules and scratch:
+T1 by severity band, rules, scratch and finetuned:
 
-<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+<!-- rendered by scripts/report_tables.py at a94a947 -->
 
-Rendered from commit `4955e06adaa2` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
+Rendered from commits `4955e06adaa2` + `44480da7717a` (dirty tree), sets T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8.
 
 | severity band | system | items | gaps | macro-F1 | wrong-join /1k | changed gaps |
 |---|---|---:|---:|---:|---:|---:|
 | 0 | rules | 53 | 18575 | 0.806 | 0.00 | 0.0095 |
 | 0 | scratch | 53 | 18575 | 0.987 | 0.00 | 0.0012 |
+| 0 | finetuned | 53 | 18575 | 0.993 | 0.00 | 0.0007 |
 | (0,0.33] | rules | 92 | 30364 | 0.656 | 0.00 | 0.0080 |
 | (0,0.33] | scratch | 92 | 30364 | 0.922 | 0.03 | 0.0241 |
+| (0,0.33] | finetuned | 92 | 30364 | 0.958 | 0.00 | 0.0254 |
 | (0.33,0.66] | rules | 104 | 38495 | 0.607 | 0.00 | 0.0207 |
 | (0.33,0.66] | scratch | 104 | 38495 | 0.917 | 0.13 | 0.0439 |
+| (0.33,0.66] | finetuned | 104 | 38495 | 0.944 | 0.18 | 0.0460 |
 | (0.66,1] | rules | 101 | 32575 | 0.502 | 0.00 | 0.0320 |
 | (0.66,1] | scratch | 101 | 32575 | 0.895 | 0.31 | 0.0658 |
+| (0.66,1] | finetuned | 101 | 32575 | 0.942 | 0.06 | 0.0702 |
 
-`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+`scratch` and `finetuned` rows: weights revisions `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` and `11d6b26e80dfa2c9606702cd2755a63c9dce99ed` of `jalalhussein1982/newline-fixer-finetuned` (section 12). `finetuned-ablation` rows: the same architecture from random initialization, weights not published.
 
-Where the model wins. JOIN: on V1 its JOIN F1 is 0.974 against 0.682 for the rules (`experiments/README.md`); the rules join a split word only when a lexicon lookup succeeds. PARA structure on clean text: scratch has paragraph match 0.959 on V3 and 0.929 on T3 against 0.921 and 0.893 for the rules, and fewer damaged gaps. The severity table shows a gain in every band: macro-F1 0.987 against 0.806 at severity 0, and 0.895 against 0.502 at the highest band. Its own cost grows with severity: wrong joins go from 0.00 to 0.31 per thousand, and its clean damage in band 0 is 0.0012.
+Where the fine-tuned model wins. JOIN: on V1 its JOIN F1 is 0.995 against 0.682 for the rules (the per-class tables); the rules join a split word only when a lexicon lookup succeeds. Real text: on V2 its NL F1 is 0.814 against 0.651 for the rules and its PARA F1 0.886 against 0.776, and paragraph match is 0.708 against 0.526 on V2 and 0.553 against 0.382 on T2. Clean text: paragraph match is 0.974 on V3 and 0.964 on T3 against 0.921 and 0.893 for the rules. The severity table shows a gain in every band: macro-F1 0.993 against 0.806 at severity 0, and 0.942 against 0.502 at the highest band; its clean damage in band 0 is 0.0007.
 
-Where it loses. On V2 and T2 the model has a lower break-F1 than the rules (0.737 against 0.869 on V2, 0.669 against 0.760 on T2), and it glues words together. Decision 0007 measured NL recall of 0.37 on V2. Paragraph match is lower than the rules' on V2 (0.453 against 0.526) and on T2 it is a near-tie (0.375 against 0.382).
+Where it loses. Wrong joins: 4.58 per thousand gaps on V2, 2.19 on T2, up to 0.18 in the middle severity band of T1, against 0.00 for the rules in every one of those (a wrong join glues two words together). Damage on V2 is 0.0641 against 0.0604. On T2 the single JOIN gap is found (recall 1.0) but nine gaps are predicted JOIN (precision 0.111). The challenge example is not reproduced (section 10). On the V2 passages the model is above identity in every class that has support, but its NL precision there is 0.750, so some of its inserted line breaks are wrong.
 
-Why. The design's risk table predicted that models learn the corruptor, not the task. The synthetic corruptions are uniform random breaks at the same rates in training and in V1 and T1; the PDF extractions differ from them. The gap between the V1 and V2 scores (0.922 and 0.733) is the size of that difference for this model. The explanation was not tested beyond this comparison.
+Why. The design's risk table predicted that models learn the corruptor, not the task. The synthetic corruptions are uniform random breaks at the same rates in training and in V1 and T1; the PDF extractions differ from them. The drop from V1 to V2 is 0.056 macro-F1 for the fine-tuned model (0.954 to 0.898), 0.189 for scratch (0.922 to 0.733) and 0.225 for the random-init ablation (0.839 to 0.614), so pretraining shrinks the gap without closing it. The explanation was not tested beyond this comparison.
 
 ## 8. Service numbers
 
-<!-- rendered by scripts/report_tables.py at 7ecab76 -->
+<!-- rendered by scripts/report_tables.py at a94a947 -->
 
 | label | system | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | RSS MB | disk MB | commit |
 |---|---|---:|---:|---:|---:|---:|---:|---|
+| container-finetuned | finetuned | 121.8 / 158.9 | 342.9 / 585.1 | 2584.1 / 2954.5 | 9,458 | - | - | `3390fa73a69c` |
 | container-rules | rules | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | - | - | `3ef9677a888b` |
 | container-scratch | scratch | 54.7 / 61.8 | 304.1 / 318.5 | 1977.4 / 2056.9 | 23,563 | - | - | `3ef9677a888b` |
-| m1-mac-cpu | identity | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.5 | 7,204,882 | 24 | 0.0 | `c181dae5d6cb` |
-| m1-mac-cpu | rules | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,412,221 | 32 | 0.2 | `c181dae5d6cb` |
-| m1-mac-cpu | scratch | 7.5 / 7.6 | 40.6 / 41.9 | 268.1 / 274.1 | 71,266 | 274 | 22.6 | `c181dae5d6cb` |
+| m1-mac-cpu | identity | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.6 | 6,976,161 | 24 | 0.0 | `610ca964767e` |
+| m1-mac-cpu | rules | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,354,047 | 32 | 0.2 | `610ca964767e` |
+| m1-mac-cpu | scratch | 7.3 / 7.5 | 40.2 / 42.0 | 267.8 / 283.9 | 79,701 | 297 | 22.6 | `610ca964767e` |
+| m1-mac-cpu | finetuned | 28.8 / 34.5 | 92.8 / 96.4 | 807.9 / 855.7 | 24,898 | 662 | 290.9 | `610ca964767e` |
 
-`scratch` rows: weights revision `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` (section 5).
+`scratch` and `finetuned` rows: weights revisions `6c311e757d17e89c80b7b86908043637a4f56e28` of `jalalhussein1982/newline-fixer-scratch` and `11d6b26e80dfa2c9606702cd2755a63c9dce99ed` of `jalalhussein1982/newline-fixer-finetuned` (section 12). `finetuned-ablation` rows: the same architecture from random initialization, weights not published.
 
 Latency is one request at a time; throughput is eight concurrent requests of 2,000 characters. Rows labelled `m1-mac-cpu` are in-process measurements on an Apple M1 (8 GB) on CPU. Rows labelled `container-*` go through HTTP against the image running in Docker Desktop's Linux VM on the same Mac, so they carry no size or memory figures.
 
-The design states the latency rule on the host CPU, so the host p50 at 2,000 characters is the figure that enters the decision rule: rules 0.5 ms, scratch 40.6 ms, limit 300 ms. Both pass. The container figure for scratch, 304.1 ms, is 7.5 times the host figure and would fail the limit if it were the gate. The cause is not isolated; thread oversubscription in the VM is the leading hypothesis and is untested. Rules in the container take 1.9 ms. Resident memory after warm-up is 32 MB for rules and 274 MB for scratch. The image is 1.18 GB (from `docker image ls`), dominated by the CPU PyTorch wheel.
+The design states the latency rule on the host CPU, so the host p50 at 2,000 characters is the figure that enters the decision rule: rules 0.5 ms, scratch 40.2 ms, finetuned 92.8 ms, limit 300 ms. All three pass. The container figure for finetuned, 342.9 ms (p95 585.1 ms), is 3.7 times the host figure and would fail the limit if it were the gate. Decision 0010 extrapolated about 700 ms from scratch's ratio of 7.6 (304.1 ms in the container against 40.2 on the host); the measurement is half that, because the ratio is not constant across models. The cause of the container overhead is not isolated; thread oversubscription in the VM is the leading hypothesis and is untested. Rules in the container take 1.9 ms. Resident memory after warm-up is 32 MB for rules, 297 MB for scratch and 662 MB for finetuned; the fine-tuned weights are 290.9 MB on disk against 22.6 MB for scratch. The image holds the weights of both learned models and is 1.89 GB on disk (535 MB content size, from `docker image ls`), dominated by the CPU PyTorch wheel and the two weight sets. Container throughput for finetuned is 9,458 characters per second against 24,898 on the host.
 
 ## 9. Decisions
 
@@ -306,37 +381,42 @@ Records are in [`docs/decisions/`](docs/decisions/). They are never edited; a ch
 - [0005](docs/decisions/0005-clean-text-sources.md): Wikipedia plus generated documents; Wikitext-103 rejected because its whitespace is tokenized, not clean.
 - [0006](docs/decisions/0006-rules-baseline-frozen.md): B1 frozen at the first version that beats identity on V1 and V2 with no wrong joins on V3. Three table-like passages were removed from V2 under the reviewer rule, not by tuning rules.
 - [0007](docs/decisions/0007-scratch-model-class-weighting.md): unweighted cross-entropy for the from-scratch model. Inverse-frequency weights gave V1 macro-F1 0.741 and V3 damage 0.0447, failing the gate.
-- [0008](docs/decisions/0008-served-model.md): serve the rules baseline. Both systems pass both candidate conditions; the rules have the higher V2 macro-F1 (0.806 against 0.733) and no wrong joins.
+- [0008](docs/decisions/0008-served-model.md): serve the rules baseline; superseded by 0010. Both systems pass both candidate conditions; the rules have the higher V2 macro-F1 (0.806 against 0.733) and no wrong joins.
+- [0009](docs/decisions/0009-encoder-candidate.md): fine-tune `microsoft/deberta-v3-xsmall`. After one epoch each, it led `distilbert-base-cased` on V1 macro-F1 (0.937 against 0.901) and both were within the per-window latency limit of 67.4 ms (65.5 and 51.2 ms); one epoch and one seed, so the gap is not a significance claim.
+- [0010](docs/decisions/0010-served-model-after-m5.md): serve the fine-tuned encoder, superseding 0008. Rules, scratch and finetuned pass both candidate conditions; finetuned has the highest V2 macro-F1 (0.898 against 0.806 and 0.733). The decision records the caveats that this report measures: wrong joins, the challenge example, and the cost in weight size, memory and container latency. The random-init ablation (V3 damage 0.0057, over the gate) is evidence for what pretraining is worth, not a candidate.
 
 ## 10. Known failures and limits
 
-- **The challenge example is reproduced by the rules and not by the model.** The model puts a paragraph break after `3.2.3` instead of a space, and a paragraph break before the first bullet where the expected output has a single newline (decision 0007). The rest of the example is correct. The rules reproduce it exactly (T0 macro-F1 1.000).
-- **V2 regression and T2 wrong joins.** The model is below the rules and below identity on V2, and makes 9.16 (V2) and 6.58 (T2) wrong joins per thousand gaps. A wrong join glues two words together.
-- **The V3 gate margin is thin.** The chosen epoch has V3 damage 0.0016 against the gate of 0.0026, but three of the eight epochs were above the gate (decision 0007). Selection used V1 macro-F1, so passing the gate at epoch 8 is partly luck.
-- **The rules also damage clean text.** V3 damage is 0.0026, exactly at the gate, and their PARA F1 is below identity on V1 and V2. On T3, the clean test set, the rules change 0.0102 of gaps (four times the 0.0026 gate that was set on V3) with paragraph match 0.893 and macro-F1 0.811, where scratch changes 0.0023 with 0.929 and 0.977. The gate set on V3 did not generalise for the system that is served. Scratch's own T3 cost is 0.11 wrong joins per thousand gaps where the rules make none.
+- **Requirement A2 (the challenge example through the API) holds for `NF_MODEL=rules` and not for the default model, which differs on one gap; the default follows decision 0010's rule (Q2) over A2, deliberately.**
+- **The challenge example is reproduced by the rules and not by the served model.** The fine-tuned model gets the heading and the lead-in sentence right and puts a paragraph break (a blank line) before the first bullet where the expected output has a single newline. T0 macro-F1 is 0.667 (paragraph match 0.500) against 1.000 for the rules. Scratch failed it in two places (T0 0.620). Anyone who tries the README example against the default image will see the difference; `NF_MODEL=rules` gives the exact output.
+- **Wrong joins.** The fine-tuned model makes 4.58 (V2), 2.19 (T2) and 0.11 (T3) wrong joins per thousand gaps where the rules make none. A wrong join glues two words together. It is lower than scratch (9.16, 6.58, 0.11) and is the worst error the service can make.
+- **Container latency.** The served model takes 342.9 ms p50 at 2,000 characters in the container (p95 585.1 ms), above the 300 ms limit, which the design states on the host (92.8 ms). The cause of the container overhead is not isolated. A user running the default image on a CPU like the Docker Desktop VM's will wait about a third of a second for 2,000 characters and 2.6 seconds for 10,000.
+- **One seed.** Every learned number is one training run per model; the ablation difference on V2 (0.284) is large, but the size of the gap and the ranking of finetuned against scratch on T2 are single measurements. The encoder was chosen from one epoch of one seed, with a latency margin of 65.5 ms against 67.4 ms.
+- **Weight size and memory.** 290.9 MB of weights and 662 MB resident, against 22.6 MB and 297 MB for scratch and 32 MB for the rules.
+- **The rules also damage clean text.** V3 damage is 0.0026, exactly at the gate, and their PARA F1 is below identity on V1 and V2. On T3, the clean test set, the rules change 0.0102 of gaps (four times the gate set on V3), with paragraph match 0.893 and macro-F1 0.811, where finetuned changes 0.0011 with 0.964 and 0.989. The gate set on V3 did not generalise for the rules; finetuned's own T3 cost is 0.11 wrong joins per thousand gaps.
 - **The realistic evidence is ten documents**: four in V2, six in T2, 29 and 40 passages.
 - **The generated documents are reproducible only by download, not by script.**
-- **The container latency gap**: scratch at 304.1 ms against 40.6 ms on the host, cause not isolated.
 - **Out of scope by design**: hyphenated line breaks and breaks deleted without whitespace.
-- **Test-set record from a dirty tree.** `experiments/results/test-sets.json` was rendered at commit `4955e06adaa2` with uncommitted files: the decision record 0008 and the README of the next commit, `9cb6c5d`. They were not yet committed when the evaluation ran. The code was that of `4955e06`, so the numbers do not depend on the difference.
+- **Test-set records.** `experiments/results/test-sets.json` (identity, rules, scratch) was rendered at commit `4955e06adaa2` with uncommitted files: the decision record 0008 and the README of the next commit, `9cb6c5d`. The code was that of `4955e06`, so the numbers do not depend on the difference. `experiments/results/test-sets-m5.json` (finetuned and its ablation) was rendered from a clean tree at `44480da7717a`; the merged tables are marked dirty because the older record was. The candidate-selection record `experiments/results/m5-candidates.json` was also measured from a dirty tree (decision 0010).
 
 ## 11. What would be done next
 
 In priority order, each with the number it targets:
 
-1. The fine-tuned cased encoder of design 4.5 (milestone M5), with model selection on V2. Target: V2 macro-F1 above 0.806 under the damage gate of 0.0026.
-2. A V2-aware or wrong-join-penalised selection rule for the from-scratch model (decision 0007 consequences). Target: V2 wrong joins from 9.16 per thousand toward the 0.00 of the rules.
-3. More realistic corruptions in the training data. Target: the V1 to V2 gap, 0.922 against 0.733 macro-F1, and the NL recall of 0.37 on V2.
-4. The container thread experiment. Target: scratch p50 at 2,000 characters from 304.1 ms toward the host's 40.6 ms.
-5. The Hugging Face Space (milestone M6), which runs the same image.
-6. ONNX export only if latency is missed; the host figure (40.6 ms against 300 ms) does not call for it.
+1. Isolate the container latency (thread settings in the VM, a second host). Target: finetuned p50 at 2,000 characters in the container from 342.9 ms toward the host's 92.8 ms, under 300 ms.
+2. More realistic corruptions in the training data. Target: wrong joins on V2 from 4.58 per thousand toward the 0.00 of the rules, and the V1 to V2 gap of 0.056 macro-F1 (0.954 against 0.898).
+3. The Hugging Face Space (milestone M6), which runs the same image.
+4. A second seed for finetuned and its ablation, to put a spread on the 0.284 pretraining effect on V2.
+5. ONNX export only if the container latency blocks the Space after item 1; the host figure (92.8 ms against 300 ms) does not call for it.
 
 ## 12. Process
 
-The requirements, design and implementation plan were committed before any code (requirement A7); `git log` shows them first. Work then went in milestones M1 (data, baselines, evaluation), M2 (from-scratch model), M3 (service, Docker, benchmark) and M4 (this report), each a short-lived branch merged into `main` by pull request with CI. Decision records were written on the day of the choice. Library code is test-first. Each plan task was executed with a fresh implementer and a separate reviewer (subagent-driven development). The author's development environment was Claude Code (and Codex); every generated change was reviewed and every decision is the author's.
+The requirements, design and implementation plan were committed before any code (requirement A7); `git log` shows them first. Work then went in milestones M1 (data, baselines, evaluation), M2 (from-scratch model), M3 (service, Docker, benchmark), M4 (the report) and M5 (the fine-tuned encoder and its ablation, then this update), each a short-lived branch merged into `main` by pull request with CI. Decision records were written on the day of the choice. Library code is test-first. Each plan task was executed with a fresh implementer and a separate reviewer (subagent-driven development). The author's development environment was Claude Code (and Codex); every generated change was reviewed and every decision is the author's.
 
 Locations:
 
-- Weights: https://huggingface.co/jalalhussein1982/newline-fixer-scratch, revision `6c311e757d17e89c80b7b86908043637a4f56e28`.
+- Weights, scratch: https://huggingface.co/jalalhussein1982/newline-fixer-scratch, revision `6c311e757d17e89c80b7b86908043637a4f56e28`.
+- Weights, fine-tuned encoder: https://huggingface.co/jalalhussein1982/newline-fixer-finetuned, revision `11d6b26e80dfa2c9606702cd2755a63c9dce99ed`. The ablation weights are not published.
+- Colab notebooks: `notebooks/train_scratch_colab.ipynb` and `notebooks/train_finetune_colab.ipynb` (candidate selection and the two full runs of M5). The Colab runs used transformers 5, which writes `extra_special_tokens` as a list in the tokenizer config; the repository pins transformers below 5 (4.57.6 in the lock file), so `FinetunedFixer.load` maps the list to the mapping form before loading (decision 0009).
 - Wikipedia source: `wikimedia/wikipedia`, revision `b04c8d1ceb2f5cd4588862100d08de323dccfbaa`.
 - Built dataset: https://huggingface.co/datasets/jalalhussein1982/newline-fixer-data, revision `42b4d8333b2bb89901f0be1680756be628382c88`.

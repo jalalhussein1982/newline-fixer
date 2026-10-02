@@ -20,7 +20,7 @@ Conventions for every milestone:
 | M2 | `plans/2026-10-02-m2-scratch-model.md` | 8 tasks | M1 model trained, evaluated on dev sets, run recorded in `experiments/` |
 | M3 | `plans/2026-10-02-m3-service.md` | see the plan | API, Docker, tests, benchmark; served model chosen by the decision rule |
 | M4 | `plans/2026-10-02-m4-report.md` | see the plan | `report.md` complete, test sets evaluated once, bundle produced |
-| M5 | `plans/<date>-m5-finetuned-model.md` | written at M5 start | M2 selected, trained, ablated, published; report updated |
+| M5 | `plans/2026-10-02-m5-finetuned-model.md` | written at M5 start | M2 selected, trained, ablated, published; report updated |
 | M6 | `plans/<date>-m6-extensions.md` | written at M6 start | Space deployed; further items only while a measured number improves |
 
 ## M1: data, baselines, evaluation harness

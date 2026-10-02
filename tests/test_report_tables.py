@@ -5,6 +5,8 @@ from typing import Any
 import pytest
 
 from newline_fixer.eval.report import (
+    candidates_table,
+    merge_results,
     per_class_table,
     realistic_facts,
     service_table,
@@ -174,3 +176,59 @@ def test_report_tables_script_renders_every_section(
     ):
         assert heading in out
     assert "Rendered from commit" in out
+
+
+def test_candidates_table_rows_limit_line_and_yes_no() -> None:
+    record = {
+        "scratch_p50_ms": 100.0,
+        "limit_ms": 300.0,
+        "candidates": {
+            "a": {
+                "pretrained": "m/a",
+                "V1_macro_f1": 0.91234,
+                "p50_ms": 250.0,
+                "p95_ms": 280.0,
+                "within_limit": True,
+                "n_params": 22_000_000,
+            },
+            "b": {
+                "pretrained": "m/b",
+                "V1_macro_f1": 0.9,
+                "p50_ms": 400.0,
+                "p95_ms": 450.0,
+                "within_limit": False,
+                "n_params": 66_000_000,
+            },
+        },
+    }
+    out = candidates_table(record)
+    assert out.startswith("Scratch p50 per 256-token window: 100.0 ms; limit (3x): 300.0 ms.")
+    assert "| a | m/a | 22,000,000 | 0.912 | 250.0 | 280.0 | yes |" in out
+    assert "| b | m/b | 66,000,000 | 0.900 | 400.0 | 450.0 | no |" in out
+    assert out.count("\n| a |") + out.count("\n| b |") == 2
+
+
+def test_merge_results_concatenates_systems_and_joins_commits() -> None:
+    a = {
+        "git_commit": "a" * 40,
+        "dirty": False,
+        "sets_sha256": {"T0": "h0"},
+        "systems": {"rules": {"T0": 1}},
+    }
+    b = {**a, "git_commit": "b" * 40, "dirty": True, "systems": {"finetuned": {"T0": 2}}}
+    m = merge_results(a, b)
+    assert list(m["systems"]) == ["rules", "finetuned"]
+    assert m["git_commit"] == "a" * 40 + "+" + "b" * 40
+    assert m["dirty"] is True
+    out = summary_table_provenance(m)
+    assert f"commits `{'a' * 12}` + `{'b' * 12}` (dirty tree)" in out
+    with pytest.raises(ValueError, match="set hashes"):
+        merge_results(a, {**b, "sets_sha256": {"T0": "other"}})
+    with pytest.raises(ValueError, match="both records"):
+        merge_results(a, a)
+
+
+def summary_table_provenance(m: dict[str, Any]) -> str:
+    from newline_fixer.eval.report import _provenance
+
+    return _provenance(m)

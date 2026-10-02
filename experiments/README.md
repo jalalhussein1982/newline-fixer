@@ -36,6 +36,57 @@ Sets: V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315 (built from seed 1 at co
 | V3 | scratch | 9187 | 0.975 | SPACE,NL,PARA | 0.971 | 0.000 | 0.988 | 0.00 | 0.0016 | 0.080 | 0.080 | 0.959 |
 
 
+## m5-candidates
+
+Scratch p50 per 256-token window: 22.5 ms; limit (3x): 67.4 ms.
+
+| run | pretrained | params | V1 macro-F1 | p50 ms / window | p95 ms | within limit |
+|---|---|---:|---:|---:|---:|---|
+| ft-deberta-select | microsoft/deberta-v3-xsmall | 70,646,404 | 0.937 | 65.5 | 76.0 | yes |
+| ft-distilbert-select | distilbert-base-cased | 65,195,524 | 0.901 | 51.2 | 53.6 | yes |
+
+
+## m5-finetuned
+
+Results at commit `20eb57a61d0a`, 2026-10-02T18:12:49+00:00.
+Sets: V1=4f22b6469bbd, V2=574867bf0d4d, V3=07db0ab68315 (built from seed 1 at commit 2d3885bd31a2)
+
+| set | system | gaps | macro-F1 | classes | break-F1 | JOIN F1 | PARA F1 | wrong-join /1k | damage | str≠raw | str≠norm | para match |
+|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| V1 | identity | 123610 | 0.418 | JOIN,SPACE,NL,PARA | 0.346 | 0.000 | 0.424 | 0.00 | 0.0000 | 0.603 | 0.000 | 0.161 |
+| V1 | rules | 123610 | 0.635 | JOIN,SPACE,NL,PARA | 0.513 | 0.682 | 0.410 | 0.00 | 0.0186 | 0.863 | 0.846 | 0.145 |
+| V1 | scratch | 123610 | 0.922 | JOIN,SPACE,NL,PARA | 0.885 | 0.974 | 0.861 | 0.11 | 0.0365 | 0.903 | 0.903 | 0.656 |
+| V1 | finetuned | 123610 | 0.954 | JOIN,SPACE,NL,PARA | 0.940 | 0.995 | 0.899 | 0.02 | 0.0384 | 0.891 | 0.891 | 0.747 |
+| V1 | finetuned-ablation | 123610 | 0.839 | JOIN,SPACE,NL,PARA | 0.763 | 0.912 | 0.749 | 0.68 | 0.0337 | 0.949 | 0.949 | 0.428 |
+| V2 | identity | 2401 | 0.753 | SPACE,NL,PARA | 0.714 | 0.000 | 0.864 | 0.00 | 0.0000 | 0.000 | 0.000 | 0.555 |
+| V2 | rules | 2401 | 0.806 | SPACE,NL,PARA | 0.869 | 0.000 | 0.776 | 0.00 | 0.0604 | 0.931 | 0.931 | 0.526 |
+| V2 | scratch | 2401 | 0.733 | SPACE,NL,PARA | 0.737 | 0.000 | 0.785 | 9.16 | 0.0804 | 1.000 | 1.000 | 0.453 |
+| V2 | finetuned | 2401 | 0.898 | SPACE,NL,PARA | 0.915 | 0.000 | 0.886 | 4.58 | 0.0641 | 0.966 | 0.966 | 0.708 |
+| V2 | finetuned-ablation | 2401 | 0.614 | SPACE,NL,PARA | 0.547 | 0.000 | 0.548 | 6.66 | 0.0979 | 1.000 | 1.000 | 0.226 |
+| V3 | identity | 9187 | 1.000 | SPACE,NL,PARA | 1.000 | 0.000 | 1.000 | 0.00 | 0.0000 | 0.000 | 0.000 | 1.000 |
+| V3 | rules | 9187 | 0.940 | SPACE,NL,PARA | 0.988 | 0.000 | 0.933 | 0.00 | 0.0026 | 0.170 | 0.170 | 0.921 |
+| V3 | scratch | 9187 | 0.975 | SPACE,NL,PARA | 0.971 | 0.000 | 0.988 | 0.00 | 0.0016 | 0.080 | 0.080 | 0.959 |
+| V3 | finetuned | 9187 | 0.991 | SPACE,NL,PARA | 0.986 | 0.000 | 0.985 | 0.00 | 0.0008 | 0.070 | 0.070 | 0.974 |
+| V3 | finetuned-ablation | 9187 | 0.926 | SPACE,NL,PARA | 0.900 | 0.000 | 0.909 | 0.44 | 0.0057 | 0.330 | 0.330 | 0.794 |
+
+
+## test-sets-m5
+
+Results at commit `44480da7717a`, 2026-10-02T18:28:45+00:00.
+Sets: T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8 (built from seed 1 at commit 2d3885bd31a2)
+
+| set | system | gaps | macro-F1 | classes | break-F1 | JOIN F1 | PARA F1 | wrong-join /1k | damage | str≠raw | str≠norm | para match |
+|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| T0 | finetuned | 29 | 0.667 | JOIN,SPACE,NL,PARA | 1.000 | 1.000 | 0.667 | 0.00 | 0.1724 | 1.000 | 1.000 | 0.500 |
+| T0 | finetuned-ablation | 29 | 0.667 | JOIN,SPACE,NL,PARA | 1.000 | 1.000 | 0.667 | 0.00 | 0.1724 | 1.000 | 1.000 | 0.500 |
+| T1 | finetuned | 120009 | 0.954 | JOIN,SPACE,NL,PARA | 0.937 | 0.989 | 0.897 | 0.07 | 0.0403 | 0.854 | 0.854 | 0.750 |
+| T1 | finetuned-ablation | 120009 | 0.845 | JOIN,SPACE,NL,PARA | 0.777 | 0.902 | 0.753 | 0.62 | 0.0342 | 0.897 | 0.897 | 0.449 |
+| T2 | finetuned | 3645 | 0.637 | JOIN,SPACE,NL,PARA | 0.801 | 0.200 | 0.762 | 2.19 | 0.0782 | 1.000 | 1.000 | 0.553 |
+| T2 | finetuned-ablation | 3645 | 0.441 | JOIN,SPACE,NL,PARA | 0.537 | 0.091 | 0.385 | 5.49 | 0.0941 | 1.000 | 1.000 | 0.145 |
+| T3 | finetuned | 18392 | 0.989 | SPACE,NL,PARA | 0.984 | 0.000 | 0.970 | 0.11 | 0.0011 | 0.085 | 0.085 | 0.964 |
+| T3 | finetuned-ablation | 18392 | 0.925 | SPACE,NL,PARA | 0.891 | 0.000 | 0.927 | 0.22 | 0.0073 | 0.290 | 0.290 | 0.832 |
+
+
 ## test-sets
 
 Results at commit `4955e06adaa2` (dirty tree), 2026-10-02T14:16:08+00:00.
@@ -61,6 +112,10 @@ Sets: T0=95d8fe63481b, T1=a3d16ebe012c, T2=11ba1ea6f18c, T3=aaceae2a74c8 (built 
 
 | run | commit | class weights | best epoch / run | V1 macro-F1 | V2 macro-F1 | V3 damage | params | device | minutes |
 |---|---|---|---|---:|---:|---:|---:|---|---:|
+| finetuned-ablation | `6093ac8f9125` |  | 3 / 3 | 0.839 |  | 0.0057 | 70,646,404 | cuda | 15.4 |
+| finetuned | `6093ac8f9125` |  | 3 / 3 | 0.954 |  | 0.0008 | 70,646,404 | cuda | 15.0 |
+| ft-deberta-select | `6093ac8f9125` |  | 1 / 1 | 0.937 |  | 0.0023 | 70,646,404 | cuda | 3.8 |
+| ft-distilbert-select | `6093ac8f9125` |  | 1 / 1 | 0.901 |  | 0.0024 | 65,195,524 | cuda | 2.4 |
 | scratch-v1-inverse | `dd2a39b955d0` | inverse | 3 / 5 | 0.741 |  | 0.0447 | 5,551,692 | cuda | 5.2 |
 | scratch-v1 | `dd2a39b955d0` | none | 8 / 8 | 0.922 |  | 0.0016 | 5,551,692 | cuda | 8.6 |
 
@@ -71,8 +126,10 @@ Latency is one request at a time; throughput is eight concurrent requests of 2,0
 
 | label | system | mode | device | disk MB | RSS MB | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | commit |
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| container-finetuned | finetuned | http | cpu | - | - | 121.8 / 158.9 | 342.9 / 585.1 | 2584.1 / 2954.5 | 9,458 | `3390fa73a69c` |
 | container-rules | rules | http | cpu | - | - | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | `3ef9677a888b` |
 | container-scratch | scratch | http | cpu | - | - | 54.7 / 61.8 | 304.1 / 318.5 | 1977.4 / 2056.9 | 23,563 | `3ef9677a888b` |
-| m1-mac-cpu | identity | in-process | cpu | 0.0 | 24 | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.5 | 7,204,882 | `c181dae5d6cb` |
-| m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,412,221 | `c181dae5d6cb` |
-| m1-mac-cpu | scratch | in-process | cpu | 22.6 | 274 | 7.5 / 7.6 | 40.6 / 41.9 | 268.1 / 274.1 | 71,266 | `c181dae5d6cb` |
+| m1-mac-cpu | identity | in-process | cpu | 0.0 | 24 | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.6 | 6,976,161 | `610ca964767e` |
+| m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,354,047 | `610ca964767e` |
+| m1-mac-cpu | scratch | in-process | cpu | 22.6 | 297 | 7.3 / 7.5 | 40.2 / 42.0 | 267.8 / 283.9 | 79,701 | `610ca964767e` |
+| m1-mac-cpu | finetuned | in-process | cpu | 290.9 | 662 | 28.8 / 34.5 | 92.8 / 96.4 | 807.9 / 855.7 | 24,898 | `610ca964767e` |

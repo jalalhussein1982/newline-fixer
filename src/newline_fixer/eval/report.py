@@ -12,7 +12,29 @@ from .table import _mb  # dash for None, used by the bench table
 def _provenance(results: dict[str, Any]) -> str:
     dirty = " (dirty tree)" if results.get("dirty") else ""
     sets = ", ".join(f"{k}={v[:12]}" for k, v in results.get("sets_sha256", {}).items())
-    return f"Rendered from commit `{str(results.get('git_commit', ''))[:12]}`{dirty}, sets {sets}."
+    commits = " + ".join(f"`{c[:12]}`" for c in str(results.get("git_commit", "")).split("+"))
+    noun = "commits" if "+" in str(results.get("git_commit", "")) else "commit"
+    return f"Rendered from {noun} {commits}{dirty}, sets {sets}."
+
+
+def merge_results(a: dict[str, Any], b: dict[str, Any]) -> dict[str, Any]:
+    """Combine two evaluation records over the same sets (equal `sets_sha256`) into one.
+
+    `systems` are concatenated (a system in both is an error), `git_commit` joins both commits
+    with `+` (once if equal), `dirty` is true if either is.
+    """
+    if a.get("sets_sha256") != b.get("sets_sha256"):
+        raise ValueError("cannot merge records evaluated on different set hashes")
+    overlap = set(a["systems"]) & set(b["systems"])
+    if overlap:
+        raise ValueError(f"systems in both records: {sorted(overlap)}")
+    ca, cb = str(a.get("git_commit", "")), str(b.get("git_commit", ""))
+    return {
+        **a,
+        "git_commit": ca if ca == cb else f"{ca}+{cb}",
+        "dirty": bool(a.get("dirty")) or bool(b.get("dirty")),
+        "systems": {**a["systems"], **b["systems"]},
+    }
 
 
 def summary_table(results: dict[str, Any], sets: Sequence[str], systems: Sequence[str]) -> str:
@@ -102,6 +124,22 @@ def training_table(records: Sequence[dict[str, Any]]) -> str:
             f"{float(r.get('seconds', 0.0)) / 60:.1f} | {r.get('best_epoch', '')} | "
             f"{best.get('V1_macro_f1', 0.0):.3f} | {best.get('V3_damage', 0.0):.4f} | "
             f"{int(r.get('n_params', 0)):,} | `{str(r.get('git_commit', ''))[:12]}` |"
+        )
+    return "\n".join(lines) + "\n"
+
+
+def candidates_table(record: dict[str, Any]) -> str:
+    lines = [
+        f"Scratch p50 per 256-token window: {record['scratch_p50_ms']:.1f} ms; "
+        f"limit (3x): {record['limit_ms']:.1f} ms.",
+        "",
+        "| run | pretrained | params | V1 macro-F1 | p50 ms / window | p95 ms | within limit |",
+        "|---|---|---:|---:|---:|---:|---|",
+    ]
+    for run, c in record["candidates"].items():
+        lines.append(
+            f"| {run} | {c['pretrained']} | {int(c['n_params']):,} | {c['V1_macro_f1']:.3f} | "
+            f"{c['p50_ms']:.1f} | {c['p95_ms']:.1f} | {'yes' if c['within_limit'] else 'no'} |"
         )
     return "\n".join(lines) + "\n"
 
