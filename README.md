@@ -50,6 +50,6 @@ uv run python scripts/evaluate.py --systems identity,rules,scratch --sets V1,V2,
 
 Weights are written to `experiments/runs/<run-id>/` (git-ignored); set `NF_WEIGHTS` to a run directory to evaluate or serve it. The two runs behind decision 0007 (`scratch-v1`, and `scratch-v1-inverse` with `--class-weights inverse`) were produced with the Colab notebook above, and `experiments/runs/current` is a copy of `scratch-v1`.
 
-Weights live on the Hugging Face Hub, not in git (decision 0003). Published revision: pending, see Task 8 step 6 of the M2 plan. Once published, `NF_WEIGHTS=hf:<user>/newline-fixer-scratch@<revision>` makes the service download and use that exact revision, and the repo id and revision are recorded under the `hub` key of `experiments/training/scratch-v1.json`. To publish (after `hf auth login`): `uv run python scripts/publish_weights.py --run-id scratch-v1 --repo <user>/newline-fixer-scratch`.
+Weights live on the Hugging Face Hub, not in git (decision 0003). Published: `scratch-v1` at https://huggingface.co/jalalhussein1982/newline-fixer-scratch, revision `6c311e757d17e89c80b7b86908043637a4f56e28`. `NF_WEIGHTS=hf:jalalhussein1982/newline-fixer-scratch@6c311e757d17e89c80b7b86908043637a4f56e28` makes the service download and use that exact revision; the repo id and revision are recorded under the `hub` key of `experiments/training/scratch-v1.json`. To publish (after `hf auth login`): `uv run python scripts/publish_weights.py --run-id scratch-v1 --repo <user>/newline-fixer-scratch`.
 
 Results tables live in `experiments/README.md`.
