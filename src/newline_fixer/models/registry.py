@@ -14,7 +14,17 @@ def _rules() -> Fixer:
     return RulesFixer()
 
 
-_REGISTRY: dict[str, Callable[[], Fixer]] = {"identity": IdentityFixer, "rules": _rules}
+def _scratch() -> Fixer:
+    from .scratch import ScratchFixer, default_weights
+
+    return ScratchFixer.load(default_weights())
+
+
+_REGISTRY: dict[str, Callable[[], Fixer]] = {
+    "identity": IdentityFixer,
+    "rules": _rules,
+    "scratch": _scratch,
+}
 FIXER_NAMES = sorted(_REGISTRY)
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any
 
 
@@ -36,4 +37,21 @@ def render_table(results: dict[str, Any]) -> str:
                 f"{r['string_changed_vs_raw']:.3f} | {r['string_changed_vs_normalized']:.3f} | "
                 f"{r['paragraph_match_rate']:.3f} |"
             )
+    return "\n".join(lines) + "\n"
+
+
+def render_training_table(records: Sequence[dict[str, Any]]) -> str:
+    lines = [
+        "| run | commit | class weights | best epoch / run | V1 macro-F1 | V2 macro-F1 | V3 damage | params | device | minutes |",
+        "|---|---|---|---|---:|---:|---:|---:|---|---:|",
+    ]
+    for r in records:
+        best = r.get("best", {})
+        v2 = best.get("V2_macro_f1")
+        lines.append(
+            f"| {r['run_id']} | `{str(r.get('git_commit', ''))[:12]}` | {r.get('train_config', {}).get('class_weights', '')} | "
+            f"{r.get('best_epoch', '')} / {len(r.get('epochs', []))} | {best.get('V1_macro_f1', 0.0):.3f} | "
+            f"{'' if v2 is None else f'{v2:.3f}'} | {best.get('V3_damage', 0.0):.4f} | {int(r.get('n_params', 0)):,} | "
+            f"{r.get('device', '')} | {float(r.get('seconds', 0.0)) / 60:.1f} |"
+        )
     return "\n".join(lines) + "\n"
