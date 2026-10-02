@@ -50,6 +50,6 @@ Latency is one request at a time; throughput is eight concurrent requests of 2,0
 
 | label | system | mode | device | disk MB | RSS MB | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | commit |
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---|
-| m1-mac-cpu | identity | in-process | cpu | 0.2 | 25 | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.6 | 7,302,796 | `3f3f2f40b3eb` |
-| m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.4 / 0.4 | 2.7 / 2.7 | 4,452,515 | `3f3f2f40b3eb` |
-| m1-mac-cpu | scratch | in-process | cpu | 22.6 | 409 | 7.7 / 8.3 | 40.8 / 42.5 | 269.0 / 278.8 | 80,196 | `3f3f2f40b3eb` |
+| m1-mac-cpu | identity | in-process | cpu | 0.0 | 24 | 0.1 / 0.1 | 0.3 / 0.3 | 1.5 / 1.5 | 7,204,882 | `c181dae5d6cb` |
+| m1-mac-cpu | rules | in-process | cpu | 0.2 | 32 | 0.1 / 0.1 | 0.5 / 0.5 | 2.7 / 2.7 | 4,412,221 | `c181dae5d6cb` |
+| m1-mac-cpu | scratch | in-process | cpu | 22.6 | 274 | 7.5 / 7.6 | 40.6 / 41.9 | 268.1 / 274.1 | 71,266 | `c181dae5d6cb` |
