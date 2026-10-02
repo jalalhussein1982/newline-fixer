@@ -31,6 +31,9 @@ container-check:
 	uv run python scripts/container_check.py
 
 bundle:
+	for b in $$(git branch -r | grep -v -- '->' | sed 's|^ *origin/||'); do \
+	  git show-ref --verify --quiet "refs/heads/$$b" || git branch --track "$$b" "origin/$$b"; \
+	done
 	git bundle create jalal-hussein.bundle --all
 
 bundle-check:

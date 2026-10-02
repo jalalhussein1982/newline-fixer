@@ -78,6 +78,8 @@ The challenge is submitted as a git bundle of every branch. `make bundle-check` 
 git checkout main && git pull && make bundle   # writes jalal-hussein.bundle in the repository root (git-ignored)
 ```
 
+`make bundle` first gives every remote branch a local branch, so the bundle carries all of them as branches.
+
 ## Development
 
 ```bash
