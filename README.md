@@ -16,12 +16,36 @@ were committed before any code, and every later change to them is a commit.
 | `docs/03-implementation-plan.md` | Ordered, testable tasks derived from the design |
 | `docs/decisions/` | Architecture decision records, one file per decision, never rewritten |
 | `src/newline_fixer/` | library |
+| `src/newline_fixer/service/` | FastAPI app: `POST /v1/fix`, `/healthz`, `/metrics`, demo page at `/` |
 | `scripts/` | data building and evaluation entry points |
 | `tests/` | pytest suite |
 | `data/` | see `data/README.md` |
 | `report.md` | Final report: how to run, approach, decisions, results (written last) |
 
-Code, tests, the Dockerfile and the report arrive in later commits.
+The report arrives with M4.
+
+## Run the service
+
+```bash
+uv sync --all-extras
+make serve                       # http://localhost:8000, demo page at /
+curl -s localhost:8000/healthz
+curl -s localhost:8000/v1/fix -H 'content-type: application/json' \
+  -d '{"text": "3.2.3 Applications of Attention\n in our Model The Transformer uses multi-head attention in three different ways: • In \"encoder-decoder attention\" layers,\n the que\nries come from the previous decoder layer."}'
+```
+
+Configuration, all optional:
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `NF_MODEL` | `rules` | `identity`, `rules` or `scratch` (decision 0008 sets the default) |
+| `NF_MODEL_REVISION` | the published scratch-v1 revision | Hub revision of the scratch weights |
+| `NF_WEIGHTS` | unset | a local run directory or `hf:repo@revision`; overrides `NF_MODEL_REVISION` |
+| `NF_MAX_CHARS` | `100000` | inputs longer than this get 413 |
+| `NF_LOG_LEVEL` | `INFO` | level of the JSON request log on stdout |
+| `NF_DEVICE` | `cpu` | torch device for the scratch model |
+
+`GET /healthz` answers 503 until the model is loaded; `GET /metrics` is Prometheus text. One JSON line per request goes to stdout; request text is never logged.
 
 ## Development
 

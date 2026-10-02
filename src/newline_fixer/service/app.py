@@ -7,10 +7,11 @@ import time
 import uuid
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
+from importlib import resources
 
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from starlette.concurrency import run_in_threadpool
 from starlette.middleware.base import RequestResponseEndpoint
 from starlette.routing import Match
@@ -142,5 +143,13 @@ def create_app(
     @app.get("/metrics")
     async def metrics_endpoint() -> Response:
         return Response(metrics.render(), media_type=CONTENT_TYPE)
+
+    index_html = (
+        resources.files("newline_fixer.service").joinpath("static/index.html").read_text("utf-8")
+    )
+
+    @app.get("/", response_class=HTMLResponse)
+    async def index() -> HTMLResponse:
+        return HTMLResponse(index_html)
 
     return app
