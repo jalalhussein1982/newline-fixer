@@ -23,32 +23,29 @@ uv run python scripts/build_data.py publish --repo <your-hf-user>/newline-fixer-
 
 Re-running `assemble` redraws every split, every evaluation set and the lexicon; after it, re-run `evaluate` and `results_table` and update decision 0006 before accepting it.
 
-## Realistic sets (pending)
+## Realistic sets
 
-Raw passages were extracted with `pdftotext` and cut (seed 1). Proposed targets now exist for all 80 passages (`<nn>.target.txt`, written in a Claude session, whitespace-only, 0 unreachable breaks each) and await review by the author; none is in `review.json` yet, so V2 and T2 are not built. Step 1 below is therefore done; continue at step 2.
+Built on 2026-10-02 from ten real PDFs. Raw passages were extracted with `pdftotext` and
+cut (seed 1); targets were proposed in a Claude session (whitespace-only) and then reviewed.
 
-Source change: `python-tutorial` (a zip of many PDFs) was replaced in the dev list by `bash-manual` (GNU Bash Reference Manual). All ten downloads and extractions succeeded.
+- **V2 (dev)**: 29 passages, 0 unreachable boundaries: word2vec 6, fasttext 7, nist-800-63 8, bash-manual 8.
+- **T2 (test)**: 40 passages, 0 unreachable boundaries: attention 8, bert 8, resnet 5, adam 4, nist-ai-rmf 7, gnu-make 8.
 
-Cut passages per document (8 each, 80 total; none lost to the filter because every document had enough prose chunks, but the sampled passages changed). Passages that are mostly non-letters (letter ratio below 0.6: indexes, tables, formulas) are filtered out at cut time. The reviewer should still skip any passage without a sensible newline target, so V2 may end below 25 passages and more documents may be needed.
+Source change: `python-tutorial` (a zip of many PDFs) was replaced in the dev list by
+`bash-manual` (GNU Bash Reference Manual). Passages that are mostly non-letters (letter
+ratio below 0.6) are dropped at cut time; 8 were cut per document, 80 in total.
 
-| Role | Document | Passages |
-|------|----------|----------|
-| dev | word2vec | 8 |
-| dev | fasttext | 8 |
-| dev | nist-800-63 | 8 |
-| dev | bash-manual | 8 |
-| test | attention | 8 |
-| test | bert | 8 |
-| test | resnet | 8 |
-| test | adam | 8 |
-| test | nist-ai-rmf | 8 |
-| test | gnu-make | 8 |
+Review provenance (see `review.json`): the four dev documents and `attention` were
+reviewed by JH; `bert`, `resnet`, `adam`, `nist-ai-rmf` and `gnu-make` were read against
+the four review questions by Claude Fable 5.1 on JH's behalf and signed off by JH. Two
+targets were edited during review (`adam/00`, `adam/07`: a section number joined with its
+heading). Eleven passages were left out as having no sensible newline target:
+`word2vec/04`, `word2vec/07`, `fasttext/06` (tables and diagram labels; they were in a
+first V2 build and are discussed in decision 0006), `resnet/02`, `resnet/04`,
+`resnet/07`, `adam/01`, `adam/02`, `adam/05`, `adam/06` (equation and table debris),
+`nist-ai-rmf/03` (a two-column table extracted with its columns interleaved).
 
-To finish, from the repository root:
-
-1. For each doc (word2vec, fasttext, nist-800-63, bash-manual, attention, bert, resnet, adam, nist-ai-rmf, gnu-make), with `ANTHROPIC_API_KEY` set:
-   `uv run python scripts/make_realistic_set.py propose --doc <doc>`
-2. Review: edit `data/realistic/<doc>/<nn>.target.txt` next to its `.input.txt`, then add `"<doc>/<nn>"` to `data/realistic/review.json` with your initials and the date (`{"reviewer": "JH", "date": "...", "note": ""}`). Only reviewed passages enter the sets.
-3. `uv run python scripts/make_realistic_set.py build`, then record the printed unreachable counts here.
-
-Unreachable boundary counts: pending (printed by `build`).
+To add or redo passages: `extract` and `cut` for the document, `propose` with
+`ANTHROPIC_API_KEY` set (or write the target by hand), review, add the key to
+`review.json`, then `uv run python scripts/make_realistic_set.py build` and re-run the
+evaluation.
