@@ -1,4 +1,10 @@
+import importlib.util
+import json
 from pathlib import Path
+from types import SimpleNamespace
+from typing import Any
+
+import pytest
 
 from newline_fixer.data.build import assemble, build_lexicon, make_clean_set, make_corrupted_set
 from newline_fixer.data.manifest import build_manifest, file_sha256, published_files, write_manifest
@@ -99,3 +105,36 @@ def test_build_manifest_hashes_every_published_file(tmp_path: Path) -> None:
     assert isinstance(files, dict)
     assert set(files) == {"sets/meta.json", "split.json"}
     assert files["split.json"] == file_sha256(tmp_path / "split.json")
+
+
+def test_publish_prints_and_records_hub_revision(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    spec = importlib.util.spec_from_file_location(
+        "build_data_script", Path(__file__).parent.parent / "scripts" / "build_data.py"
+    )
+    assert spec is not None and spec.loader is not None
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+
+    (tmp_path / "split.json").write_text("{}", encoding="utf-8")
+    calls: dict[str, Any] = {}
+
+    class FakeApi:
+        def create_repo(self, *args: Any, **kwargs: Any) -> None:
+            calls["create_repo"] = (args, kwargs)
+
+        def upload_folder(self, **kwargs: Any) -> Any:
+            calls["upload_folder"] = kwargs
+            return SimpleNamespace(oid="deadbeef")
+
+    assert script.publish("u/repo", tmp_path, FakeApi()) == "deadbeef"
+    out = capsys.readouterr().out.splitlines()
+    assert out == [
+        "published https://huggingface.co/datasets/u/repo revision deadbeef",
+        "pin with revision deadbeef",
+    ]
+    assert calls["create_repo"][0] == ("u/repo",)
+    assert calls["upload_folder"]["repo_id"] == "u/repo"
+    manifest = json.loads((tmp_path / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["hub"] == {"repo": "u/repo", "revision": "deadbeef"}

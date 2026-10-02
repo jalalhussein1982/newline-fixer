@@ -5,6 +5,17 @@ Only these are committed: this file, `split.json` (group ids per split), `sets/`
 reviewed targets). Everything else is built by `scripts/build_data.py` and published to
 the Hugging Face Hub with a manifest of content hashes. See `docs/02-design.md` section 3.
 
+## Licence
+
+The Wikipedia-derived files (`clean/*.jsonl` documents whose source is the dump at the
+pinned revision, and the evaluation sets built from them) are derivatives of Wikipedia
+text and are released under the same licence, CC BY-SA 4.0, with attribution to Wikipedia
+and its contributors. The generated documents (`raw/generated/*.txt`) were written for
+this project and are released under CC BY-SA 4.0 as well, so the published dataset has
+one licence. The realistic passages under `realistic/` are short excerpts of published
+PDFs kept in this repository for evaluation only; they are not part of the published
+dataset.
+
 ## Current build
 
 - Hub dataset URL: pending (see Pending below).
@@ -18,8 +29,10 @@ the Hugging Face Hub with a manifest of content hashes. See `docs/02-design.md` 
 ### Pending
 
 ```bash
-uv run python scripts/build_data.py publish --repo <your-hf-user>/newline-fixer-data
+uv run python scripts/build_data.py publish --repo jalalhussein1982/newline-fixer-data
 ```
+
+The command prints the Hub revision; put the URL and revision in the Current build list above and in `report.md`.
 
 Re-running `assemble` redraws every split, every evaluation set and the lexicon; after it, re-run `evaluate` and `results_table` and update decision 0006 before accepting it.
 

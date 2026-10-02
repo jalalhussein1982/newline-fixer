@@ -18,6 +18,7 @@ import json
 import subprocess
 from dataclasses import asdict
 from pathlib import Path
+from typing import Any
 
 from newline_fixer.corrupt import CorruptConfig
 from newline_fixer.data.build import assemble, build_lexicon, make_clean_set, make_corrupted_set
@@ -104,28 +105,39 @@ def cmd_lexicon(args: argparse.Namespace) -> None:
     print(f"lexicon: {len(lx)} words -> {LEXICON}")
 
 
-def cmd_publish(args: argparse.Namespace) -> None:
-    from huggingface_hub import HfApi
-
+def publish(repo: str, data_dir: Path, api: Any) -> str:
+    """Upload the publishable files, record repo and revision in the manifest, return the revision."""
     write_manifest(
-        DATA / "manifest.json",
+        data_dir / "manifest.json",
         build_manifest(
-            DATA,
+            data_dir,
             DATASET_VERSION,
             git_commit(),
             dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
         ),
     )
-    api = HfApi()
-    api.create_repo(args.repo, repo_type="dataset", exist_ok=True, private=False)
-    api.upload_folder(
-        folder_path=str(DATA),
-        repo_id=args.repo,
+    api.create_repo(repo, repo_type="dataset", exist_ok=True, private=False)
+    info = api.upload_folder(
+        folder_path=str(data_dir),
+        repo_id=repo,
         repo_type="dataset",
         allow_patterns=[*PUBLISH_PATTERNS, "manifest.json"],
         commit_message=f"dataset v{DATASET_VERSION} from {git_commit()[:12]}",
     )
-    print(f"published to https://huggingface.co/datasets/{args.repo}")
+    revision = str(info.oid)
+    manifest_path = data_dir / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["hub"] = {"repo": repo, "revision": revision}
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    print(f"published https://huggingface.co/datasets/{repo} revision {revision}")
+    print(f"pin with revision {revision}")
+    return revision
+
+
+def cmd_publish(args: argparse.Namespace) -> None:
+    from huggingface_hub import HfApi
+
+    publish(args.repo, DATA, HfApi())
 
 
 def main() -> None:
