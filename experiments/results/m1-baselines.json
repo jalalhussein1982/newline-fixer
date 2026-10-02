@@ -1,9 +1,10 @@
 {
-  "run_at": "2026-10-02T01:49:51+00:00",
-  "git_commit": "650802baa8da63f9d55f4531ba81b1c271ced51d",
+  "run_at": "2026-10-02T03:06:05+00:00",
+  "git_commit": "2be9bfeeb0ac65384d1f641865f8ceab201d95a3",
   "dirty": false,
   "sets_sha256": {
     "V1": "4f22b6469bbdf371e30a5ca88935301235a3bac546a8fab77c53eb5e149e4866",
+    "V2": "574867bf0d4d467deccaedff7f9171cbfa77005c66809a1be74053784e6b5574",
     "V3": "07db0ab68315bf3b4f92d1d378c88a6042f2a8e8755c00de6323177f07c19f59"
   },
   "sets_meta": {
@@ -21,6 +22,7 @@
   },
   "sets": [
     "V1",
+    "V2",
     "V3"
   ],
   "systems": {
@@ -231,6 +233,201 @@
                 "precision": 0.35,
                 "recall": 0.07017543859649122,
                 "f1": 0.11691022964509394
+              }
+            }
+          }
+        }
+      },
+      "V2": {
+        "gap": {
+          "n_items": 29,
+          "n_gaps": 2401,
+          "macro_f1": 0.7526507385856895,
+          "macro_classes": [
+            "SPACE",
+            "NL",
+            "PARA"
+          ],
+          "break_f1": 0.7136563876651982,
+          "wrong_join_per_1000": 0.0,
+          "damage_rate": 0.0,
+          "items_untouched_rate": 1.0,
+          "per_class": {
+            "JOIN": {
+              "support": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "SPACE": {
+              "support": 2239,
+              "precision": 1.0,
+              "recall": 0.9419383653416704,
+              "f1": 0.9701011959521619
+            },
+            "NL": {
+              "support": 54,
+              "precision": 0.26865671641791045,
+              "recall": 1.0,
+              "f1": 0.42352941176470593
+            },
+            "PARA": {
+              "support": 108,
+              "precision": 0.945054945054945,
+              "recall": 0.7962962962962963,
+              "f1": 0.864321608040201
+            }
+          }
+        },
+        "paragraph_match_rate": 0.5547445255474452,
+        "string_changed_vs_raw": 0.0,
+        "string_changed_vs_normalized": 0.0,
+        "by_severity": {
+          "0": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0,0.33]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.33,0.66]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.66,1]": {
+            "n_items": 29,
+            "n_gaps": 2401,
+            "macro_f1": 0.7526507385856895,
+            "macro_classes": [
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.7136563876651982,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 1.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 2239,
+                "precision": 1.0,
+                "recall": 0.9419383653416704,
+                "f1": 0.9701011959521619
+              },
+              "NL": {
+                "support": 54,
+                "precision": 0.26865671641791045,
+                "recall": 1.0,
+                "f1": 0.42352941176470593
+              },
+              "PARA": {
+                "support": 108,
+                "precision": 0.945054945054945,
+                "recall": 0.7962962962962963,
+                "f1": 0.864321608040201
               }
             }
           }
@@ -639,6 +836,201 @@
                 "precision": 0.59375,
                 "recall": 0.07142857142857142,
                 "f1": 0.12751677852348992
+              }
+            }
+          }
+        }
+      },
+      "V2": {
+        "gap": {
+          "n_items": 29,
+          "n_gaps": 2401,
+          "macro_f1": 0.8057680384104131,
+          "macro_classes": [
+            "SPACE",
+            "NL",
+            "PARA"
+          ],
+          "break_f1": 0.8685015290519877,
+          "wrong_join_per_1000": 0.0,
+          "damage_rate": 0.060391503540191585,
+          "items_untouched_rate": 0.06896551724137931,
+          "per_class": {
+            "JOIN": {
+              "support": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "SPACE": {
+              "support": 2239,
+              "precision": 0.9910554561717353,
+              "recall": 0.9897275569450648,
+              "f1": 0.990391061452514
+            },
+            "NL": {
+              "support": 54,
+              "precision": 0.5694444444444444,
+              "recall": 0.7592592592592593,
+              "f1": 0.6507936507936508
+            },
+            "PARA": {
+              "support": 108,
+              "precision": 0.8387096774193549,
+              "recall": 0.7222222222222222,
+              "f1": 0.7761194029850746
+            }
+          }
+        },
+        "paragraph_match_rate": 0.5255474452554745,
+        "string_changed_vs_raw": 0.9310344827586207,
+        "string_changed_vs_normalized": 0.9310344827586207,
+        "by_severity": {
+          "0": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0,0.33]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.33,0.66]": {
+            "n_items": 0,
+            "n_gaps": 0,
+            "macro_f1": 0.0,
+            "macro_classes": [],
+            "break_f1": 0.0,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.0,
+            "items_untouched_rate": 0.0,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "NL": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "PARA": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              }
+            }
+          },
+          "(0.66,1]": {
+            "n_items": 29,
+            "n_gaps": 2401,
+            "macro_f1": 0.8057680384104131,
+            "macro_classes": [
+              "SPACE",
+              "NL",
+              "PARA"
+            ],
+            "break_f1": 0.8685015290519877,
+            "wrong_join_per_1000": 0.0,
+            "damage_rate": 0.060391503540191585,
+            "items_untouched_rate": 0.06896551724137931,
+            "per_class": {
+              "JOIN": {
+                "support": 0,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f1": 0.0
+              },
+              "SPACE": {
+                "support": 2239,
+                "precision": 0.9910554561717353,
+                "recall": 0.9897275569450648,
+                "f1": 0.990391061452514
+              },
+              "NL": {
+                "support": 54,
+                "precision": 0.5694444444444444,
+                "recall": 0.7592592592592593,
+                "f1": 0.6507936507936508
+              },
+              "PARA": {
+                "support": 108,
+                "precision": 0.8387096774193549,
+                "recall": 0.7222222222222222,
+                "f1": 0.7761194029850746
               }
             }
           }
