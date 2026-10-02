@@ -73,7 +73,7 @@ Configuration, all optional:
 | `NF_MAX_CHARS` | `100000` | inputs longer than this get 413 |
 | `NF_LOG_LEVEL` | `INFO` | level of the JSON request log on stdout |
 | `NF_DEVICE` | `cpu` | torch device for the learned model |
-| `NF_TORCH_THREADS` | unset (torch default) | CPU threads torch uses for inference; the image sets the value decision 0011 chose |
+| `NF_TORCH_THREADS` | unset (torch default) | CPU threads torch uses for inference; the image leaves it unset (decision 0011: no setting beat torch's default by more than 10%) |
 
 `NF_WEIGHTS` overrides the per-model variable (`NF_WEIGHTS_SCRATCH`, `NF_WEIGHTS_FINETUNED`) for the selected model.
 

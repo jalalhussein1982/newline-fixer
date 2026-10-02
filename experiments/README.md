@@ -126,6 +126,9 @@ Latency is one request at a time; throughput is eight concurrent requests of 2,0
 
 | label | system | mode | device | disk MB | RSS MB | p50 / p95 ms @500 | @2,000 | @10,000 | chars/s (batch 8) | commit |
 |---|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| container-finetuned-threads-1 | finetuned | http | cpu | - | - | 106.7 / 125.3 | 460.6 / 493.2 | 4166.8 / 4296.7 | 11,429 | `3ea41718cacc` |
+| container-finetuned-threads-2 | finetuned | http | cpu | - | - | 179.0 / 199.2 | 388.1 / 457.4 | 3462.8 / 3714.2 | 7,983 | `3ea41718cacc` (dirty) |
+| container-finetuned-threads-4 | finetuned | http | cpu | - | - | 150.6 / 180.0 | 326.7 / 400.9 | 2897.1 / 3501.2 | 8,180 | `3ea41718cacc` (dirty) |
 | container-finetuned | finetuned | http | cpu | - | - | 121.8 / 158.9 | 342.9 / 585.1 | 2584.1 / 2954.5 | 9,458 | `3390fa73a69c` |
 | container-rules | rules | http | cpu | - | - | 1.4 / 4.3 | 1.9 / 3.1 | 4.2 / 5.0 | 1,502,660 | `3ef9677a888b` |
 | container-scratch | scratch | http | cpu | - | - | 54.7 / 61.8 | 304.1 / 318.5 | 1977.4 / 2056.9 | 23,563 | `3ef9677a888b` |
