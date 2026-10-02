@@ -78,6 +78,8 @@ def train(
     run_dir: Path,
     device: torch.device,
 ) -> dict[str, object]:
+    if "V1" not in dev:
+        raise ValueError("dev must contain 'V1': the model is selected by V1 macro-F1")
     docs = list(train_docs)[: tcfg.max_docs] if tcfg.max_docs else list(train_docs)
     tokens = [t for d in docs for t in split(d.clean)[0]]
     words = WordVocab.build(tokens, cfg.vocab_size)
@@ -86,7 +88,8 @@ def train(
     net = GapTagger(cfg, len(words), len(chars)).to(device)
     optimizer = torch.optim.AdamW(net.parameters(), lr=tcfg.lr, weight_decay=tcfg.weight_decay)
     first_epoch = epoch_examples(docs, tcfg.seed, 0, cfg.budget)
-    weights = class_weight_tensor(class_counts(first_epoch), tcfg.class_weights, device)
+    counts = class_counts(first_epoch)
+    weights = class_weight_tensor(counts, tcfg.class_weights, device)
     loss_fn = nn.CrossEntropyLoss(weight=weights, ignore_index=IGNORE)
 
     record: dict[str, object] = {
@@ -98,7 +101,7 @@ def train(
         "train_config": asdict(tcfg),
         "n_train_docs": len(docs),
         "n_examples_epoch0": len(first_epoch),
-        "class_counts_epoch0": class_counts(first_epoch),
+        "class_counts_epoch0": counts,
         "n_words": len(words),
         "n_chars": len(chars),
         "n_params": count_parameters(net),
@@ -142,7 +145,7 @@ def train(
         }
         epochs.append(row)
         print(json.dumps(row))
-        f1 = metrics.get("V1_macro_f1", -1.0)
+        f1 = metrics["V1_macro_f1"]
         if f1 > best_f1:
             best_f1, best_epoch, bad = f1, epoch + 1, 0
             fixer.save(run_dir)

@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pytest
 import torch
 
 from newline_fixer.data.records import CleanDoc, EvalItem
@@ -64,6 +65,12 @@ def test_train_tiny_end_to_end(tmp_path: Path) -> None:
     assert (tmp_path / "model.pt").exists() and (tmp_path / "run.json").exists()
     fx = ScratchFixer.load(tmp_path, CPU)
     assert len(fx.predict(["a", "b", "c"], [Gap.SPACE, Gap.NL])) == 2
+
+
+def test_train_requires_v1_for_selection(tmp_path: Path) -> None:
+    tcfg = TrainConfig(run_id="n", epochs=1, batch_size=4, seed=1, char_min_count=1)
+    with pytest.raises(ValueError, match="V1"):
+        train(TINY, tcfg, DOCS, {"V3": DEV["V3"]}, tmp_path, CPU)
 
 
 def test_early_stopping_stops_after_patience(tmp_path: Path) -> None:
