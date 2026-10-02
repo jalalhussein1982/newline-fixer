@@ -86,5 +86,9 @@
   },
   "best_epoch": 3,
   "seconds": 901.7359359264374,
-  "weights_dir": "experiments/runs/finetuned"
+  "weights_dir": "experiments/runs/finetuned",
+  "hub": {
+    "repo": "jalalhussein1982/newline-fixer-finetuned",
+    "revision": "11d6b26e80dfa2c9606702cd2755a63c9dce99ed"
+  }
 }
