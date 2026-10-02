@@ -36,4 +36,4 @@ def test_config_roundtrip(tmp_path: Path) -> None:
 def test_select_device_prefers_explicit_and_falls_back_to_cpu() -> None:
     assert select_device("cpu") == torch.device("cpu")
     d = select_device()
-    assert d.type in ("cpu", "mps")
+    assert d.type in ("cpu", "mps", "cuda")

@@ -30,7 +30,7 @@ uv sync --all-extras   # creates .venv with all dependencies
 make check             # lint, type check, tests
 ```
 
-The from-scratch model needs the `model` extra (PyTorch); `uv sync --all-extras` installs it. Training uses Apple MPS when available and falls back to CPU.
+The from-scratch model needs the `model` extra (PyTorch); `uv sync --all-extras` installs it. Training uses CUDA or Apple MPS when available and falls back to CPU. On the M1 a full eight-epoch run takes about 100 minutes, so the two Task 7 runs are meant for a free Colab GPU: open `notebooks/train_scratch_colab.ipynb` in Colab, which clones this repository, trains both runs and hands back `experiments/runs/` and `experiments/training/` as a zip.
 
 On macOS, if `uv run python -c 'import newline_fixer'` fails with ModuleNotFoundError, run `make sync`: some setups mark `.venv` hidden and Python 3.12+ then ignores its `.pth` files.
 
