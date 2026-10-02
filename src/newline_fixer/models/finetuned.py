@@ -33,8 +33,8 @@ NUM_LABELS = 4
 
 def default_weights_finetuned() -> str:
     return (
-        os.environ.get(WEIGHTS_ENV_FINETUNED)
-        or os.environ.get("NF_WEIGHTS")
+        os.environ.get("NF_WEIGHTS")
+        or os.environ.get(WEIGHTS_ENV_FINETUNED)
         or DEFAULT_WEIGHTS_FINETUNED
     )
 

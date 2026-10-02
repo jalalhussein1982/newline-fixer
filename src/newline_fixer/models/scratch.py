@@ -20,7 +20,7 @@ DEFAULT_WEIGHTS = "experiments/runs/current"
 
 
 def default_weights() -> str:
-    return os.environ.get(WEIGHTS_ENV_SCRATCH) or os.environ.get(WEIGHTS_ENV) or DEFAULT_WEIGHTS
+    return os.environ.get(WEIGHTS_ENV) or os.environ.get(WEIGHTS_ENV_SCRATCH) or DEFAULT_WEIGHTS
 
 
 class ScratchFixer:

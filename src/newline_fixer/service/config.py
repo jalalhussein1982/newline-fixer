@@ -49,8 +49,8 @@ class Settings:
             and not self._finetuned_revision()
         ):
             raise ValueError(
-                "model 'finetuned' has no published revision yet: set NF_WEIGHTS_FINETUNED "
-                "(or NF_WEIGHTS) to a weights source, or NF_MODEL_REVISION to a Hub revision"
+                "model 'finetuned' has no weights source: set NF_WEIGHTS, NF_WEIGHTS_FINETUNED "
+                "or NF_MODEL_REVISION"
             )
         if self.max_chars <= 0:
             raise ValueError(f"NF_MAX_CHARS must be a positive integer, got {self.max_chars}")

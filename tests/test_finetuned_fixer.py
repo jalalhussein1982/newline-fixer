@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pytest
 import torch
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -123,3 +124,13 @@ def test_tokenizer_overrides_map_list_form_extra_special_tokens(tmp_path: Path) 
     }
     cfg.write_text('{"extra_special_tokens": {"a": "[NL]"}}', encoding="utf-8")
     assert _tokenizer_overrides(tmp_path) == {}
+
+
+def test_default_weights_prefers_nf_weights(monkeypatch: pytest.MonkeyPatch) -> None:
+    from newline_fixer.models.finetuned import default_weights_finetuned
+
+    monkeypatch.setenv("NF_WEIGHTS_FINETUNED", "per-model")
+    monkeypatch.setenv("NF_WEIGHTS", "global")
+    assert default_weights_finetuned() == "global"
+    monkeypatch.delenv("NF_WEIGHTS")
+    assert default_weights_finetuned() == "per-model"
