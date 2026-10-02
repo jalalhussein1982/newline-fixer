@@ -61,12 +61,16 @@ Configuration, all optional:
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `NF_MODEL` | `rules` | `identity`, `rules` or `scratch` (decision 0008 sets the default) |
+| `NF_MODEL` | `rules` | `identity`, `rules`, `scratch` or `finetuned` (decision 0008 sets the default) |
 | `NF_MODEL_REVISION` | the published scratch-v1 revision | Hub revision of the scratch weights |
 | `NF_WEIGHTS` | unset | a local run directory or `hf:repo@revision`; overrides `NF_MODEL_REVISION` |
+| `NF_WEIGHTS_SCRATCH` | unset | weights source for `NF_MODEL=scratch` (run directory or `hf:repo@revision`) |
+| `NF_WEIGHTS_FINETUNED` | unset | weights source for `NF_MODEL=finetuned`; with neither it nor `NF_WEIGHTS` set, `NF_MODEL_REVISION` is required until a revision is published |
 | `NF_MAX_CHARS` | `100000` | inputs longer than this get 413 |
 | `NF_LOG_LEVEL` | `INFO` | level of the JSON request log on stdout |
-| `NF_DEVICE` | `cpu` | torch device for the scratch model |
+| `NF_DEVICE` | `cpu` | torch device for the learned model |
+
+`NF_WEIGHTS` overrides the per-model variable (`NF_WEIGHTS_SCRATCH`, `NF_WEIGHTS_FINETUNED`) for the selected model.
 
 `GET /healthz` answers 503 until the model is loaded; `GET /metrics` is Prometheus text. One JSON line per request goes to stdout; request text is never logged.
 

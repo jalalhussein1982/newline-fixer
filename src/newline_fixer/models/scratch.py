@@ -15,11 +15,12 @@ from .scratch_net import GapTagger
 from .vocab import CharVocab, WordVocab, collate, encode_window
 
 WEIGHTS_ENV = "NF_WEIGHTS"
+WEIGHTS_ENV_SCRATCH = "NF_WEIGHTS_SCRATCH"
 DEFAULT_WEIGHTS = "experiments/runs/current"
 
 
 def default_weights() -> str:
-    return os.environ.get(WEIGHTS_ENV, DEFAULT_WEIGHTS)
+    return os.environ.get(WEIGHTS_ENV_SCRATCH) or os.environ.get(WEIGHTS_ENV) or DEFAULT_WEIGHTS
 
 
 class ScratchFixer:
